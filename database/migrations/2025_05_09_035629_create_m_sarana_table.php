@@ -21,6 +21,15 @@ return new class extends Migration
             $table->integer('sarana_jumlah')->default(0)->comment('Jumlah sarana yang tersedia');
             $table->string('sarana_kondisi', 20)->comment('Kondisi sarana (rusak, perlu perbaikan)');
             $table->string('sarana_gambar')->nullable()->comment('Path gambar sarana');
+
+            // Kolom tambahan untuk DSS
+            $table->tinyInteger('tingkat_kerusakan')->nullable()->comment('1 (ringan) - 5 (parah)');
+            $table->tinyInteger('frekuensi_penggunaan')->nullable()->comment('1 (jarang) - 5 (sering)');
+            $table->tinyInteger('tingkat_urgensi')->nullable()->comment('1 (rendah) - 5 (tinggi)');
+            $table->tinyInteger('usia_sarana')->nullable()->comment('1 (baru) - 5 (sangat tua)');
+            $table->tinyInteger('biaya_perbaikan')->nullable()->comment('1 (mahal) - 5 (murah)');
+            $table->float('prioritas')->nullable()->comment('Skor prioritas hasil DSS');
+
             $table->timestamps();
 
             // Foreign key constraint

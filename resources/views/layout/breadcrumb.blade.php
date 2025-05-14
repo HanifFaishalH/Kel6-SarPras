@@ -16,7 +16,7 @@
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="{{ asset('srtdash/messages.html') }}">Message</a>
                     <a class="dropdown-item" href="{{ asset('srtdash/settings.html') }}">Settings</a>
-                    <a class="dropdown-item" href="{{ asset('srtdash/logout.html') }}">Log Out</a>
+                    <a class="dropdown-item" href="{{ url('/logout') }}">Log Out</a>
                 </div>
             </div>
         </div>

@@ -12,13 +12,6 @@
                     <div class="card-body">
                         <h4 class="header-title">{{ $page->title }}</h4>
 
-                        <div class="mb-3 d-flex justify-content-between">
-                            <div>
-                                <button onclick="modalAction('{{ url('level/create_ajax') }}')" class="btn btn-sm btn-primary">Tambah Ajax</button>
-                                <a href="{{ url('level/create') }}" class="btn btn-sm btn-success">Tambah</a>
-                            </div>
-                        </div>
-
                         @if (session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
@@ -65,8 +58,6 @@
 @endpush
 
 @push('js')
-    <!-- DataTables & jQuery (jQuery sudah ada di layout.template) -->
-    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 
     <script>
         function modalAction(url = '') {

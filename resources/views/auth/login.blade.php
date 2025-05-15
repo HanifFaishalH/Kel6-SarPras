@@ -19,77 +19,79 @@
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/responsive.css') }}">
     <script src="{{ asset('srtdash/assets/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 
-    <head>
-
-        <style>
-            body,
-            html {
-                height: 100%;
-                margin: 0;
-            }
-
-            .login-area {
-                position: relative;
-                background: url('{{ asset('bg.jpg') }}') no-repeat center center fixed;
-                background-size: cover;
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .login-area::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 1;
-            }
-
-            .container {
-                position: relative;
-                z-index: 2;
-            }
-
-            .logo-jti-wrapper {
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 3;
-                background-color: white;
-                border-radius: 50%;
-                padding: 10px;
-                box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-                display: inline-block;
-                width: 140px;
-                overflow: visible;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .logo-jti {
-                width: 120px;
-                height: auto;
-                display: block;
-            }
 
 
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+        }
 
-            #loginForm {
-                border-radius: 10px;
-            }
+        .login-area {
+            position: relative;
+            background: url('{{ asset('bg.jpg') }}') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-            .login-form-head {
-                border-top-left-radius: 10px;
-                border-top-right-radius: 10px;
-                background-color: #815ef6;
-            }
-        </style>
-    </head>
+        .login-area::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-jti-wrapper {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 3;
+            background-color: white;
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+            display: inline-block;
+            width: 140px;
+            overflow: visible;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-jti {
+            width: 120px;
+            height: auto;
+            display: block;
+        }
+
+
+
+        #loginForm {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+        }
+
+        .login-form-head {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            background-color: #815ef6;
+        }
+    </style>
+
 
 </head>
 

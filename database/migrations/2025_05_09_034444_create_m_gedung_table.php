@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('m_gedung', function (Blueprint $table) {
             $table->id('gedung_id');
-            $table->string('gedung_nama', 50)->unique();
-            $table->string('gedung_kode', 20);
+            $table->string('gedung_nama', 50);
+            $table->string('gedung_kode', 20)->unique();
             $table->timestamps();   
         });
     }

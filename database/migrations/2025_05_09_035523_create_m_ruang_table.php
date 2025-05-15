@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('m_ruang', function (Blueprint $table) {
             $table->id('ruang_id');
             $table->unsignedBigInteger('lantai_id');
-            $table->string('ruang_nama', 50)->unique();
+            $table->string('ruang_nama', 50);
             $table->string('ruang_kode', 20)->unique();
             $table->string('ruang_tipe', 20)->comment('Tipe ruang (kelas, lab, kantor, dll)');
             $table->timestamps();

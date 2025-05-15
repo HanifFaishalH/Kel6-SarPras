@@ -29,7 +29,7 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
 
 Route::get('/', [HomeController::class, 'index']);
 
-Route::middleware(['authorize:ADM'])->group(function () {
+Route::middleware(['authorize:admin'])->group(function () {
 Route::get('/level', [LevelController::class, 'index']);
 Route::get('level/list', [LevelController::class, 'list']);
 });

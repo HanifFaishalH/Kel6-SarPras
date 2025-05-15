@@ -14,11 +14,11 @@ class LevelSeeder extends Seeder
     public function run(): void
     {
         $levels = [
-            ['level_nama' => 'admin', 'created_at' => now(), 'updated_at' => now()],
-            ['level_nama' => 'mahasiswa', 'created_at' => now(), 'updated_at' => now()],
-            ['level_nama' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
-            ['level_nama' => 'tendik', 'created_at' => now(), 'updated_at' => now()],
-            ['level_nama' => 'teknisi', 'created_at' => now(), 'updated_at' => now()],
+            ['level_nama' => 'Administrator', 'level_kode' => 'admin', 'created_at' => now(), 'updated_at' => now()],
+            ['level_nama' => 'Mahasiswa', 'level_kode' => 'mhs', 'created_at' => now(), 'updated_at' => now()],
+            ['level_nama' => 'Dosen', 'level_kode' => 'dosen', 'created_at' => now(), 'updated_at' => now()],
+            ['level_nama' => 'Tenaga Kependidikan', 'level_kode' => 'tendik', 'created_at' => now(), 'updated_at' => now()],
+            ['level_nama' => 'Teknisi', 'level_kode' => 'teknisi', 'created_at' => now(), 'updated_at' => now()],
         ];
         foreach ($levels as $level) {
             DB::table('m_level')->insert($level);

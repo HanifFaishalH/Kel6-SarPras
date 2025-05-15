@@ -16,9 +16,9 @@ class UsersSeeder extends Seeder
         //
         $users = [
             [
-                'user_id' => 'admin',
+                'username' => 'admin',
                 'password' => bcrypt('admin'),
-                'nama' => 'Administrator',
+                'nama' => 'Admin1',
                 'level_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -26,6 +26,7 @@ class UsersSeeder extends Seeder
             [
                 'username' => 'mahasiswa',
                 'password' => bcrypt('mahasiswa'),
+                'nama' => 'Mahasiswa1',
                 'level_id' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -33,6 +34,7 @@ class UsersSeeder extends Seeder
             [
                 'username' => 'dosen',
                 'password' => bcrypt('dosen'),
+                'nama' => 'Dosen1',
                 'level_id' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -40,6 +42,7 @@ class UsersSeeder extends Seeder
             [
                 'username' => 'tendik',
                 'password' => bcrypt('tendik'),
+                'nama' => 'Tenaga Pendidik1',
                 'level_id' => 4,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -47,6 +50,7 @@ class UsersSeeder extends Seeder
             [
                 'username' => 'teknisi',
                 'password' => bcrypt('teknisi'),
+                'nama' => 'Teknisi1',
                 'level_id' => 5,
                 'created_at' => now(),
                 'updated_at' => now(),

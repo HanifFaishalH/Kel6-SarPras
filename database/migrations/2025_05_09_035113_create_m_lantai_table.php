@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('m_lantai', function (Blueprint $table) {
             $table->id('lantai_id');
             $table->unsignedBigInteger('gedung_id');
-            $table->string('lantai_nama', 50)->unique();
+            $table->string('lantai_nama', 50);
             $table->timestamps();
 
             // Foreign key constraint

@@ -9,11 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('m_level', function (Blueprint $table) {
-            $table->id('level_id');
-            $table->string('level_nama', 50)->unique();
+        Schema::create('t_statistik_laporan', function (Blueprint $table) {
+            $table->id('statistik_laporan_id');
+            $table->date('tanggal_laporan');
+            $table->unsignedBigInteger('total_laporan')->default(0);
             $table->timestamps();
         });
     }
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_level');
+        Schema::dropIfExists('t_statistik_laporan');
     }
 };

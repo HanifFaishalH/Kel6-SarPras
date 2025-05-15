@@ -22,10 +22,7 @@ return new class extends Migration
             //general data
             $table->string('no_induk', 20)->nullable()->comment('NIM/NIDN/NIP');
             $table->string('nama', 50);
-
-            // Specific role
-            $table->string('unit')->nullable()->comment('Fakultas/Unit Kerja');
-            $table->string('expertise')->nullable()->comment('Bidang keahlian (khusus teknisi)');
+            $table->string('foto')->nullable();
             $table->timestamps();
 
             // Foreign key constraint

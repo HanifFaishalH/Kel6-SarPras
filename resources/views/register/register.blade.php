@@ -92,6 +92,33 @@
             border-top-right-radius: 10px;
             background-color: #815ef6;
         }
+
+        .form-gp {
+            margin-bottom: 20px;
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+        }
+
+        .input-icon-wrapper input {
+            width: 100%;
+            height: 40px;
+            padding-right: 35px;
+            /* memberi ruang untuk ikon */
+            padding-left: 10px;
+            box-sizing: border-box;
+        }
+
+        .input-icon-wrapper i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c63ff;
+            /* warna ikon */
+            font-size: 18px;
+        }
     </style>
 </head>
 
@@ -121,26 +148,37 @@
                     <div class="login-form-body">
                         <div class="form-gp">
                             <label for="exampleInputName1">Full Name</label>
-                            <input type="text" id="exampleInputName1">
-                            <i class="ti-user"></i>
+                            <div class="input-icon-wrapper">
+                                <input type="text" id="exampleInputName1" placeholder="Enter your full name">
+                                <i class="ti-user"></i>
+                            </div>
                             <div class="text-danger"></div>
                         </div>
+
                         <div class="form-gp">
-                            <label for="exampleInputEmail1">Email address</label>
-                            <input type="email" id="exampleInputEmail1">
-                            <i class="ti-email"></i>
+                            <label for="exampleInputEmail1">Email Address</label>
+                            <div class="input-icon-wrapper">
+                                <input type="email" id="exampleInputEmail1" placeholder="Enter your email address">
+                                <i class="ti-email"></i>
+                            </div>
                             <div class="text-danger"></div>
                         </div>
+
                         <div class="form-gp">
                             <label for="exampleInputPassword1">Password</label>
-                            <input type="password" id="exampleInputPassword1">
-                            <i class="ti-lock"></i>
+                            <div class="input-icon-wrapper">
+                                <input type="password" id="exampleInputPassword1" placeholder="Enter your password">
+                                <i class="ti-lock"></i>
+                            </div>
                             <div class="text-danger"></div>
                         </div>
+
                         <div class="form-gp">
                             <label for="exampleInputPassword2">Confirm Password</label>
-                            <input type="password" id="exampleInputPassword2">
-                            <i class="ti-lock"></i>
+                            <div class="input-icon-wrapper">
+                                <input type="password" id="exampleInputPassword2" placeholder="Re-enter your password">
+                                <i class="ti-lock"></i>
+                            </div>
                             <div class="text-danger"></div>
                         </div>
                         <div class="submit-btn-area">
@@ -155,7 +193,7 @@
                             </div>
                         </div>
                         <div class="form-footer text-center mt-5">
-                            <p class="text-muted">Don't have an account? <a href="{{ url('/')}}">Sign in</a></p>
+                            <p class="text-muted">Don't have an account? <a href="{{ url('/') }}">Sign in</a></p>
                         </div>
                     </div>
                 </form>

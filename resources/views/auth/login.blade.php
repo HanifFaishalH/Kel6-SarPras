@@ -90,6 +90,33 @@
             border-top-right-radius: 10px;
             background-color: #815ef6;
         }
+
+        .form-gp {
+            margin-bottom: 20px;
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+        }
+
+        .input-icon-wrapper input {
+            width: 100%;
+            padding-right: 35px;
+            /* ruang untuk ikon */
+            padding-left: 10px;
+            height: 40px;
+            box-sizing: border-box;
+        }
+
+        .input-icon-wrapper i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c63ff;
+            /* ungu ringan */
+            font-size: 18px;
+        }
     </style>
 
 
@@ -118,14 +145,19 @@
                     <div class="login-form-body">
                         <div class="form-gp">
                             <label for="username">Username</label>
-                            <input type="text" name="username" id="username" required>
-                            <i class="ti-email"></i>
+                            <div class="input-icon-wrapper">
+                                <input type="text" name="username" id="username" required placeholder="Username">
+                                <i class="ti-email"></i>
+                            </div>
                             <div class="text-danger" id="usernameError"></div>
                         </div>
+
                         <div class="form-gp">
                             <label for="password">Password</label>
-                            <input type="password" name="password" id="password" required>
-                            <i class="ti-lock"></i>
+                            <div class="input-icon-wrapper">
+                                <input type="password" name="password" id="password" required placeholder="Password">
+                                <i class="ti-lock"></i>
+                            </div>
                             <div class="text-danger" id="passwordError"></div>
                         </div>
                         <div class="submit-btn-area">

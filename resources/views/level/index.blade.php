@@ -7,7 +7,7 @@
 
     <div class="main-content-inner">
         <div class="row">
-            <div class="col-12 mt-5">
+            <div class="col-12 mt-1">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">{{ $page->title }}</h4>

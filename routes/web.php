@@ -25,13 +25,15 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::get('register', [RegisterController::class, 'index']);
 Route::post('register', [RegisterController::class, 'store']);
 
-Route::middleware(['auth'])->group(function () { // artinya semua route di dalam group ini harus
+Route::middleware(['auth'])->group(function () {
 
-Route::get('/', [HomeController::class, 'index']);
+    Route::get('/', [HomeController::class, 'index']);
 
-Route::middleware(['authorize:admin'])->group(function () {
-Route::get('/level', [LevelController::class, 'index']);
-Route::get('level/list', [LevelController::class, 'list']);
+    Route::middleware(['authorize:admin, mhs'])->group(function () {
+        Route::group(['prefix' => 'level'], function () {
+            Route::get('/', [LevelController::class, 'index']);
+            Route::get('/list', [LevelController::class, 'list']);
+        });
 });
 
 });

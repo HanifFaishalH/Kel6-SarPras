@@ -132,7 +132,7 @@
                             <button type="submit">Submit <i class="ti-arrow-right"></i></button>
                         </div>
                         <div class="form-footer text-center mt-5">
-                            <p class="text-muted">Don't have an account? <a href="{{ url('register') }}">Sign up</a>
+                            <p class="text-muted">Don't have an account? <a href="{{ url('/register') }}">Sign up</a>
                             </p>
                         </div>
                     </div>

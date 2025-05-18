@@ -32,6 +32,7 @@ class RuangSeeder extends Seeder
                 ['lantai_id' => 1, 'ruang_nama' => 'Ruang Teknisi', 'ruang_kode' => 'RT1', 'ruang_tipe' => 'teknisi', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 1, 'ruang_nama' => 'Ruang Toilet Barat 1', 'ruang_kode' => 'RTB1', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 1, 'ruang_nama' => 'Ruang Toilet Timur 1', 'ruang_kode' => 'RTS1', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
+                ['lantai_id' => 1, 'ruang_nama' => 'Lobby Lantai 1', 'ruang_kode' => 'LL1', 'ruang_tipe' => 'lobby', 'created_at' => now(), 'updated_at' => now()],
             ],
             2 => [
                 // Lantai 2
@@ -57,6 +58,7 @@ class RuangSeeder extends Seeder
                 ['lantai_id' => 2, 'ruang_nama' => 'Ruang TUK', 'ruang_kode' => 'RTUK', 'ruang_tipe' => 'kantor', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 2, 'ruang_nama' => 'Ruang Teknisi 2', 'ruang_kode' => 'RT2', 'ruang_tipe' => 'teknisi', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 2, 'ruang_nama' => 'Ruang Teknisi 3', 'ruang_kode' => 'RT3', 'ruang_tipe' => 'teknisi', 'created_at' => now(), 'updated_at' => now()],
+                ['lantai_id' => 2, 'ruang_nama' => 'Lobby Lantai 2', 'ruang_kode' => 'LL2', 'ruang_tipe' => 'lobby', 'created_at' => now(), 'updated_at' => now()],
             ],
             3 => [
                 // Lantai 3
@@ -79,6 +81,7 @@ class RuangSeeder extends Seeder
                 ['lantai_id' => 3, 'ruang_nama' => 'Ruang Admin 1', 'ruang_kode' => 'RA1', 'ruang_tipe' => 'kantor', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 3, 'ruang_nama' => 'Ruang Toilet Barat 3', 'ruang_kode' => 'RTB3', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 3, 'ruang_nama' => 'Ruang Toilet Timur 3', 'ruang_kode' => 'RTS3', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
+                ['lantai_id' => 3, 'ruang_nama' => 'Lobby Lantai 3', 'ruang_kode' => 'LL3', 'ruang_tipe' => 'lobby', 'created_at' => now(), 'updated_at' => now()],
             ],
             4 => [
                 // Lantai 4
@@ -97,6 +100,7 @@ class RuangSeeder extends Seeder
                 ['lantai_id' => 4, 'ruang_nama' => 'Ruang Admin', 'ruang_kode' => 'RA2', 'ruang_tipe' => 'kantor', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 4, 'ruang_nama' => 'Ruang Toilet Barat 4', 'ruang_kode' => 'RTB4', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 4, 'ruang_nama' => 'Ruang Toilet Timur 4', 'ruang_kode' => 'RTS4', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
+                ['lantai_id' => 4, 'ruang_nama' => 'Lobby Lantai 4', 'ruang_kode' => 'LL4', 'ruang_tipe' => 'lobby', 'created_at' => now(), 'updated_at' => now()],
             ],
             5 => [
                 // Lantai 5
@@ -121,6 +125,7 @@ class RuangSeeder extends Seeder
                 ['lantai_id' => 5, 'ruang_nama' => 'Ruang OB 2', 'ruang_kode' => 'ROB2', 'ruang_tipe' => 'kantor', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 5, 'ruang_nama' => 'Ruang Toilet Barat 5', 'ruang_kode' => 'RTB5', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 5, 'ruang_nama' => 'Ruang Toilet Timur 5', 'ruang_kode' => 'RTS5', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
+                ['lantai_id' => 5, 'ruang_nama' => 'Lobby Lantai 5', 'ruang_kode' => 'LL5', 'ruang_tipe' => 'lobby', 'created_at' => now(), 'updated_at' => now()],
             ],
             6 => [
                 // Lantai 6
@@ -146,6 +151,7 @@ class RuangSeeder extends Seeder
                 ['lantai_id' => 6, 'ruang_nama' => 'Ruang D.06', 'ruang_kode' => 'RD.06', 'ruang_tipe' => 'kantor', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 6, 'ruang_nama' => 'Ruang Jurusan TI', 'ruang_kode' => 'RJT', 'ruang_tipe' => 'kantor', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 6, 'ruang_nama' => 'Ruang Program Studi', 'ruang_kode' => 'RPS', 'ruang_tipe' => 'kantor', 'created_at' => now(), 'updated_at' => now()],
+                ['lantai_id' => 6, 'ruang_nama' => 'Lobby Lantai 6', 'ruang_kode' => 'LL6', 'ruang_tipe' => 'lobby', 'created_at' => now(), 'updated_at' => now()],
             ],
             7 => [
                 // Lantai 7
@@ -170,6 +176,7 @@ class RuangSeeder extends Seeder
                 ['lantai_id' => 7, 'ruang_nama' => 'Ruang Teknisi 5', 'ruang_kode' => 'RT5', 'ruang_tipe' => 'teknisi', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 7, 'ruang_nama' => 'Ruang Toilet Barat 7', 'ruang_kode' => 'RTB7', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 7, 'ruang_nama' => 'Ruang Toilet Timur 7', 'ruang_kode' => 'RTS7', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
+                ['lantai_id' => 7, 'ruang_nama' => 'Lobby Lantai 7', 'ruang_kode' => 'LL7', 'ruang_tipe' => 'lobby', 'created_at' => now(), 'updated_at' => now()],
             ],
             8 => [
                 // Lantai 8
@@ -188,6 +195,7 @@ class RuangSeeder extends Seeder
                 ['lantai_id' => 8, 'ruang_nama' => 'Ruang Toilet Timur 8', 'ruang_kode' => 'RTS8', 'ruang_tipe' => 'toilet', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 8, 'ruang_nama' => 'Ruang Musik', 'ruang_kode' => 'RM', 'ruang_tipe' => 'musik', 'created_at' => now(), 'updated_at' => now()],
                 ['lantai_id' => 8, 'ruang_nama' => 'Ruang Auditorium', 'ruang_kode' => 'R.Audit', 'ruang_tipe' => 'auditorium', 'created_at' => now(), 'updated_at' => now()],
+                ['lantai_id' => 8, 'ruang_nama' => 'Lobby Lantai 8', 'ruang_kode' => 'LL8', 'ruang_tipe' => 'lobby', 'created_at' => now(), 'updated_at' => now()],
             ]
         ];
 

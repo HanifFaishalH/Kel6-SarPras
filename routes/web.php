@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LevelController;
+use App\Http\Controllers\GedungController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,7 @@ use App\Http\Controllers\LevelController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 Route::pattern('id', '[0-9]+');
 
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -34,6 +36,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [LevelController::class, 'index']);
             Route::get('/list', [LevelController::class, 'list']);
         });
-});
 
+        Route::middleware(['authorize:admin'])->group(function () {
+            Route::group(['prefix' => 'gedung'], function () {
+                Route::get('/', [GedungController::class, 'index']);
+                Route::get('/list', [GedungController::class, 'list']);
+            });
+        });
+    });
 });

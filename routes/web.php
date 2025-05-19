@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\GedungController;
 
@@ -41,6 +42,13 @@ Route::middleware(['auth'])->group(function () {
             Route::group(['prefix' => 'gedung'], function () {
                 Route::get('/', [GedungController::class, 'index']);
                 Route::get('/list', [GedungController::class, 'list']);
+            });
+        });
+
+        Route::middleware(['authorize:admin'])->group(function () {
+            Route::group(['prefix' => 'fasilitas'], function () {
+                Route::get('/', [BarangController::class, 'index']);
+                Route::get('/list', [BarangController::class, 'list']);
             });
         });
     });

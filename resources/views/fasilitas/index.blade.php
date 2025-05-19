@@ -21,31 +21,31 @@
                         @endif
 
                         <div class="form-group row">
-                            <label class="col-form-label col-sm-2">Filter Gedung:</label>
+                            <label class="col-form-label col-sm-2">Filter Kategori:</label>
                             <div class="col-sm-4">
-                                <select class="form-control" id="gedung_id" name="gedung_id">
-                                    <option value="">- Pilih Gedung -</option>
-                                    @foreach ($gedung as $item)
-                                        <option value="{{ $item->gedung_id }}">{{ $item->gedung_nama }}</option>
+                                <select class="form-control" id="kategori_id" name="kategori_id">
+                                    <option value="">- Pilih Kategori -</option>
+                                    @foreach ($kategori as $item)
+                                        <option value="{{ $item->kategori_id }}">{{ $item->kategori_nama }}</option>
                                     @endforeach
                                 </select>
-                                <small class="form-text text-muted">Nama Gedung</small>
+                                <small class="form-text text-muted">Kategori Fasilitas</small>
                             </div>
                             <div class="col-sm-6 text-right">
                                 <button type="button" class="btn btn-primary"
-                                    onclick="modalAction('{{ url('gedung/create') }}')">
-                                    <i class="fa fa-plus"></i> Tambah Gedung
+                                    onclick="modalAction('{{ url('fasilitas/create') }}')">
+                                    <i class="fa fa-plus"></i> Tambah Fasilitas
                                 </button>
                             </div>
                         </div>
 
                         <div class="data-tables">
-                            <table class="table table-bordered table-striped table-hover table-sm" id="table_gedung">
+                            <table class="table table-bordered table-striped table-hover table-sm" id="table_fasilitas">
                                 <thead class="bg-light text-capitalize">
                                     <tr>
                                         <th>ID</th>
-                                        <th>Nama Gedung</th>
-                                        <th>Kode Gedung</th>
+                                        <th>Nama Barang</th>
+                                        <th>Kategori</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -70,42 +70,42 @@
             $('#myModal').load(url, function(response, status, xhr) {
                 if (status == "error") {
                     $('#myModal').html(
-                        '<div class="alert alert-danger">Belum jadi.</div>');
+                        '<div class="alert alert-danger">Belum buat</div>');
                 }
                 $('#myModal').modal('show');
             });
         }
 
-        var dataGedung;
+        var dataFasilitas;
         $(document).ready(function() {
-            dataGedung = $('#table_gedung').DataTable({
+            dataFasilitas = $('#table_fasilitas').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('gedung/list') }}",
+                    url: "{{ url('fasilitas/list') }}",
                     dataType: "json",
                     type: "GET",
                     data: function(d) {
-                        d.gedung_id = $('#gedung_id').val();
+                        d.kategori_id = $('#kategori_id').val();
                     }
                 },
                 columns: [{
                         data: "DT_RowIndex",
-                        name: "gedung_id"
+                        name: "barang_id"
                     },
                     {
-                        data: "gedung_nama",
-                        name: "gedung_nama"
+                        data: "barang_nama",
+                        name: "barang_nama"
                     },
                     {
-                        data: "gedung_kode",
-                        name: "gedung_kode"
+                        data: "kategori_nama",
+                        name: "kategori_nama"
                     },
                     {
                         data: "aksi",
                         name: "aksi",
                         orderable: false,
-                        searchable: false,
+                        searchable: false
                     }
                 ],
                 order: [
@@ -113,8 +113,8 @@
                 ]
             });
 
-            $('#gedung_id').on('change', function() {
-                dataGedung.ajax.reload();
+            $('#kategori_id').on('change', function() {
+                dataFasilitas.ajax.reload();
             });
         });
     </script>

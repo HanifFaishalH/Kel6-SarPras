@@ -21,7 +21,7 @@ class LevelSeeder extends Seeder
             ['level_nama' => 'Teknisi', 'level_kode' => 'teknisi', 'created_at' => now(), 'updated_at' => now()],
         ];
         foreach ($levels as $level) {
-            DB::table('m_level')->insert($level);
+            DB::table('m_level')->insertOrIgnore($level);
         }
     }
 }

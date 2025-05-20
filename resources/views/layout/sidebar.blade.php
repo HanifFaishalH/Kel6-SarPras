@@ -12,17 +12,19 @@
         <div class="menu-inner">
             <nav>
                 <ul class="metismenu" id="menu">
+                    <li class="nav-item">
+                        <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
+                            <i class="fa fa-dashboard"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="metismenu" id="menu">
                     <!-- Bagian Kelola -->
                     <li class="menu-section mt-2">
                         <h4 class="text-white pl-3">Kelola</h4>
                     </li>
 
-                    <li class="nav-item mt-3">
-                        <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
-                            <i class="fa fa-dashboard"></i>
-                            <span>Dasbor</span>
-                        </a>
-                    </li>
 
                     <li class="nav-item">
                         <a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
@@ -97,16 +99,7 @@
                         <a href="{{ url('/laporan') }}"
                             class="nav-link {{ $activeMenu == 'buat-laporan' ? 'active' : '' }}" aria-expanded="false">
                             <i class="fa fa-file-text"></i>
-                            <span>Buat Laporan</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ url('/pratinjau-laporan') }}"
-                            class="nav-link {{ $activeMenu == 'lihat-laporan' ? 'active' : '' }}"
-                            aria-expanded="false">
-                            <i class="fa fa-eye"></i>
-                            <span>Lihat Laporan</span>
+                            <span>Laporan</span>
                         </a>
                     </li>
 

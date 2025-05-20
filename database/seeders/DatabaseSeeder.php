@@ -15,6 +15,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LevelSeeder::class,
             UsersSeeder::class, // Ensure your seeder is listed here
+            GedungSeeder::class,
+            BarangSeeder::class,
+            KategoriSeeder::class,
+            LantaiSeeder::class,
+            RuangSeeder::class,
+            SaranaSeeder::class,
         ]);
     }
 }

@@ -5,21 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GedungModel extends Model
+class RuangModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'm_gedung';
-    protected $primaryKey = 'gedung_id';
+    protected $table = 'm_ruang';
+    protected $primaryKey = 'ruang_id';
     protected $fillable = [
-        'gedung_nama',
-        'gedung_kode',
+        'ruang_nama',
+        'ruang_kode',
+        'lantai_id',
     ];
-    
     public $timestamps = true;
 
     public function lantai()
     {
-        return $this->hasMany(LantaiModel::class, 'gedung_id', 'gedung_id');
+        return $this->belongsTo(LantaiModel::class, 'lantai_id', 'lantai_id');
     }
+
 }

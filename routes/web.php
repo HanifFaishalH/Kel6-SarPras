@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\GedungController;
+use App\Http\Controllers\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,13 @@ Route::middleware(['auth'])->group(function () {
             Route::group(['prefix' => 'fasilitas'], function () {
                 Route::get('/', [BarangController::class, 'index']);
                 Route::get('/list', [BarangController::class, 'list']);
+            });
+
+            Route::group(['prefix' => 'laporan'], function () {
+                Route::get('/', [LaporanController::class, 'index']);
+                Route::get('/list', [LaporanController::class, 'list']);
+                Route::get('/create_ajax', [LaporanController::class, 'create_ajax']);
+                Route::post('/store_ajax', [LaporanController::class, 'store_ajax']);
             });
         });
     });

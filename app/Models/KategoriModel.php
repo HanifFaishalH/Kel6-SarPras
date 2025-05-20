@@ -17,4 +17,9 @@ class KategoriModel extends Model
     ];
 
     public $timestamps = true;
+
+    public function sarana()
+    {
+        return $this->hasMany(SaranaModel::class, 'kategori_id', 'kategori_id');
+    }
 }

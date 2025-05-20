@@ -147,53 +147,33 @@
                     </div>
                     <div class="login-form-body">
                         <div class="form-gp">
-                            <label for="exampleInputName1">Full Name</label>
+                            <label for="username">Username</label>
                             <div class="input-icon-wrapper">
-                                <input type="text" id="exampleInputName1" placeholder="Enter your full name">
+                                <input type="text" id="username" placeholder="Enter your full name">
                                 <i class="ti-user"></i>
                             </div>
                             <div class="text-danger"></div>
                         </div>
 
                         <div class="form-gp">
-                            <label for="exampleInputEmail1">Email Address</label>
+                            <label for="password">Password</label>
                             <div class="input-icon-wrapper">
-                                <input type="email" id="exampleInputEmail1" placeholder="Enter your email address">
-                                <i class="ti-email"></i>
-                            </div>
-                            <div class="text-danger"></div>
-                        </div>
-
-                        <div class="form-gp">
-                            <label for="exampleInputPassword1">Password</label>
-                            <div class="input-icon-wrapper">
-                                <input type="password" id="exampleInputPassword1" placeholder="Enter your password">
+                                <input type="password" id="password" placeholder="Enter your password">
                                 <i class="ti-lock"></i>
                             </div>
                             <div class="text-danger"></div>
                         </div>
 
                         <div class="form-gp">
-                            <label for="exampleInputPassword2">Confirm Password</label>
+                            <label for="confirm_password">Confirm Password</label>
                             <div class="input-icon-wrapper">
-                                <input type="password" id="exampleInputPassword2" placeholder="Re-enter your password">
+                                <input type="password" id="confirm_password" placeholder="Re-enter your password">
                                 <i class="ti-lock"></i>
                             </div>
                             <div class="text-danger"></div>
                         </div>
-                        <div class="submit-btn-area">
+                        <div class="submit-btn-area mt-5">
                             <button id="form_submit" type="submit">Submit <i class="ti-arrow-right"></i></button>
-                            <div class="login-other row mt-4">
-                                <div class="col-6">
-                                    <a class="fb-login" href="#">Sign up with <i class="fa fa-facebook"></i></a>
-                                </div>
-                                <div class="col-6">
-                                    <a class="google-login" href="#">Sign up with <i class="fa fa-google"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-footer text-center mt-5">
-                            <p class="text-muted">Don't have an account? <a href="{{ url('/') }}">Sign in</a></p>
                         </div>
                     </div>
                 </form>

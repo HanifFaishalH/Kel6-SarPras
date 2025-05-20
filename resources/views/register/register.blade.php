@@ -175,6 +175,9 @@
                         <div class="submit-btn-area mt-5">
                             <button id="form_submit" type="submit">Submit <i class="ti-arrow-right"></i></button>
                         </div>
+                        <div class="form-footer text-center mt-5">
+                            <p class="text-muted">Already Have an Account? <a href="{{ url('/') }}">Sign in</a></p>
+                        </div>
                     </div>
                 </form>
             </div>

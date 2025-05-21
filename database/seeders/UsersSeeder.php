@@ -89,7 +89,7 @@ class UsersSeeder extends Seeder
             ],
         ];
         foreach ($users as $user) {
-            DB::table('m_users')->insert($user);
+            DB::table('m_users')->insertOrIgnore($user);
         }
     }
 }

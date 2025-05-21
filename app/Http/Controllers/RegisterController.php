@@ -23,7 +23,7 @@ class RegisterController extends Controller
             'nama' => 'required|string|max:100',
             'no_induk' => 'required|string|max:50|unique:m_users,no_induk',
             'level_id' => 'required|exists:m_level,level_id',
-            'password' => 'required|min:6',
+            'password' => 'required|min:5',
             'confirm_password' => 'required|same:password',
         ];
 

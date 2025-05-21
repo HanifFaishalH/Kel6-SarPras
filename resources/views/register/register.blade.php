@@ -13,20 +13,15 @@
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/metisMenu.css') }}">
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/owl.carousel.min.css') }}">
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/slicknav.min.css') }}">
-    <!-- amchart css -->
-    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css"
-        media="all" />
-    <!-- others css -->
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/typography.css') }}">
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/default-css.css') }}">
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/styles.css') }}">
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/responsive.css') }}">
-    <!-- modernizr css -->
     <script src="{{ asset('srtdash/assets/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 
     <style>
-        body,
-        html {
+        body, html {
             height: 100%;
             margin: 0;
         }
@@ -44,10 +39,7 @@
         .login-area::before {
             content: "";
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1;
         }
@@ -66,31 +58,31 @@
             border-radius: 50%;
             padding: 10px;
             box-shadow: 0px 0 8px rgba(0, 0, 0, 0.15);
-            display: inline-block;
-            width: 140px;
-            overflow: visible;
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 140px;
+        }
+
+        .logo-jti {
+            width: 120px;
+            height: auto;
         }
 
         #loginForm {
             background-color: rgba(255, 255, 255, 0.9);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
             border-radius: 10px;
-        }
-
-
-        .logo-jti {
-            width: 120px;
-            height: auto;
-            display: block;
+            padding: 30px;
         }
 
         .login-form-head {
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
             background-color: #815ef6;
+            color: white;
+            padding: 20px;
+            text-align: center;
         }
 
         .form-gp {
@@ -101,11 +93,11 @@
             position: relative;
         }
 
-        .input-icon-wrapper input {
+        .input-icon-wrapper input,
+        .input-icon-wrapper select {
             width: 100%;
             height: 40px;
             padding-right: 35px;
-            /* memberi ruang untuk ikon */
             padding-left: 10px;
             box-sizing: border-box;
         }
@@ -116,8 +108,37 @@
             top: 50%;
             transform: translateY(-50%);
             color: #6c63ff;
-            /* warna ikon */
             font-size: 18px;
+        }
+
+        .submit-btn-area button {
+            width: 100%;
+            background-color: #6c63ff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn-area button:hover {
+            background-color: #574dcf;
+        }
+
+        .alert {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
         }
     </style>
 </head>
@@ -128,74 +149,115 @@
         <img src="{{ asset('jti.png') }}" alt="Logo JTI" class="logo-jti">
     </div>
 
-    <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-    <!-- preloader area start -->
-    <div id="preloader">
-        <div class="loader"></div>
-    </div>
-    <!-- preloader area end -->
-    <!-- login area start -->
     <div class="login-area">
         <div class="container">
             <div class="login-box ptb--100">
                 <form id="loginForm" method="POST" action="{{ url('register') }}">
+                    @csrf
                     <div class="login-form-head">
                         <h4>Sign up</h4>
                         <p>Hello there, Sign up and Join with Us</p>
                     </div>
                     <div class="login-form-body">
+
+                        {{-- Pesan Error --}}
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul style="margin-bottom: 0;">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        {{-- Pesan Sukses --}}
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        <!-- Level -->
+                        <div class="form-gp">
+                            <label for="level_id">Level Pengguna</label>
+                            <div class="input-icon-wrapper">
+                                <select name="level_id" id="level_id" class="form-control" required>
+                                    <option value="">- Pilih Level -</option>
+                                    @foreach($level as $l)
+                                        <option value="{{ $l->level_id }}" {{ old('level_id') == $l->level_id ? 'selected' : '' }}>{{ $l->level_nama }}</option>
+                                    @endforeach
+                                </select>
+                                <i class="ti-user"></i>
+                            </div>
+                        </div>
+
+                        <!-- No Induk -->
+                        <div class="form-gp">
+                            <label for="no_induk">No Induk (NIM/NIP)</label>
+                            <div class="input-icon-wrapper">
+                                <input type="text" name="no_induk" id="no_induk" placeholder="Masukkan NIM/NIP anda" value="{{ old('no_induk') }}" required>
+                                <i class="ti-id-badge"></i>
+                            </div>
+                        </div>
+
+                        <!-- Nama -->
+                        <div class="form-gp">
+                            <label for="nama">Nama Lengkap</label>
+                            <div class="input-icon-wrapper">
+                                <input type="text" name="nama" id="nama" placeholder="Masukkan nama lengkap anda" value="{{ old('nama') }}" required>
+                                <i class="ti-user"></i>
+                            </div>
+                        </div>
+
+                        <!-- Username -->
                         <div class="form-gp">
                             <label for="username">Username</label>
                             <div class="input-icon-wrapper">
-                                <input type="text" id="username" placeholder="Enter your full name">
+                                <input type="text" name="username" id="username" placeholder="Masukkan username" value="{{ old('username') }}" required>
                                 <i class="ti-user"></i>
                             </div>
-                            <div class="text-danger"></div>
                         </div>
 
+                        <!-- Password -->
                         <div class="form-gp">
                             <label for="password">Password</label>
                             <div class="input-icon-wrapper">
-                                <input type="password" id="password" placeholder="Enter your password">
+                                <input type="password" name="password" id="password" placeholder="Masukkan password" required>
                                 <i class="ti-lock"></i>
                             </div>
-                            <div class="text-danger"></div>
                         </div>
 
+                        <!-- Confirm Password -->
                         <div class="form-gp">
-                            <label for="confirm_password">Confirm Password</label>
+                            <label for="confirm_password">Konfirmasi Password</label>
                             <div class="input-icon-wrapper">
-                                <input type="password" id="confirm_password" placeholder="Re-enter your password">
+                                <input type="password" name="confirm_password" id="confirm_password" placeholder="Ulangi password anda" required>
                                 <i class="ti-lock"></i>
                             </div>
-                            <div class="text-danger"></div>
                         </div>
+
                         <div class="submit-btn-area mt-5">
                             <button id="form_submit" type="submit">Submit <i class="ti-arrow-right"></i></button>
                         </div>
+
                         <div class="form-footer text-center mt-5">
-                            <p class="text-muted">Already Have an Account? <a href="{{ url('/') }}">Sign in</a></p>
+                            <p class="text-muted">Sudah punya akun? <a href="{{ url('/') }}">Sign in</a></p>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <!-- login area end -->
 
-    <!-- jquery latest version -->
+    <!-- Scripts -->
     <script src="{{ asset('srtdash/assets/js/vendor/jquery-2.2.4.min.js') }}"></script>
-    <!-- bootstrap 4 js -->
     <script src="{{ asset('srtdash/assets/js/popper.min.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/metisMenu.min.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/jquery.slimscroll.min.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/jquery.slicknav.min.js') }}"></script>
-
-    <!-- others plugins -->
     <script src="{{ asset('srtdash/assets/js/plugins.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/scripts.js') }}"></script>
 </body>

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as Authenticatable; // implementasi class Authenticatable
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class UserModel extends Authenticatable
 {
@@ -13,7 +13,11 @@ class UserModel extends Authenticatable
 
     protected $table = 'm_users';
     protected $primaryKey = 'user_id';
-    protected $fillable = ['level_id', 'username', 'password', 'no_induk', 'nama', 'unit', 'expertise', 'created_at', 'updated_at'];
+    public $timestamps = true;
+
+    protected $fillable = [
+        'level_id', 'username', 'password', 'no_induk', 'nama', 'unit', 'expertise', 'created_at', 'updated_at'
+    ];
 
     protected $hidden = ['password'];
     protected $casts = ['password' => 'hashed'];

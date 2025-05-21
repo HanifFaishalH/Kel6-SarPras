@@ -116,11 +116,11 @@ class LaporanController extends Controller
             'data' => $laporan
         ]);
     }
-
-
     public function getLantai($gedung_id)
     {
-        $lantai = LantaiModel::where('gedung_id', $gedung_id)->get();
+        $lantai = LantaiModel::where('gedung_id', $gedung_id)
+            ->select('lantai_id', 'lantai_nama')
+            ->get();
         return response()->json($lantai);
     }
 

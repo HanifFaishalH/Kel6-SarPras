@@ -16,7 +16,7 @@
                     <select name="gedung_id" id="gedung_id" class="form-control" required>
                         <option value="">- Pilih Gedung -</option>
                         @foreach($gedung as $item)
-                            <option value="{{ $item->id }}">{{ $item->nama_gedung }}</option>
+                            <option value="{{ $item->gedung_id }}">{{ $item->gedung_nama }}</option>
                         @endforeach
                     </select>
                     <small id="error-gedung_id" class="error-text form-text text-danger"></small>
@@ -69,29 +69,36 @@ $(document).ready(function () {
         $('#ruang_id').html('<option value="">- Pilih Ruang -</option>').prop('disabled', true);
         $('#sarana_id').html('<option value="">- Pilih Sarana -</option>').prop('disabled', true);
 
+        $('#gedung_id').change(function () {
+        var gedungId = $(this).val();
         if (gedungId) {
             $.ajax({
-                url: '/get-lantai/' + gedungId,
+                url: '/laporan/get-lantai/' + gedungId, // Pastikan sesuai dengan route
                 type: 'GET',
                 dataType: 'json',
-                success: function (data) {
-                    console.log('Data lantai:', data); // debugging
-                    $('#lantai_id').prop('disabled', false);
-                    $.each(data, function (key, value) {
-                        $('#lantai_id').append('<option value="' + value.lantai_id + '">' + value.nama_lantai + '</option>');
-                    });
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                error: function () {
-                    alert('Gagal mengambil data lantai');
+                success: function (data) {
+                    $('#lantai_id').html('<option value="">- Pilih Lantai -</option>');
+                    $.each(data, function (key, value) {
+                        $('#lantai_id').append('<option value="' + value.id + '">' + value.text + '</option>');
+                    });
+                    $('#lantai_id').prop('disabled', false);
+                },
+                error: function (xhr) {
+                    console.error('Error:', xhr.status, xhr.responseText);
+                    alert('Gagal mengambil data lantai. Silakan coba lagi.');
                 }
             });
         }
     });
+    });
 
     $('#lantai_id').change(function () {
         var lantaiId = $(this).val();
-        $('#ruang_id').html('<option value="">- Pilih Ruang -</option>').prop('disabled', true);
-        $('#sarana_id').html('<option value="">- Pilih Sarana -</option>').prop('disabled', true);
+        $('#ruang_id').html('<option value="">- Pilih Ruang -</option>').prop('enable', true);
+        $('#sarana_id').html('<option value="">- Pilih Sarana -</option>').prop('enable', true);
 
         if (lantaiId) {
             $.ajax({

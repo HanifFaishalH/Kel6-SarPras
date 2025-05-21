@@ -48,8 +48,40 @@ class UsersSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'username' => 'teknisi',
-                'password' => bcrypt('teknisi'),
+                'username' => 'teknisi 1',
+                'password' => bcrypt('teknisi1'),
+                'nama' => 'Teknisi1',
+                'level_id' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'teknisi 2',
+                'password' => bcrypt('teknisi2'),
+                'nama' => 'Teknisi1',
+                'level_id' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'teknisi 3',
+                'password' => bcrypt('teknisi3'),
+                'nama' => 'Teknisi1',
+                'level_id' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'teknisi 4',
+                'password' => bcrypt('teknisi4'),
+                'nama' => 'Teknisi1',
+                'level_id' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'teknisi 5',
+                'password' => bcrypt('teknisi5'),
                 'nama' => 'Teknisi1',
                 'level_id' => 5,
                 'created_at' => now(),
@@ -57,7 +89,7 @@ class UsersSeeder extends Seeder
             ],
         ];
         foreach ($users as $user) {
-            DB::table('m_users')->insertOrIgnore($user);
+            DB::table('m_users')->insert($user);
         }
     }
 }

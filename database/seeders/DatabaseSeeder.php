@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             LantaiSeeder::class,
             RuangSeeder::class,
             SaranaSeeder::class,
+            TeknisiSeeder::class,
         ]);
     }
 }

@@ -53,4 +53,9 @@ class LaporanModel extends Model
     {
         return $this->attributes['status'] ?? 'pending';
     }
+
+    public function getPhotoAttribute($value)
+    {
+        return $value ? url('storage/' . $value) : null;
+    }
 }

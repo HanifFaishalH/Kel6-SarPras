@@ -57,6 +57,9 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/list', [LaporanController::class, 'list']);
                 Route::get('/create_ajax', [LaporanController::class, 'create_ajax']);
                 Route::post('/store_ajax', [LaporanController::class, 'store_ajax']);
+                Route::get('/get-lantai/{gedung_id}', [LaporanController::class, 'getLantai']);
+                Route::get('/get-ruang/{lantai_id}', [LaporanController::class, 'getRuang']);
+                Route::get('/get-sarana/{ruang_id}', [LaporanController::class, 'getSarana']);
             });
         });
     });

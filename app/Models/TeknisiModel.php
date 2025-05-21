@@ -8,4 +8,35 @@ use Illuminate\Database\Eloquent\Model;
 class TeknisiModel extends Model
 {
     use HasFactory;
+
+    protected $table = 'm_teknisi';
+    protected $primaryKey = 'teknisi_id';
+    public $timestamps = true;
+
+    protected $fillable = [
+        'user_id',
+        'nama_teknisi',
+        'keahlian',     // contoh: listrik, AC, komputer
+        'telepon',
+        'email',
+        'status',       // aktif / nonaktif
+    ];
+
+    // Relasi ke user
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Relasi ke laporan yang ditangani
+    public function laporan()
+    {
+        return $this->hasMany(LaporanModel::class, 'teknisi_id');
+    }
+
+    // Jika ada tabel pivot untuk keahlian teknisi
+    public function keahlianList()
+    {
+        return $this->belongsToMany(KategoriModel::class, 'teknisi_keahlian', 'teknisi_id', 'kategori_id');
+    }
 }

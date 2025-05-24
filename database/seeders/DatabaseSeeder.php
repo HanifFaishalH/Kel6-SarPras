@@ -15,13 +15,14 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LevelSeeder::class,
             UsersSeeder::class, // Ensure your seeder is listed here
-            GedungSeeder::class,
-            BarangSeeder::class,
             KategoriSeeder::class,
+            GedungSeeder::class,
+            TeknisiSeeder::class,
             LantaiSeeder::class,
             RuangSeeder::class,
+            BarangSeeder::class,
             SaranaSeeder::class,
-            TeknisiSeeder::class,
+            LaporanSeeder::class,
         ]);
     }
 }

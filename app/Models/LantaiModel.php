@@ -14,14 +14,10 @@ class LantaiModel extends Model
     protected $fillable = [
         'lantai_nama',
         'lantai_kode',
-        'lantai_gedung_id',
+        'gedung_id',
     ];
     public $timestamps = true;
 
-    public function gedung()
-    {
-        return $this->belongsTo(GedungModel::class, 'lantai_gedung_id', 'gedung_id');
-    }
     public function ruang()
     {
         return $this->hasMany(RuangModel::class, 'lantai_id', 'lantai_id');

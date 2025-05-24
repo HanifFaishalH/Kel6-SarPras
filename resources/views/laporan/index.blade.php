@@ -99,7 +99,7 @@
                 { data: "created_at", name: "created_at" },
                 { data: "aksi", name: "aksi", orderable: false, searchable: false }
             ],
-            order: [[7, 'desc']]
+            // order: [[7, 'desc']]
         });
 
         $('#status').on('change', function() {

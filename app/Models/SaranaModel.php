@@ -26,8 +26,8 @@ class SaranaModel extends Model
     {
         return $this->belongsTo(KategoriModel::class, 'kategori_id', 'kategori_id');
     }
-    public function barang()
-    {
-        return $this->belongsTo(BarangModel::class, 'barang_id', 'barang_id');
+    public function barang() {
+        return $this->belongsTo(BarangModel::class, 'barang_id');
     }
+
 }

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->enum('tingkat_kerusakan', ['rendah', 'sedang', 'tinggi']);
             $table->enum('tingkat_urgensi', ['rendah', 'sedang', 'tinggi', 'kritis']);
             $table->enum('frekuensi_penggunaan', ['harian', 'mingguan', 'bulanan', 'tahunan']);
-            $table->unsignedBigInteger('tanggal_operasional');
+            $table->date('tanggal_operasional');
             $table->timestamps();
 
             //status

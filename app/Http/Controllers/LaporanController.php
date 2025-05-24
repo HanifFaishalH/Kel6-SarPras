@@ -8,10 +8,14 @@ use App\Models\GedungModel;
 use App\Models\LantaiModel;
 use App\Models\RuangModel;
 use App\Models\SaranaModel;
-use App\Models\UserModel;
-use App\Models\TeknisiModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+
+use Exception;
 
 class LaporanController extends Controller
 {
@@ -63,8 +67,8 @@ class LaporanController extends Controller
                 return $row->teknisi ? $row->teknisi->name : '-';
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\''.url('/laporan/' . $row->laporan_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button>';
-                $btn = '<button onclick="modalAction(\''.url('/laporan/' . $row->laporan_id . '/edit_ajax').'\')" class="btn btn-info btn-sm">Detail</button>';
+                $btn = '<button onclick="modalAction(\''.url('/laporan/' . $row->laporan_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\''.url('/laporan/' . $row->laporan_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -72,67 +76,91 @@ class LaporanController extends Controller
     }
 
     public function create_ajax() {
-        $gedung = GedungModel::all();
-        $lantai = LantaiModel::all();
-        $ruang = RuangModel::all();
-        $sarana = SaranaModel::all();
-
         return view('laporan.create_ajax', [
-            'gedung' => $gedung,
-            'lantai' => $lantai,
-            'ruang' => $ruang,
-            'sarana' => $sarana
+            'gedung' => GedungModel::all(),
+            'lantai' => [],
+            'ruang' => [],
+            'sarana' => [],
         ]);
     }
-    public function store(Request $request)
-    {
-        $validator = $request->validate([
-            'user_id' => 'required|exists:m_users,user_id',
-            'gedung_id' => 'required|exists:m_gedung,gedung_id',
-            'lantai_id' => 'required|exists:m_lantai,lantai_id',
-            'ruang_id' => 'required|exists:m_ruang,ruang_id',
-            'sarana_id' => 'required|exists:m_sarana,sarana_id',
-            'laporan_judul' => 'required|string|max:100',
-            'laporan_foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'tingkat_kerusakan' => 'required|in:rendah,sedang,tinggi',
-            'tingkat_urgensi' => 'required|in:rendah,sedang,tinggi,kritis',
-            'frekuensi_penggunaan' => 'required|in:harian,mingguan,bulanan,tahunan',
-            'tanggal_operasional' => 'required|date',
-        ]);
 
-        // Upload foto jika ada
-        if ($request->hasFile('laporan_foto')) {
-            $path = $request->file('laporan_foto')->store('laporan', 'public');
-            $validator['laporan_foto'] = $path;
+    public function store_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $validator = Validator::make($request->all(), [
+                'gedung_id' => 'required|exists:m_gedung,gedung_id',
+                'lantai_id' => 'required|exists:m_lantai,lantai_id',
+                'ruang_id' => 'required|exists:m_ruang,ruang_id',
+                'sarana_id' => 'required|exists:m_sarana,sarana_id',
+                'laporan_judul' => 'required|string|max:100',
+                'laporan_foto' => 'nullable|image|max:2048',
+                'tingkat_kerusakan' => 'required|in:rendah,sedang,tinggi',
+                'tingkat_urgensi' => 'required|in:rendah,sedang,tinggi,kritis',
+                'frekuensi_penggunaan' => 'required|in:harian,mingguan,bulanan,tahunan',
+                'tanggal_operasional' => 'required|date'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $data = $validator->validated();
+            $data['user_id'] = Auth::user()->user_id;
+
+            if ($request->hasFile('laporan_foto')) {
+                $file = $request->file('laporan_foto');
+                $path = 'laporan_files';
+                $filename = 'LAP-' . Str::upper(Str::random(10)) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path($path), $filename);
+                $data['laporan_foto'] = $path . '/' . $filename;
+            }
+
+            $laporan = LaporanModel::create($data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Laporan berhasil dibuat',
+                'data' => $laporan
+            ], 200);
         }
 
-        $laporan = LaporanModel::create([
-            ...$validator,
-            'tanggal_operasional' => strtotime($validator['tanggal_operasional']),
-        ]);
-
-        return response()->json([
-            'message' => 'Laporan berhasil ditambahkan',
-            'data' => $laporan
-        ]);
+        return view('/laporan');
     }
+
+
+    public function getGedung()
+    {
+        $gedung = GedungModel::all();
+        return response()->json($gedung);
+    }
+
     public function getLantai($gedung_id)
     {
-        $lantai = LantaiModel::where('gedung_id', $gedung_id)
-            ->select('lantai_id', 'lantai_nama')
-            ->get();
+        $lantai = LantaiModel::where('gedung_id', $gedung_id)->get();
         return response()->json($lantai);
     }
 
-    public function getRuang($lantai_id)
+    public function getRuangDanSarana($lantai_id)
     {
         $ruang = RuangModel::where('lantai_id', $lantai_id)->get();
-        return response()->json($ruang);
+        $ruangIDs = $ruang->pluck('ruang_id');
+
+        $sarana = SaranaModel::whereIn('ruang_id', $ruangIDs)->with('barang')->get();
+
+        $saranaFormatted = $sarana->map(function ($item) {
+            return [
+                'sarana_id' => $item->sarana_id,
+                'sarana_kode' => $item->barang->barang_kode ?? 'KODE-' . $item->sarana_id,
+                'sarana_nama' => $item->barang->barang_nama ?? 'Sarana #' . $item->sarana_id
+            ];
+        });
+        return response()->json([
+            'ruang' => $ruang,
+            'sarana' => $saranaFormatted
+        ]);
     }
 
-    public function getSarana($ruang_id)
-    {
-        $sarana = SaranaModel::where('ruang_id', $ruang_id)->get();
-        return response()->json($sarana);
-    }
 }

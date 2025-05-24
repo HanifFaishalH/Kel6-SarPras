@@ -23,4 +23,8 @@ class RuangModel extends Model
         return $this->belongsTo(LantaiModel::class, 'lantai_id', 'lantai_id');
     }
 
+    public function sarana() {
+        return $this->hasMany(SaranaModel::class, 'ruang_id');
+    }
+
 }

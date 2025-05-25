@@ -33,34 +33,31 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index']);
 
-    Route::middleware(['authorize:admin, mhs'])->group(function () {
+    Route::middleware(['authorize:admin,mhs'])->group(function () {
         Route::group(['prefix' => 'level'], function () {
             Route::get('/', [LevelController::class, 'index']);
             Route::get('/list', [LevelController::class, 'list']);
         });
 
-        Route::middleware(['authorize:admin'])->group(function () {
-            Route::group(['prefix' => 'gedung'], function () {
-                Route::get('/', [GedungController::class, 'index']);
-                Route::get('/list', [GedungController::class, 'list']);
-            });
+        Route::group(['prefix' => 'gedung'], function () {
+            Route::get('/', [GedungController::class, 'index']);
+            Route::get('/list', [GedungController::class, 'list']);
         });
 
-        Route::middleware(['authorize:admin'])->group(function () {
-            Route::group(['prefix' => 'fasilitas'], function () {
-                Route::get('/', [BarangController::class, 'index']);
-                Route::get('/list', [BarangController::class, 'list']);
-            });
 
-            Route::group(['prefix' => 'laporan'], function () {
-                Route::get('/', [LaporanController::class, 'index']);
-                Route::get('/list', [LaporanController::class, 'list']);
-                Route::get('/create_ajax', [LaporanController::class, 'create_ajax']);
-                Route::get('/ajax/gedung', [LaporanController::class, 'getGedung']);
-                Route::get('/ajax/lantai/{gedung_id}', [LaporanController::class, 'getLantai']);
-                Route::get('/ajax/ruang-sarana/{lantai_id}', [LaporanController::class, 'getRuangDanSarana']);
-                Route::post('/store_ajax', [LaporanController::class, 'store_ajax']);
-            });
+        Route::group(['prefix' => 'fasilitas'], function () {
+            Route::get('/', [BarangController::class, 'index']);
+            Route::get('/list', [BarangController::class, 'list']);
+        });
+
+        Route::group(['prefix' => 'laporan'], function () {
+            Route::get('/', [LaporanController::class, 'index']);
+            Route::get('/list', [LaporanController::class, 'list']);
+            Route::get('/create_ajax', [LaporanController::class, 'create_ajax']);
+            Route::get('/ajax/gedung', [LaporanController::class, 'getGedung']);
+            Route::get('/ajax/lantai/{gedung_id}', [LaporanController::class, 'getLantai']);
+            Route::get('/ajax/ruang-sarana/{lantai_id}', [LaporanController::class, 'getRuangDanSarana']);
+            Route::post('/store_ajax', [LaporanController::class, 'store_ajax']);
         });
     });
 });

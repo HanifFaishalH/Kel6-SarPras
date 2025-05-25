@@ -41,7 +41,9 @@ class LaporanController extends Controller
 
     public function list(Request $request)
     {
-        $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi']);
+        $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
+            ->where('user_id', Auth::user()->user_id);
+
         if ($request->laporan_id) {
             $laporan->where('laporan_id', $request->laporan_id);
         }
@@ -126,7 +128,7 @@ class LaporanController extends Controller
                 'data' => $laporan
             ], 200);
         }
-
+        
         return view('/laporan');
     }
 

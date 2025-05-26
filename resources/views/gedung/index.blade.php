@@ -3,7 +3,11 @@
 @section('content')
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
         data-keyboard="false" data-width="75%" aria-hidden="true">
-        <!-- Konten modal akan dimuat di sini -->
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Konten modal akan dimuat di sini -->
+            </div>
+        </div>
     </div>
 
     <div class="main-content-inner">
@@ -67,12 +71,30 @@
 @push('js')
     <script>
         function modalAction(url = '') {
-            $('#myModal').load(url, function(response, status, xhr) {
-                if (status == "error") {
-                    $('#myModal').html(
-                        '<div class="alert alert-danger">Belum jadi.</div>');
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#myModal .modal-content').html(response.html);
+                        $('#myModal').modal('show');
+                    } else {
+                        alert('Gagal memuat data: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    let message = 'Terjadi kesalahan saat memuat data.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    } else if (xhr.status === 404) {
+                        message = 'Data tidak ditemukan.';
+                    } else if (xhr.status === 500) {
+                        message = 'Kesalahan server internal.';
+                    }
+                    alert(message);
+                    console.error('Error:', xhr);
                 }
-                $('#myModal').modal('show');
             });
         }
 
@@ -105,7 +127,7 @@
                         data: "aksi",
                         name: "aksi",
                         orderable: false,
-                        searchable: false,
+                        searchable: false
                     }
                 ],
                 order: [

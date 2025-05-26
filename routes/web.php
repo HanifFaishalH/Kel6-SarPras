@@ -42,6 +42,11 @@ Route::middleware(['auth'])->group(function () {
         Route::group(['prefix' => 'gedung'], function () {
             Route::get('/', [GedungController::class, 'index']);
             Route::get('/list', [GedungController::class, 'list']);
+            Route::get('/{id}/show', [GedungController::class, 'show']);
+            Route::get('/{id}/edit', [GedungController::class, 'edit']);
+            Route::put('/{id}/update', [GedungController::class, 'update']);
+            Route::get('/{id}/delete', [GedungController::class, 'confirm']);
+            Route::delete('/{id}/delete', [GedungController::class, 'delete']);
         });
 
 

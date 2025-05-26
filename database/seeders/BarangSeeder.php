@@ -167,6 +167,12 @@ class BarangSeeder extends Seeder
                 'barang_nama' => 'Tong Sampah',
                 'spesifikasi' => 'Kapasitas 30 liter, plastik',
             ],
+            [
+                'barang_id' => 26,
+                'kategori_id' => 1,
+                'barang_nama' => 'Kursi Biru Lipat',
+                'spesifikasi' => 'Kursi Bantal Lipat, bahan kapas, warna biru',
+            ],
         ];
 
         $data = [];

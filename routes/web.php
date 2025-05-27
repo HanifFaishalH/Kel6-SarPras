@@ -9,6 +9,7 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\GedungController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,8 @@ Route::get('register', [RegisterController::class, 'index']);
 Route::post('register', [RegisterController::class, 'store']);
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/', [HomeController::class, 'index']);
 
@@ -42,6 +45,11 @@ Route::middleware(['auth'])->group(function () {
         Route::group(['prefix' => 'gedung'], function () {
             Route::get('/', [GedungController::class, 'index']);
             Route::get('/list', [GedungController::class, 'list']);
+            Route::get('/{id}/show', [GedungController::class, 'show']);
+            Route::get('/{id}/edit', [GedungController::class, 'edit']);
+            Route::put('/{id}/update', [GedungController::class, 'update']);
+            Route::get('/{id}/delete', [GedungController::class, 'confirm']);
+            Route::delete('/{id}/delete', [GedungController::class, 'delete']);
         });
 
 

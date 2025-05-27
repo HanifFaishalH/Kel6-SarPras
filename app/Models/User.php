@@ -25,6 +25,7 @@ class User extends Authenticatable implements AuthenticatableContract
         'nama',
         'unit',
         'expertise',
+        'foto',
     ];
 
     /**

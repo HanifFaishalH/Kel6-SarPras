@@ -876,7 +876,7 @@ class SaranaSeeder extends Seeder
 
                     // Masukkan setiap 500 data untuk efisiensi
                     if (count($data) >= 500) {
-                        DB::table('m_sarana')->insert($data);
+                        DB::table('m_sarana')->insertOrIgnore($data);
                         $data = [];
                     }
                 }
@@ -885,7 +885,7 @@ class SaranaSeeder extends Seeder
 
         // Sisanya
         if (!empty($data)) {
-            DB::table('m_sarana')->insert($data);
+            DB::table('m_sarana')->insertOrIgnore($data);
         }
     }
 }

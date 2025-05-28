@@ -100,7 +100,7 @@
                             return `<img src="{{ url('uploads/user') }}/${data}" alt="foto" width="40" class="img-thumbnail">`;
                         }
                     },
-                    { data: "level_nama", name: "level.level_nama" },
+                    { data: "level.level_nama", name: "level.level_nama" },
                     { data: "aksi", name: "aksi", orderable: false, searchable: false }
                 ],
                 order: [[0, 'asc']]

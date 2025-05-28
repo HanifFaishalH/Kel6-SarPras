@@ -10,6 +10,7 @@ use App\Http\Controllers\LevelController;
 use App\Http\Controllers\GedungController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/list', [LevelController::class, 'list']);
         });
 
+    Route::middleware(['authorize:admin'])->group(function () {
+        Route::group(['prefix' => 'user'], function () {
+            Route::get('/', [UserController::class, 'index']);
+            Route::get('/list', [UserController::class, 'list']);
+        });
+
         Route::group(['prefix' => 'gedung'], function () {
             Route::get('/', [GedungController::class, 'index']);
             Route::get('/list', [GedungController::class, 'list']);
@@ -68,4 +75,5 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/store_ajax', [LaporanController::class, 'store_ajax']);
         });
     });
+});
 });

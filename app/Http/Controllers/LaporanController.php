@@ -200,6 +200,94 @@ class LaporanController extends Controller
         return view('/laporan');
     }
 
+    public function edit_ajax($id)
+    {
+        try {
+            $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana'])
+                ->where('laporan_id', $id)
+                ->where('user_id', Auth::user()->user_id)
+                ->firstOrFail();
+
+            $gedung = GedungModel::all();
+            $lantai = LantaiModel::where('gedung_id', $laporan->gedung_id)->get();
+            $ruang = RuangModel::where('lantai_id', $laporan->lantai_id)->get();
+            $sarana = SaranaModel::where('ruang_id', $laporan->ruang_id)->with('barang')->get();
+
+            return view('laporan.edit', [
+                'laporan' => $laporan,
+                'gedung' => $gedung,
+                'lantai' => $lantai,
+                'ruang' => $ruang,
+                'sarana' => $sarana
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Laporan tidak ditemukan atau Anda tidak memiliki akses.'
+            ], 404);
+        }
+    }
+
+
+    public function update_ajax(Request $request, $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            try {
+                $laporan = LaporanModel::where('laporan_id', $id)
+                    ->where('user_id', Auth::user()->user_id)
+                    ->firstOrFail();
+
+                $validator = Validator::make($request->all(), [
+                    'gedung_id' => 'required|exists:m_gedung,gedung_id',
+                    'lantai_id' => 'required|exists:m_lantai,lantai_id',
+                    'ruang_id' => 'required|exists:m_ruang,ruang_id',
+                    'sarana_id' => 'required|exists:m_sarana,sarana_id',
+                    'laporan_judul' => 'required|string|max:100',
+                    'laporan_foto' => 'nullable|image|max:2048',
+                    'tingkat_kerusakan' => 'required|in:rendah,sedang,tinggi',
+                    'tingkat_urgensi' => 'required|in:rendah,sedang,tinggi,kritis',
+                    'frekuensi_penggunaan' => 'required|in:harian,mingguan,bulanan,tahunan',
+                    'tanggal_operasional' => 'required|date'
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status' => 'error',
+                        'errors' => $validator->errors()
+                    ], 422);
+                }
+
+                $data = $validator->validated();
+
+                if ($request->hasFile('laporan_foto')) {
+                    if ($laporan->laporan_foto && Storage::exists('public/' . $laporan->laporan_foto)) {
+                        Storage::delete('public/' . $laporan->laporan_foto);
+                    }
+                    $file = $request->file('laporan_foto');
+                    $path = 'laporan_files';
+                    $filename = 'LAP-' . Str::upper(Str::random(10)) . '.' . $file->getClientOriginalExtension();
+                    $file->move(public_path($path), $filename);
+                    $data['laporan_foto'] = $path . '/' . $filename;
+                }
+
+                $laporan->update($data);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Laporan berhasil diperbarui',
+                    'data' => $laporan
+                ], 200);
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Laporan tidak ditemukan atau Anda tidak memiliki akses.'
+                ], 404);
+            }
+        }
+
+        redirect('/laporan/kelola');
+    }
+
 
     public function getGedung()
     {

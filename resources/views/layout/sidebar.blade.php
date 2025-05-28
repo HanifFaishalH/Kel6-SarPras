@@ -91,19 +91,19 @@
                             <li class="nav-item">
                                 <a href="{{ url('/laporan') }}" class="nav-link {{ $activeMenu == 'laporan' ? 'active' : '' }}">
                                     <i class="fa fa-file-text"></i>
-                                    <span>Laporan</span>
+                                    <span>Buat Laporan</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ url('/kelola-laporan') }}" class="nav-link {{ $activeMenu == 'kelola-laporan-kerusakan' ? 'active' : '' }}">
+                                <a href="{{ url('/laporan/kelola') }}" class="nav-link {{ $activeMenu == 'kelola-laporan-kerusakan' ? 'active' : '' }}">
                                     <i class="fa fa-wrench"></i>
-                                    <span>Kelola Laporan Kerusakan</span>
+                                    <span>Kelola Laporan</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ url('/riwayat-laporan') }}" class="nav-link {{ $activeMenu == 'lihat-riwayat-laporan' ? 'active' : '' }}">
                                     <i class="fa fa-history"></i>
-                                    <span>Lihat Riwayat Laporan</span>
+                                    <span>Riwayat Laporan</span>
                                 </a>
                             </li>
                         </ul>

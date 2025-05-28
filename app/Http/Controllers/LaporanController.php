@@ -50,6 +50,54 @@ class LaporanController extends Controller
 
         return datatables()->of($laporan)
             ->addIndexColumn()
+            ->addColumn('sarana', function ($row) {
+                return $row->sarana->sarana_nama;
+            })
+            ->addColumn('user', function ($row) {
+                return $row->user->name;
+            })
+            ->addColumn('teknisi', function ($row) {
+                return $row->teknisi ? $row->teknisi->name : '-';
+            })
+            ->addColumn('aksi', function ($row) {
+                $btn = '<button onclick="modalAction(\'' . url('/laporan/' . $row->laporan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                return $btn;
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+
+    public function kelola()
+    {
+        $laporan = LaporanModel::all();
+
+        $breadcrumbs = [
+            'title' => 'Daftar Laporan',
+            'list' => ['home', 'kelola-laporan-kerusakan']
+        ];
+        $page = (object) [
+            'title' => "Daftar Laporan"
+        ];
+        $activeMenu = 'kelola-laporan-kerusakan';
+        return view('laporan.kelola', [
+            'laporan' => $laporan,
+            'breadcrumbs' => $breadcrumbs,
+            'page' => $page,
+            'activeMenu' => $activeMenu
+        ]);
+    }
+
+    public function list_kelola(Request $request)
+    {
+        $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
+            ->where('user_id', Auth::user()->user_id);
+
+        if ($request->laporan_id) {
+            $laporan->where('laporan_id', $request->laporan_id);
+        }
+
+        return datatables()->of($laporan)
+            ->addIndexColumn()
             ->addColumn('gedung', function ($row) {
                 return $row->gedung->gedung_nama;
             })
@@ -69,15 +117,16 @@ class LaporanController extends Controller
                 return $row->teknisi ? $row->teknisi->name : '-';
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\''.url('/laporan/' . $row->laporan_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\''.url('/laporan/' . $row->laporan_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button>';
+                $btn = '<button onclick="modalAction(\'' . url('/laporan/' . $row->laporan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/laporan/' . $row->laporan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
 
-    public function create_ajax() {
+    public function create_ajax()
+    {
         return view('laporan.create_ajax', [
             'gedung' => GedungModel::all(),
             'lantai' => [],
@@ -128,7 +177,7 @@ class LaporanController extends Controller
                 'data' => $laporan
             ], 200);
         }
-        
+
         return view('/laporan');
     }
 
@@ -164,5 +213,4 @@ class LaporanController extends Controller
             'sarana' => $saranaFormatted
         ]);
     }
-
 }

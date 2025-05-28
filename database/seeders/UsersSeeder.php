@@ -90,11 +90,11 @@ class UsersSeeder extends Seeder
             [
                 'username' => 'sarpras',
                 'password' => bcrypt('sarpras'),
-                'nama' => 'Sarana Prasarana',
+                'nama' => 'Sarpras',
                 'level_id' => 6,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
         ];
         foreach ($users as $user) {
             DB::table('m_users')->insertOrIgnore($user);

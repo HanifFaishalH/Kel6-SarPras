@@ -10,6 +10,7 @@ use App\Http\Controllers\LevelController;
 use App\Http\Controllers\GedungController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LaporanKerusakanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/', [HomeController::class, 'index']);
+
+
+    Route::middleware(['authorize:admin'])->group(function () {
+        Route::get('/laporan/per_tahun', [LaporanKerusakanController::class, 'laporanPerTahun']);
+        Route::get('/laporan/per_bulan', [LaporanKerusakanController::class, 'laporanPerBulan']);
+    });
 
     Route::middleware(['authorize:admin,mhs'])->group(function () {
         Route::group(['prefix' => 'level'], function () {

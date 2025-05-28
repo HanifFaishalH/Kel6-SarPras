@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/kelola', [LaporanController::class, 'kelola']);
             Route::get('/list', [LaporanController::class, 'list']);
             Route::get('/list_kelola', [LaporanController::class, 'list_kelola']);
+            Route::get('/show_ajax/{id}', [LaporanController::class, 'show_ajax']);
             Route::get('/create_ajax', [LaporanController::class, 'create_ajax']);
             Route::get('/ajax/gedung', [LaporanController::class, 'getGedung']);
             Route::get('/ajax/lantai/{gedung_id}', [LaporanController::class, 'getLantai']);

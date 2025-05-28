@@ -60,7 +60,7 @@ class LaporanController extends Controller
                 return $row->teknisi ? $row->teknisi->name : '-';
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/laporan/' . $row->laporan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn = '<button onclick="modalAction(\'' . url('/laporan/' . 'show_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -117,12 +117,31 @@ class LaporanController extends Controller
                 return $row->teknisi ? $row->teknisi->name : '-';
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/laporan/' . $row->laporan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/laporan/' . $row->laporan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button>';
+                $btn = '<button onclick="modalAction(\'' . url('/laporan/' . 'show_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/laporan/' . 'edit_ajax/' . $row->laporan_id) . '\')" class="btn btn-warning btn-sm">Edit</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+
+    public function show_ajax($id)
+    {
+        try {
+            $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
+                ->where('laporan_id', $id)
+                ->where('user_id', Auth::user()->user_id)
+                ->firstOrFail();
+
+            return view('laporan.show_ajax', [
+                'laporan' => $laporan
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Laporan tidak ditemukan atau Anda tidak memiliki akses.'
+            ], 404);
+        }
     }
 
     public function create_ajax()

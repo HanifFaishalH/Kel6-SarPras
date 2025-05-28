@@ -138,6 +138,73 @@
             $('#gedung_id').on('change', function() {
                 dataGedung.ajax.reload();
             });
+
+            // Tangani form submission via AJAX untuk update
+            $(document).on('submit', '#editGedungForm', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                let url = "{{ route('gedung.update', ':id') }}".replace(':id', form.find(
+                    'input[name="gedung_id"]').val() || form.data('id'));
+
+                $.ajax({
+                    url: url,
+                    type: 'POST', // Laravel akan menangani @method('PUT') via _method
+                    data: form.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#myModal').modal('hide');
+                            dataGedung.ajax.reload(); // Refresh DataTable
+                            alert(response.message || 'Data berhasil diperbarui!');
+                        } else {
+                            alert('Gagal menyimpan data: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        let message = 'Terjadi kesalahan saat menyimpan data.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+                        alert(message);
+                        console.error('Error:', xhr);
+                    }
+                });
+            });
+
+            // Tangani form submission via AJAX untuk delete
+            $(document).on('submit', '#deleteGedungForm', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                let url = form.attr('action');
+
+                $.ajax({
+                    url: url,
+                    type: 'POST', // Laravel menangani @method('DELETE') via _method
+                    data: form.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#myModal').modal('hide');
+                            dataGedung.ajax.reload(); // Refresh DataTable
+                            alert(response.message || 'Data berhasil dihapus!');
+                        } else {
+                            alert('Gagal menghapus data: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        let message = 'Terjadi kesalahan saat menghapus data.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        } else if (xhr.status === 404) {
+                            message = 'Data tidak ditemukan.';
+                        } else if (xhr.status === 500) {
+                            message = 'Kesalahan server internal.';
+                        }
+                        alert(message);
+                        console.error('Error:', xhr);
+                    }
+                });
+            });
         });
     </script>
 @endpush

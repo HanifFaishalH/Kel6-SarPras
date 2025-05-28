@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GedungModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GedungController extends Controller
 {
@@ -51,6 +52,8 @@ class GedungController extends Controller
             ->make(true);
     }
 
+    // Detail
+
     public function show(string $id)
     {
         $gedung = GedungModel::find($id);
@@ -67,6 +70,58 @@ class GedungController extends Controller
         return response()->json([
             'status' => 'success',
             'html' => $html
+        ]);
+    }
+
+    // Edit
+
+    public function edit($id)
+    {
+        $gedung = GedungModel::findOrFail($id);
+        $html = view('gedung.edit', compact('gedung'))->render();
+        return response()->json([
+            'status' => 'success',
+            'html' => $html,
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'gedung_nama' => 'required|string|max:255',
+            'gedung_kode' => 'required|string|max:50|unique:m_gedung,gedung_kode,' . $id . ',gedung_id',
+        ]);
+
+        $gedung = GedungModel::findOrFail($id);
+        $gedung->update($request->only(['gedung_nama', 'gedung_kode']));
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data gedung berhasil diperbarui!',
+        ]);
+    }
+
+    public function confirm($id)
+    {
+        
+        $gedung = DB::table('m_gedung')->where('gedung_id', $id)->first();
+        
+        if (!$gedung) {
+            return redirect()->back()->with('error', 'Data gedung tidak ditemukan.');
+        }
+
+        return view('gedung.confirm_delete', compact('gedung'));
+    }
+
+
+    public function destroy($id)
+    {
+        $gedung = GedungModel::findOrFail($id);
+        $gedung->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data gedung berhasil dihapus!',
         ]);
     }
 }

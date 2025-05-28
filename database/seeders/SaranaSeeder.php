@@ -18,6 +18,7 @@ class SaranaSeeder extends Seeder
 
         $now = Carbon::now();
         $data = [];
+        $counter = 1;
 
         // Define room configurations in a more readable way
         $roomConfigurations = [
@@ -865,10 +866,13 @@ class SaranaSeeder extends Seeder
         foreach ($roomConfigurations as $roomId => $items) {
             foreach ($items as $item) {
                 for ($i = 0; $i < $item['jumlah']; $i++) {
+                    $saranaKode = "SARANA-{$counter}";
+                    $counter++;
                     $data[] = [
                         'ruang_id' => $roomId,
                         'kategori_id' => $item['kategori_id'],
                         'barang_id' => $item['barang_id'],
+                        'sarana_kode' => $saranaKode,
                         'tanggal_operasional' => $now,
                         'created_at' => $now,
                         'updated_at' => $now,

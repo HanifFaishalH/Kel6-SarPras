@@ -5,15 +5,19 @@
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Laporan Kerusakan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body">
-
                 <div class="form-group">
                     <label>Gedung</label>
-                    <input type="hidden" name="gedung_id" value="{{ $gedung->gedung_id }}">
-                    <input type="text" class="form-control" value="{{ $gedung->gedung_nama }}" readonly>
+                    @if ($gedung)
+                        <input type="hidden" name="gedung_id" value="{{ $gedung->gedung_id }}">
+                        <input type="text" class="form-control" value="{{ $gedung->gedung_nama }}" readonly>
+                    @else
+                        <input type="hidden" name="gedung_id" value="">
+                        <input type="text" class="form-control" value="Tidak ada gedung tersedia" readonly>
+                    @endif
                     <small id="error-gedung_id" class="error-text form-text text-danger"></small>
                 </div>
 
@@ -69,7 +73,6 @@
                         <option value="rendah">Rendah</option>
                         <option value="sedang">Sedang</option>
                         <option value="tinggi">Tinggi</option>
-                        <option value="kritis">Kritis</option>
                     </select>
                     <small id="error-tingkat_kerusakan" class="error-text form-text text-danger"></small>
                 </div>
@@ -115,31 +118,16 @@
 
 <script>
 $(document).ready(function() {
-    // Get floors based on building selection
-    const gedungID = $('input[name="gedung_id"]').val();
-    if (gedungID) {
-        $.ajax({
-            url: "{{ url('laporan/ajax/lantai') }}/" + gedungID,
-            type: "GET",
-            dataType: "json",
-            success: function(data) {
-                var lantaiSelect = $('select[name="lantai_id"]');
-                lantaiSelect.empty().append('<option value="">- Pilih Lantai -</option>');
-                $.each(data, function(key, value) {
-                    lantaiSelect.append(
-                        '<option value="'+ value.lantai_id +'">'+ value.lantai_nama +'</option>'
-                    );
-                });
-            },
-            error: function(xhr) {
-                console.error('Error:', xhr.responseText);
-            }
-        });
-    }
-
     // Get rooms and facilities based on floor selection
     $('select[name="lantai_id"]').on('change', function() {
         var lantaiID = $(this).val();
+        var ruangSelect = $('select[name="ruang_id"]');
+        var saranaSelect = $('select[name="sarana_id"]');
+
+        // Clear dependent selects
+        ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>');
+        saranaSelect.empty().append('<option value="">- Pilih Sarana -</option>');
+
         if (lantaiID) {
             $.ajax({
                 url: "{{ url('laporan/ajax/ruang-sarana') }}/" + lantaiID,
@@ -147,10 +135,7 @@ $(document).ready(function() {
                 dataType: "json",
                 success: function(data) {
                     // Handle rooms
-                    var ruangSelect = $('select[name="ruang_id"]');
-                    ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>');
-                    
-                    if(data.ruang && data.ruang.length > 0) {
+                    if (data.ruang && data.ruang.length > 0) {
                         $.each(data.ruang, function(key, value) {
                             ruangSelect.append(
                                 '<option value="'+ value.ruang_id +'">'+ value.ruang_nama +'</option>'
@@ -159,12 +144,8 @@ $(document).ready(function() {
                     }
 
                     // Handle facilities
-                    var saranaSelect = $('select[name="sarana_id"]');
-                    saranaSelect.empty().append('<option value="">- Pilih Sarana -</option>');
-                    
-                    if(data.sarana && data.sarana.length > 0) {
+                    if (data.sarana && data.sarana.length > 0) {
                         $.each(data.sarana, function(key, value) {
-                            
                             saranaSelect.append(
                                 '<option value="'+ value.sarana_id +'">'+ 
                                 value.sarana_kode + ' - ' + value.sarana_nama + 
@@ -175,14 +156,12 @@ $(document).ready(function() {
                 },
                 error: function(xhr) {
                     console.error('Error:', xhr.responseText);
+                    alert('Gagal memuat data ruang atau sarana. Silakan coba lagi.');
                 }
             });
-        } else {
-            // Clear dependent selects if no floor selected
-            $('select[name="ruang_id"]').empty().append('<option value="">- Pilih Ruang -</option>');
-            $('select[name="sarana_id"]').empty().append('<option value="">- Pilih Sarana -</option>');
         }
     });
+
     // Handle form submission
     $('#form-create-laporan').on('submit', function(e) {
         e.preventDefault();
@@ -195,10 +174,19 @@ $(document).ready(function() {
             processData: false,
             success: function(response) {
                 if (response.status == 'success') {
-                    // Close modal and refresh table
-                    $('#modal-create-laporan').modal('hide');
-                    $('#laporan-table').DataTable().ajax.reload();
+                    // Show success message
                     alert(response.message);
+                    // Reset form fields
+                    $('#form-create-laporan')[0].reset();
+                    // Reset status filter in parent page to show all reports
+                    if ($('#status').length) {
+                        $('#status').val('').trigger('change');
+                    }
+                    // Close the modal
+                    $('#myModal').modal('hide');
+                    // Refresh DataTable
+                    console.log('Refreshing DataTable...');
+                    $('#laporan-table').DataTable().ajax.reload(null, false);
                 } else {
                     // Handle validation errors
                     $.each(response.errors, function(key, value) {
@@ -208,6 +196,7 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 console.error('Error:', xhr.responseText);
+                alert('Gagal menyimpan laporan. Silakan coba lagi.');
             }
         });
     });

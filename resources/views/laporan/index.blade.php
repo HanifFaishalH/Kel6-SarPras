@@ -16,11 +16,10 @@
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
                     @if (session('error'))
-                        <div class="alert alert-danger">{{ session('error') }}</div>
+                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
                     <!-- Tombol Tambah Laporan -->
-                     <button onclick="modalAction('{{ url('/laporan/create_ajax') }}')" class="btn btn-info">Buat Laporan</button>
-
+                    <button onclick="modalAction('{{ url('/laporan/create_ajax') }}')" class="btn btn-info">Buat Laporan</button>
 
                     <div class="form-group row">
                         <label class="col-form-label col-sm-2">Filter Status:</label>
@@ -36,7 +35,7 @@
                     </div>
 
                     <div class="data-tables">
-                        <table class="table table-bordered table-striped table-hover table-sm" id="table_laporan">
+                        <table class="table table-bordered table-striped table-hover table-sm" id="laporan-table">
                             <thead class="bg-light text-capitalize">
                                 <tr>
                                     <th>No</th>
@@ -74,15 +73,19 @@
 
     var dataLaporan;
     $(document).ready(function() {
-        dataLaporan = $('#table_laporan').DataTable({
+        dataLaporan = $('#laporan-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ url('laporan/list') }}", // Ganti sesuai route
+                url: "{{ url('laporan/list') }}",
                 dataType: "json",
                 type: "GET",
-                data: function (d) {
+                data: function(d) {
                     d.status = $('#status').val();
+                },
+                error: function(xhr) {
+                    console.error('DataTable AJAX error:', xhr.responseText);
+                    alert('Gagal memuat data tabel. Silakan coba lagi.');
                 }
             },
             columns: [
@@ -92,11 +95,11 @@
                 { data: "status", name: "status" },
                 { data: "created_at", name: "created_at" },
                 { data: "aksi", name: "aksi", orderable: false, searchable: false }
-            ],
-            // order: [[7, 'desc']]
+            ]
         });
 
         $('#status').on('change', function() {
+            console.log('Status filter changed to:', $(this).val());
             dataLaporan.ajax.reload();
         });
     });

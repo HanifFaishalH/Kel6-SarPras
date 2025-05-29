@@ -89,13 +89,16 @@ class LaporanController extends Controller
 
     public function list_kelola(Request $request)
     {
-        $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
-            ->where('user_id', Auth::user()->user_id);
-
+        $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi']);
+    
         if ($request->laporan_id) {
             $laporan->where('laporan_id', $request->laporan_id);
         }
-
+    
+        if ($request->status) {
+            $laporan->where('status', $request->status);
+        }
+    
         return datatables()->of($laporan)
             ->addIndexColumn()
             ->addColumn('gedung', function ($row) {
@@ -116,15 +119,18 @@ class LaporanController extends Controller
             ->addColumn('teknisi', function ($row) {
                 return $row->teknisi ? $row->teknisi->name : '-';
             })
+            ->addColumn('status', function ($row) {
+                return $row->status;
+            })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/laporan/' . 'show_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/laporan/' . 'edit_ajax/' . $row->laporan_id) . '\')" class="btn btn-warning btn-sm">Edit</button>';
+                $btn = '<button onclick="modalAction(\'' . url('/laporan/show_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/laporan/edit_ajax/' . $row->laporan_id) . '\')" class="btn btn-warning btn-sm">Edit</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
-
+        
     public function show_ajax($id)
     {
         try {
@@ -146,9 +152,11 @@ class LaporanController extends Controller
 
     public function create_ajax()
     {
+        $gedung = GedungModel::first(); // Fetch the single building
+        $lantai = $gedung ? LantaiModel::where('gedung_id', $gedung->gedung_id)->get() : [];
         return view('laporan.create_ajax', [
-            'gedung' => GedungModel::all(),
-            'lantai' => [],
+            'gedung' => $gedung,
+            'lantai' => $lantai,
             'ruang' => [],
             'sarana' => [],
         ]);
@@ -228,7 +236,6 @@ class LaporanController extends Controller
         }
     }
 
-
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
@@ -287,7 +294,6 @@ class LaporanController extends Controller
 
         redirect('/laporan/kelola');
     }
-
 
     public function getGedung()
     {

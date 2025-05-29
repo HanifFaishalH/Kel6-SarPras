@@ -38,6 +38,30 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index']);
 
+    Route::middleware(['authorize:mhs,dosen,tendik, sarpras'])->group(function () {
+        Route::group(['prefix' => 'laporan'], function () {
+            Route::get('/', [LaporanController::class, 'index']);
+            Route::get('/list', [LaporanController::class, 'list']);
+            Route::get('/show_ajax/{id}', [LaporanController::class, 'show_ajax']);
+            Route::get('/create_ajax', [LaporanController::class, 'create_ajax']);
+            Route::get('/getGedung', [LaporanController::class, 'getGedung']);
+            Route::get('/ajax/lantai/{gedung_id}', [LaporanController::class, 'getLantai']);
+            Route::get('/ajax/ruang-sarana/{lantai_id}', [LaporanController::class, 'getRuangDanSarana']);
+            Route::post('/store_ajax', [LaporanController::class, 'store_ajax']);
+        });
+        
+        Route::post('/feedback', [LaporanController::class, 'feedback']);
+    });
+    
+    Route::middleware(['authorize:sarpras'])->group(function () {
+        Route::group(['prefix' => 'laporan'], function () {
+            Route::get('/kelola', [LaporanController::class, 'kelola']);
+            Route::get('/list_kelola', [LaporanController::class, 'list_kelola']);
+            Route::get('/edit_ajax/{id}', [LaporanController::class, 'edit_ajax']);
+            Route::post('/{id}/update_ajax', [LaporanController::class, 'update_ajax']);
+        });
+    });
+
     Route::middleware(['authorize:admin'])->group(function () {
         Route::group(['prefix' => 'level'], function () {
             Route::get('/', [LevelController::class, 'index']);
@@ -86,28 +110,6 @@ Route::middleware(['auth'])->group(function () {
         Route::group(['prefix' => 'sarpras'], function () {
             Route::get('/', [SaranaController::class, 'index']);
             Route::get('/list', [SaranaController::class, 'list']);
-        });
-    });
-
-    //laporan general
-    Route::middleware(['authorize:admin,mhs,sarpras'])->group(function () {
-        Route::group(['prefix' => 'laporan'], function () {
-            Route::get('/', [LaporanController::class, 'index']);
-            Route::get('/list', [LaporanController::class, 'list']);
-            Route::get('/create_ajax', [LaporanController::class, 'create_ajax']);
-            Route::get('/show_ajax/{id}', [LaporanController::class, 'show_ajax']);
-        });
-    });
-
-    Route::middleware(['authorize:mhs,dosen,tendik'])->group(function () {
-        Route::group(['prefix' => 'laporan'], function () {
-            Route::get('/', [LaporanController::class, 'index']);
-            Route::get('/list', [LaporanController::class, 'list']);
-            Route::get('/create_ajax', [LaporanController::class, 'create_ajax']);
-            Route::get('/getGedung', [LaporanController::class, 'getGedung']);
-            Route::get('/ajax/lantai/{gedung_id}', [LaporanController::class, 'getLantai']);
-            Route::get('/ajax/ruang-sarana/{lantai_id}', [LaporanController::class, 'getRuangDanSarana']);
-            Route::post('/store_ajax', [LaporanController::class, 'store_ajax']);
         });
     });
 });

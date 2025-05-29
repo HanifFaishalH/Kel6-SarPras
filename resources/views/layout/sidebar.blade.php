@@ -21,15 +21,15 @@
                     </li>
 
                     <!-- Kelola -->
-                    <li class="nav-item has-submenu {{ in_array($activeMenu, ['level', 'kelola-periode', 'kelola-pengguna', 'kelola-prioritas']) ? 'mm-active' : '' }}">
+                    <li class="nav-item has-submenu {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas']) ? 'mm-active' : '' }}">
                         <a href="javascript:void(0)" class="nav-link section-title">
                             <i class="fa fa-gear"></i>
                             <span>Kelola</span>
                         </a>
-                        <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['level', 'kelola-periode', 'kelola-pengguna', 'kelola-prioritas']) ? 'in' : '' }}">
+                        <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas']) ? 'in' : '' }}">
                             <li><a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}"><i class="fa fa-list"></i> Level</a></li>
                             <li><a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'kelola-periode' ? 'active' : '' }}"><i class="fa fa-calendar"></i> Kelola Periode</a></li>
-                            <li><a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'kelola-pengguna' ? 'active' : '' }}"><i class="fa fa-users"></i> Kelola Pengguna</a></li>
+                            <li><a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}"><i class="fa fa-users"></i> Kelola Pengguna</a></li>
                             <li><a href="{{ url('/prioritas') }}" class="nav-link {{ $activeMenu == 'kelola-prioritas' ? 'active' : '' }}"><i class="fa fa-exclamation-circle"></i> Kelola Prioritas</a></li>
                         </ul>
                     </li>
@@ -48,15 +48,15 @@
                     </li>
 
                     <!-- Laporan -->
-                    <li class="nav-item has-submenu {{ in_array($activeMenu, ['laporan', 'kelola-laporan-kerusakan', 'lihat-riwayat-laporan']) ? 'mm-active' : '' }}">
+                    <li class="nav-item has-submenu {{ in_array($activeMenu, ['laporan', 'kelola', 'riwayat']) ? 'mm-active' : '' }}">
                         <a href="javascript:void(0)" class="nav-link section-title">
                             <i class="fa fa-file-text"></i>
                             <span>Laporan</span>
                         </a>
-                        <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['laporan', 'kelola-laporan-kerusakan', 'lihat-riwayat-laporan']) ? 'in' : '' }}">
+                        <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['laporan', 'kelola', 'riwayat']) ? 'in' : '' }}">
                             <li><a href="{{ url('/laporan') }}" class="nav-link {{ $activeMenu == 'laporan' ? 'active' : '' }}"><i class="fa fa-file-text"></i> Buat Laporan</a></li>
-                            <li><a href="{{ url('/laporan/kelola') }}" class="nav-link {{ $activeMenu == 'kelola-laporan-kerusakan' ? 'active' : '' }}"><i class="fa fa-wrench"></i> Kelola Laporan</a></li>
-                            <li><a href="{{ url('/riwayat-laporan') }}" class="nav-link {{ $activeMenu == 'lihat-riwayat-laporan' ? 'active' : '' }}"><i class="fa fa-history"></i> Riwayat Laporan</a></li>
+                            <li><a href="{{ url('/laporan/kelola') }}" class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}"><i class="fa fa-wrench"></i> Kelola Laporan</a></li>
+                            <li><a href="{{ url('/riwayat') }}" class="nav-link {{ $activeMenu == 'riwayat' ? 'active' : '' }}"><i class="fa fa-history"></i> Riwayat Laporan</a></li>
                         </ul>
                     </li>
 

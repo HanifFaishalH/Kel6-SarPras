@@ -45,7 +45,6 @@ class GedungController extends Controller
             ->addColumn('aksi', function ($gedung) {
                 $btn  = '<button onclick="modalAction(\'' . url('/gedung/' . $gedung->gedung_id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/gedung/' . $gedung->gedung_id . '/edit') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/gedung/' . $gedung->gedung_id . '/delete') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -98,30 +97,6 @@ class GedungController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Data gedung berhasil diperbarui!',
-        ]);
-    }
-
-    public function confirm($id)
-    {
-        
-        $gedung = DB::table('m_gedung')->where('gedung_id', $id)->first();
-        
-        if (!$gedung) {
-            return redirect()->back()->with('error', 'Data gedung tidak ditemukan.');
-        }
-
-        return view('gedung.confirm_delete', compact('gedung'));
-    }
-
-
-    public function destroy($id)
-    {
-        $gedung = GedungModel::findOrFail($id);
-        $gedung->delete();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Data gedung berhasil dihapus!',
         ]);
     }
 }

@@ -873,6 +873,7 @@ class SaranaSeeder extends Seeder
                         'kategori_id' => $item['kategori_id'],
                         'barang_id' => $item['barang_id'],
                         'sarana_kode' => $saranaKode,
+                        'jumlah_laporan' => 0,
                         'tanggal_operasional' => $now,
                         'created_at' => $now,
                         'updated_at' => $now,

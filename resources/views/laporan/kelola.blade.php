@@ -2,7 +2,7 @@
 
 @section('content')
 <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true">
-    <!-- Konten modal akan dimuat di sini -->
+    //
 </div>
 
 <div class="main-content-inner">
@@ -18,9 +18,6 @@
                     @if (session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
-                    <!-- Tombol Tambah Laporan -->
-                     <button onclick="modalAction('{{ url('/laporan/create_ajax') }}')" class="btn btn-info">Buat Laporan</button>
-
 
                     <div class="form-group row">
                         <label class="col-form-label col-sm-2">Filter Status:</label>
@@ -41,6 +38,8 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Judul</th>
+                                    <th>Lantai</th>
+                                    <th>Ruang</th>
                                     <th>Sarana</th>
                                     <th>Status</th>
                                     <th>Tanggal Laporan</th>
@@ -78,7 +77,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ url('laporan/list') }}", // Ganti sesuai route
+                url: "{{ url('laporan/list_kelola') }}", // Ganti sesuai route
                 dataType: "json",
                 type: "GET",
                 data: function (d) {
@@ -88,6 +87,8 @@
             columns: [
                 { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
                 { data: "laporan_judul", name: "laporan_judul" },
+                { data: "lantai", name: "lantai" },
+                { data: "ruang", name: "ruang" },
                 { data: "sarana", name: "sarana" },
                 { data: "status", name: "status" },
                 { data: "created_at", name: "created_at" },

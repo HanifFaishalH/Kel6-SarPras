@@ -29,18 +29,18 @@
                                         <option value="{{ $item->kategori_id }}">{{ $item->kategori_nama }}</option>
                                     @endforeach
                                 </select>
-                                <small class="form-text text-muted">Kategori Fasilitas</small>
+                                <small class="form-text text-muted">Kategori Barang</small>
                             </div>
                             <div class="col-sm-6 text-right">
                                 <button type="button" class="btn btn-primary"
-                                    onclick="modalAction('{{ url('fasilitas/create') }}')">
-                                    <i class="fa fa-plus"></i> Tambah Fasilitas
+                                    onclick="modalAction('{{ url('barang/create') }}')">
+                                    <i class="fa fa-plus"></i> Tambah Barang
                                 </button>
                             </div>
                         </div>
 
                         <div class="data-tables">
-                            <table class="table table-bordered table-striped table-hover table-sm" id="table_fasilitas">
+                            <table class="table table-bordered table-striped table-hover table-sm" id="table_barang">
                                 <thead class="bg-light text-capitalize">
                                     <tr>
                                         <th>ID</th>
@@ -76,13 +76,13 @@
             });
         }
 
-        var dataFasilitas;
+        var dataBarang;
         $(document).ready(function() {
-            dataFasilitas = $('#table_fasilitas').DataTable({
+            dataBarang = $('#table_barang').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('fasilitas/list') }}",
+                    url: "{{ url('barang/list') }}",
                     dataType: "json",
                     type: "GET",
                     data: function(d) {
@@ -114,7 +114,7 @@
             });
 
             $('#kategori_id').on('change', function() {
-                dataFasilitas.ajax.reload();
+                dataBarang.ajax.reload();
             });
         });
     </script>

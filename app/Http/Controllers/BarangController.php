@@ -16,17 +16,17 @@ class BarangController extends Controller
         $kategori = KategoriModel::all();
 
         $breadcrumbs = [
-            'title' => 'Daftar Fasilitas',
-            'list' => ['home', 'fasilitas']
+            'title' => 'Daftar Barang',
+            'list' => ['home', 'Barang']
         ];
 
         $page = (object) [
-            'title' => "Daftar Fasilitas"
+            'title' => "Daftar Barang"
         ];
 
-        $activeMenu = 'fasilitas';
+        $activeMenu = 'barang';
 
-        return view('fasilitas.index', [
+        return view('barang.index', [
             'kategori' => $kategori,
             'breadcrumbs' => $breadcrumbs,
             'page' => $page,

@@ -35,15 +35,15 @@
                     </li>
 
                     <!-- Sarana Prasarana -->
-                    <li class="nav-item has-submenu {{ in_array($activeMenu, ['sarana', 'gedung', 'fasilitas']) ? 'mm-active' : '' }}">
+                    <li class="nav-item has-submenu {{ in_array($activeMenu, ['sarana', 'gedung', 'barang']) ? 'mm-active' : '' }}">
                         <a href="javascript:void(0)" class="nav-link section-title">
                             <i class="fa fa-building"></i>
                             <span>Sarana Prasarana</span>
                         </a>
-                        <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['sarana', 'gedung', 'fasilitas']) ? 'in' : '' }}">
-                            <li><a href="{{ url('/sarana') }}" class="nav-link {{ $activeMenu == 'sarana' ? 'active' : '' }}"><i class="fa fa-building"></i> Sarana</a></li>
+                        <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['sarana', 'gedung', 'barang']) ? 'in' : '' }}">
+                            <li><a href="{{ url('/sarana') }}" class="nav-link {{ $activeMenu == 'sarana' ? 'active' : '' }}"><i class="fa fa-building"></i> Kelola Sarana</a></li>
                             <li><a href="{{ url('/gedung') }}" class="nav-link {{ $activeMenu == 'gedung' ? 'active' : '' }}"><i class="fa fa-university"></i> Kelola Gedung</a></li>
-                            <li><a href="{{ url('/fasilitas') }}" class="nav-link {{ $activeMenu == 'fasilitas' ? 'active' : '' }}"><i class="fa fa-cogs"></i> Kelola Fasilitas</a></li>
+                            <li><a href="{{ url('/barang') }}" class="nav-link {{ $activeMenu == 'barang' ? 'active' : '' }}"><i class="fa fa-cube"></i> Kelola Barang</a></li>
                         </ul>
                     </li>
 

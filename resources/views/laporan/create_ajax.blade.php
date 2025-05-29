@@ -12,12 +12,8 @@
 
                 <div class="form-group">
                     <label>Gedung</label>
-                    <select name="gedung_id" id="gedung_id" class="form-control" required>
-                        <option value="">- Pilih Gedung -</option>
-                        @foreach ($gedung as $g)
-                            <option value="{{ $g->gedung_id }}">{{ $g->gedung_nama }}</option>
-                        @endforeach
-                    </select>
+                    <input type="hidden" name="gedung_id" value="{{ $gedung->gedung_id }}">
+                    <input type="text" class="form-control" value="{{ $gedung->gedung_nama }}" readonly>
                     <small id="error-gedung_id" class="error-text form-text text-danger"></small>
                 </div>
 
@@ -73,6 +69,7 @@
                         <option value="rendah">Rendah</option>
                         <option value="sedang">Sedang</option>
                         <option value="tinggi">Tinggi</option>
+                        <option value="kritis">Kritis</option>
                     </select>
                     <small id="error-tingkat_kerusakan" class="error-text form-text text-danger"></small>
                 </div>
@@ -119,40 +116,26 @@
 <script>
 $(document).ready(function() {
     // Get floors based on building selection
-    $('select[name="gedung_id"]').on('change', function() {
-        var gedungID = $(this).val();
-        if (gedungID) {
-            $.ajax({
-                url: "{{ url('laporan/ajax/lantai') }}/" + gedungID,
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    var lantaiSelect = $('select[name="lantai_id"]');
-                    lantaiSelect.empty().append('<option value="">- Pilih Lantai -</option>');
-                    
-                    // Reset dependent selects
-                    $('select[name="ruang_id"]').empty().append('<option value="">- Pilih Ruang -</option>');
-                    $('select[name="sarana_id"]').empty().append('<option value="">- Pilih Sarana -</option>');
-                    
-                    if(data.length > 0) {
-                        $.each(data, function(key, value) {
-                            lantaiSelect.append(
-                                '<option value="'+ value.lantai_id +'">'+ value.lantai_nama +'</option>'
-                            );
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                }
-            });
-        } else {
-            // Clear all dependent selects if no building selected
-            $('select[name="lantai_id"]').empty().append('<option value="">- Pilih Lantai -</option>');
-            $('select[name="ruang_id"]').empty().append('<option value="">- Pilih Ruang -</option>');
-            $('select[name="sarana_id"]').empty().append('<option value="">- Pilih Sarana -</option>');
-        }
-    });
+    const gedungID = $('input[name="gedung_id"]').val();
+    if (gedungID) {
+        $.ajax({
+            url: "{{ url('laporan/ajax/lantai') }}/" + gedungID,
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                var lantaiSelect = $('select[name="lantai_id"]');
+                lantaiSelect.empty().append('<option value="">- Pilih Lantai -</option>');
+                $.each(data, function(key, value) {
+                    lantaiSelect.append(
+                        '<option value="'+ value.lantai_id +'">'+ value.lantai_nama +'</option>'
+                    );
+                });
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+            }
+        });
+    }
 
     // Get rooms and facilities based on floor selection
     $('select[name="lantai_id"]').on('change', function() {
@@ -230,4 +213,3 @@ $(document).ready(function() {
     });
 });
 </script>
-

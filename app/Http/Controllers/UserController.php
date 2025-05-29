@@ -11,7 +11,7 @@ class UserController extends Controller
        public function index()
     {
         $user = UserModel::all();
-        $level=LevelModel::all();
+        $level= LevelModel::all();
         $breadcrumbs = [
             'title' => 'Daftar User',
             'list' => ['home', 'user']
@@ -35,19 +35,36 @@ class UserController extends Controller
     public function list(Request $request) {
         $data = UserModel::select(
             'user_id',
+            'no_induk',
             'username',
             'password',
             'nama', 
             'level_id',
             'foto',
-            'no_induk',
         )->with('level')->get();
-        if ($request->user_id) {
-            $data->where('user_id', $request->user_id);
+
+        
+        if ($request->level_id) {
+            $data = $data->where('level_id', $request->level_id)->get();
         }
 
         return datatables()->of($data)
             ->addIndexColumn()
+            ->addColumn('level_nama', function ($row) {
+                return $row->level ? $row->level->level_nama : '-';
+            })
+            ->addColumn('no_induk', function ($row) {
+                return $row->no_induk ? $row->no_induk : '-';
+            })
+            ->addColumn('username', function ($row) {
+                return $row->username ? $row->username : '-';
+            })
+            ->addColumn('nama', function ($row) {
+                return $row->nama ? $row->nama : '-';
+            })
+            ->addColumn('foto', function ($row) {
+                return $row->foto ? '<img src="' . asset('storage/' . $row->foto) . '" class="img-thumbnail" style="width: 50px; height: 50px;">' : '-';
+            })
             ->addColumn('aksi', function ($row) {
                 $btn  = '<button onclick="modalAction(\''.url('/user/' . $row->user_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\''.url('/user/' . $row->user_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> ';

@@ -57,8 +57,7 @@
 @endsection
 
 @push('css')
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+
 @endpush
 
 @push('js')
@@ -96,11 +95,8 @@
                         name: "foto",
                         orderable: false,
                         searchable: false,
-                        render: function(data, type, row) {
-                            return `<img src="{{ url('uploads/user') }}/${data}" alt="foto" width="40" class="img-thumbnail">`;
-                        }
                     },
-                    { data: "level.level_nama", name: "level.level_nama" },
+                    { data: "level_nama", name: "level_nama" },
                     { data: "aksi", name: "aksi", orderable: false, searchable: false }
                 ],
                 order: [[0, 'asc']]

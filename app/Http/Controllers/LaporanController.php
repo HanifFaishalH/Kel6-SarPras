@@ -78,8 +78,9 @@ class LaporanController extends Controller
     }
 
     public function create_ajax() {
+        $gedung = GedungModel::find(1);
         return view('laporan.create_ajax', [
-            'gedung' => GedungModel::all(),
+            'gedung' => $gedung,
             'lantai' => [],
             'ruang' => [],
             'sarana' => [],
@@ -132,37 +133,33 @@ class LaporanController extends Controller
         return view('/laporan');
     }
 
-
     public function getGedung()
     {
-        $gedung = GedungModel::all();
-        return response()->json($gedung);
+        return response()->json(GedungModel::all());
     }
 
     public function getLantai($gedung_id)
     {
-        $lantai = LantaiModel::where('gedung_id', $gedung_id)->get();
-        return response()->json($lantai);
+        return response()->json(LantaiModel::where('gedung_id', $gedung_id)->get());
     }
 
     public function getRuangDanSarana($lantai_id)
     {
         $ruang = RuangModel::where('lantai_id', $lantai_id)->get();
         $ruangIDs = $ruang->pluck('ruang_id');
-
         $sarana = SaranaModel::whereIn('ruang_id', $ruangIDs)->with('barang')->get();
 
         $saranaFormatted = $sarana->map(function ($item) {
             return [
                 'sarana_id' => $item->sarana_id,
                 'sarana_kode' => $item->barang->barang_kode ?? 'KODE-' . $item->sarana_id,
-                'sarana_nama' => $item->barang->barang_nama ?? 'Sarana #' . $item->sarana_id
+                'sarana_nama' => $item->barang->barang_nama ?? 'Sarana #' . $item->sarana_id,
             ];
         });
+
         return response()->json([
             'ruang' => $ruang,
             'sarana' => $saranaFormatted
         ]);
     }
-
 }

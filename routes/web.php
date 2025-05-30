@@ -61,7 +61,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/show_kelola_ajax/{id}', [LaporanController::class, 'show_kelola'])->name('laporan.show_kelola_detail');
             Route::get('/edit_ajax/{id}', [LaporanController::class, 'edit_ajax']);
             Route::post('/{id}/update_ajax', [LaporanController::class, 'update_ajax']);
-            // User
         });
     });
 

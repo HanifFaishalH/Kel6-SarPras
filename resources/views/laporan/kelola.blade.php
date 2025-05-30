@@ -4,7 +4,7 @@
     {{-- Modal --}}
     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static"
         data-keyboard="false">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-md modal-dialog-centered"> <!-- Changed to modal-md for compact width -->
             <div class="modal-content">
                 {{-- Konten akan dimuat via Ajax --}}
             </div>
@@ -39,7 +39,8 @@
                         </div>
 
                         <div class="data-tables">
-                            <table class="table table-bordered table-striped table-hover table-sm" id="table_laporan" style="width: 100%">
+                            <table class="table table-bordered table-striped table-hover table-sm" id="table_laporan"
+                                style="width: 100%">
                                 <thead class="bg-light text-capitalize">
                                     <tr>
                                         <th>No</th>
@@ -63,55 +64,102 @@
 @endsection
 
 @push('css')
+    <style>
+        .modal-dialog {
+            max-width: 600px;
+            /* Set desired width */
+            margin: 1.75rem auto;
+            /* Center modal */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            /* Solid white background */
+            border-radius: 0.3rem;
+            /* Bootstrap default border-radius */
+        }
+
+        .modal {
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+        }
+    </style>
 @endpush
 
 @push('js')
     <script>
         function modalAction(url = '') {
             $('#myModal .modal-content').html('<div class="text-center p-4">Loading...</div>');
-            $('#myModal .modal-content').load(url, function (response, status, xhr) {
+            $('#myModal .modal-content').load(url, function(response, status, xhr) {
                 if (status == "error") {
-                    $('#myModal .modal-content').html('<div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div>');
+                    $('#myModal .modal-content').html(
+                        '<div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div>');
                 }
             });
             $('#myModal').modal('show');
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             let dataLaporan = $('#table_laporan').DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
                 ajax: {
                     url: "{{ url('laporan/list_kelola') }}",
-                    data: function (d) {
+                    data: function(d) {
                         d.status = $('#status').val();
                     }
                 },
-                columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                    { data: 'laporan_judul', name: 'laporan_judul' },
-                    { data: 'lantai.lantai_nama', name: 'lantai.lantai_nama' },
-                    { data: 'ruang.ruang_nama', name: 'ruang.ruang_nama' },
-                    { data: "sarana", name: "sarana" },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
                     {
-                        data: 'status',
-                        name: 'status',
-                        render: function (data, type, row) {
+                        data: 'laporan_judul',
+                        name: 'laporan_judul'
+                    },
+                    {
+                        data: 'lantai.lantai_nama',
+                        name: 'lantai.lantai_nama'
+                    },
+                    {
+                        data: 'ruang.ruang_nama',
+                        name: 'ruang.ruang_nama'
+                    },
+                    {
+                        data: "sarana",
+                        name: "sarana"
+                    },
+                    {
+                        data: 'status_laporan', // Changed from 'status' to 'status_laporan'
+                        name: 'status_laporan',
+                        render: function(data, type, row) {
                             let badgeClass = {
                                 pending: 'badge badge-warning',
                                 proses: 'badge badge-primary',
                                 selesai: 'badge badge-success'
                             };
-                            return '<span class="' + (badgeClass[data] || 'badge badge-secondary') + ' badge-status">' + data.charAt(0).toUpperCase() + data.slice(1) + '</span>';
+                            return '<span class="' + (badgeClass[data] || 'badge badge-secondary') +
+                                ' badge-status">' + data.charAt(0).toUpperCase() + data.slice(1) +
+                                '</span>';
                         }
                     },
-                    { data: 'created_at', name: 'created_at' },
-                    { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
+                    {
+                        data: 'created_at',
+                        name: 'created_at'
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
             });
 
-            $('#status').on('change', function () {
+            $('#status').on('change', function() {
                 dataLaporan.ajax.reload();
             });
         });

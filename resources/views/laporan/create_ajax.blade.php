@@ -9,6 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                {{-- Gedung --}}
                 <div class="form-group">
                     <label>Gedung</label>
                     @if ($gedung)
@@ -21,6 +22,7 @@
                     <small id="error-gedung_id" class="error-text form-text text-danger"></small>
                 </div>
 
+                {{-- Lantai --}}
                 <div class="form-group">
                     <label>Lantai</label>
                     <select name="lantai_id" id="lantai_id" class="form-control" required>
@@ -32,40 +34,41 @@
                     <small id="error-lantai_id" class="error-text form-text text-danger"></small>
                 </div>
 
+                {{-- Ruang --}}
                 <div class="form-group">
                     <label>Ruang</label>
                     <select name="ruang_id" id="ruang_id" class="form-control" required>
                         <option value="">- Pilih Ruang -</option>
-                        @foreach ($ruang as $r)
-                            <option value="{{ $r->ruang_id }}">{{ $r->ruang_nama }}</option>
-                        @endforeach
+                        {{-- Option akan diisi lewat ajax --}}
                     </select>
                     <small id="error-ruang_id" class="error-text form-text text-danger"></small>
                 </div>
 
+                {{-- Sarana --}}
                 <div class="form-group">
                     <label>Sarana</label>
                     <select name="sarana_id" id="sarana_id" class="form-control" required>
                         <option value="">- Pilih Sarana -</option>
-                        @foreach ($sarana as $s)
-                            <option value="{{ $s->sarana_id }}">{{ $s->sarana_nama }}</option>
-                        @endforeach
+                        {{-- Option akan diisi lewat ajax --}}
                     </select>
                     <small id="error-sarana_id" class="error-text form-text text-danger"></small>
                 </div>
 
+                {{-- Judul Laporan --}}
                 <div class="form-group">
                     <label>Judul Laporan</label>
                     <input type="text" name="laporan_judul" class="form-control" maxlength="100" required>
                     <small id="error-laporan_judul" class="error-text form-text text-danger"></small>
                 </div>
 
+                {{-- Foto Kerusakan --}}
                 <div class="form-group">
                     <label>Foto Kerusakan</label>
                     <input type="file" name="laporan_foto" accept=".jpg,.jpeg,.png" class="form-control">
                     <small id="error-laporan_foto" class="error-text form-text text-danger"></small>
                 </div>
 
+                {{-- Tingkat Kerusakan --}}
                 <div class="form-group">
                     <label>Tingkat Kerusakan</label>
                     <select name="tingkat_kerusakan" class="form-control" required>
@@ -73,10 +76,12 @@
                         <option value="rendah">Rendah</option>
                         <option value="sedang">Sedang</option>
                         <option value="tinggi">Tinggi</option>
+                        <option value="kritis">Kritis</option>
                     </select>
                     <small id="error-tingkat_kerusakan" class="error-text form-text text-danger"></small>
                 </div>
 
+                {{-- Tingkat Urgensi --}}
                 <div class="form-group">
                     <label>Tingkat Urgensi</label>
                     <select name="tingkat_urgensi" class="form-control" required>
@@ -89,6 +94,7 @@
                     <small id="error-tingkat_urgensi" class="error-text form-text text-danger"></small>
                 </div>
 
+                {{-- Frekuensi Penggunaan --}}
                 <div class="form-group">
                     <label>Frekuensi Penggunaan</label>
                     <select name="frekuensi_penggunaan" class="form-control" required>
@@ -101,6 +107,20 @@
                     <small id="error-frekuensi_penggunaan" class="error-text form-text text-danger"></small>
                 </div>
 
+                {{-- Dampak Kerusakan --}}
+                <div class="form-group">
+                    <label>Dampak Kerusakan</label>
+                    <select name="dampak_kerusakan" class="form-control" required>
+                        <option value="">- Pilih Dampak Kerusakan -</option>
+                        <option value="minor">Minor</option>
+                        <option value="kecil">Kecil</option>
+                        <option value="sedang">Sedang</option>
+                        <option value="besar">Besar</option>
+                    </select>
+                    <small id="error-dampak_kerusakan" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Tanggal Operasional --}}
                 <div class="form-group">
                     <label>Tanggal Operasional</label>
                     <input type="date" name="tanggal_operasional" class="form-control" required>
@@ -118,13 +138,13 @@
 
 <script>
 $(document).ready(function() {
-    // Get rooms and facilities based on floor selection
+    // Ambil data ruang & sarana berdasarkan lantai terpilih
     $('select[name="lantai_id"]').on('change', function() {
         var lantaiID = $(this).val();
         var ruangSelect = $('select[name="ruang_id"]');
         var saranaSelect = $('select[name="sarana_id"]');
 
-        // Clear dependent selects
+        // Kosongkan pilihan sebelumnya
         ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>');
         saranaSelect.empty().append('<option value="">- Pilih Sarana -</option>');
 
@@ -134,23 +154,17 @@ $(document).ready(function() {
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
-                    // Handle rooms
+                    // Isi ruang
                     if (data.ruang && data.ruang.length > 0) {
                         $.each(data.ruang, function(key, value) {
-                            ruangSelect.append(
-                                '<option value="'+ value.ruang_id +'">'+ value.ruang_nama +'</option>'
-                            );
+                            ruangSelect.append('<option value="'+ value.ruang_id +'">'+ value.ruang_nama +'</option>');
                         });
                     }
 
-                    // Handle facilities
+                    // Isi sarana
                     if (data.sarana && data.sarana.length > 0) {
                         $.each(data.sarana, function(key, value) {
-                            saranaSelect.append(
-                                '<option value="'+ value.sarana_id +'">'+ 
-                                value.sarana_kode + ' - ' + value.sarana_nama + 
-                                '</option>'
-                            );
+                            saranaSelect.append('<option value="'+ value.sarana_id +'">'+ value.sarana_kode + ' - ' + value.sarana_nama + '</option>');
                         });
                     }
                 },
@@ -162,7 +176,7 @@ $(document).ready(function() {
         }
     });
 
-    // Handle form submission
+    // Handle submit form create laporan
     $('#form-create-laporan').on('submit', function(e) {
         e.preventDefault();
         var formData = new FormData(this);
@@ -174,21 +188,16 @@ $(document).ready(function() {
             processData: false,
             success: function(response) {
                 if (response.status == 'success') {
-                    // Show success message
                     alert(response.message);
-                    // Reset form fields
                     $('#form-create-laporan')[0].reset();
-                    // Reset status filter in parent page to show all reports
+                    // Reset filter status jika ada di halaman utama
                     if ($('#status').length) {
                         $('#status').val('').trigger('change');
                     }
-                    // Close the modal
                     $('#myModal').modal('hide');
-                    // Refresh DataTable
-                    console.log('Refreshing DataTable...');
                     $('#laporan-table').DataTable().ajax.reload(null, false);
                 } else {
-                    // Handle validation errors
+                    // Tampilkan error validasi
                     $.each(response.errors, function(key, value) {
                         $('#error-' + key).text(value[0]);
                     });

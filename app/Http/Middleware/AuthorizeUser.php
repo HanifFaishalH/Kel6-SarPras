@@ -13,9 +13,10 @@ class AuthorizeUser
         if (!$request->user()) {
             return redirect()->route('login');
         }
-        
-        $user_role = $request->user()->getRole(); // Use getRoleName() for level_nama
-        // dd($user_role, $roles);
+
+        $user = $request->user();
+        $user_role = $user->getRole();
+
         if (in_array($user_role, $roles)) {
             return $next($request);
         }

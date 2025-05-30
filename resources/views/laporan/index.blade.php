@@ -92,7 +92,7 @@
                 { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
                 { data: "laporan_judul", name: "laporan_judul" },
                 { data: "sarana", name: "sarana" },
-                { data: "status", name: "status" },
+                { data: "status_laporan", name: "status_laporan" },
                 { data: "created_at", name: "created_at" },
                 { data: "aksi", name: "aksi", orderable: false, searchable: false }
             ]

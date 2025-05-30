@@ -41,31 +41,53 @@ class LaporanController extends Controller
 
     public function list(Request $request)
     {
-        $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
-            ->where('user_id', Auth::user()->user_id);
+        $user = auth()->user();
+        $statusFilter = $request->get('status');
 
-        if ($request->laporan_id) {
-            $laporan->where('laporan_id', $request->laporan_id);
+        $query = LaporanModel::with(['user', 'teknisi', 'sarana.barang'])
+                    ->select('t_laporan_kerusakan.*');
+
+        // Filter status jika ada
+        if ($statusFilter) {
+            $query->where('status_laporan', $statusFilter);
         }
 
-        return datatables()->of($laporan)
+        // Cek role user
+        if ($user->level->level_name !== 'admin') {
+            // Bukan admin, batasi hanya laporan milik user ini
+            $query->where('user_id', $user->user_id);
+        }
+        // Jika admin, query tanpa filter user_id (lihat semua)
+
+        return datatables($query)
             ->addIndexColumn()
-            ->addColumn('sarana', function ($row) {
-                return $row->sarana->sarana_nama;
+            ->addColumn('role', function($row) {
+                return strtoupper($row->role);
             })
-            ->addColumn('user', function ($row) {
-                return $row->user->name;
+            ->addColumn('sarana', function($row) {
+                return $row->sarana->barang->barang_nama ?? '-';
             })
-            ->addColumn('teknisi', function ($row) {
-                return $row->teknisi ? $row->teknisi->name : '-';
+            ->addColumn('teknisi', function($row) {
+                return $row->teknisi ? $row->teknisi->user->name : '-';
             })
-            ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/laporan/' . 'show_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
+            ->addColumn('status_laporan', function($row) {
+                return ucfirst($row->status_laporan);
+            })
+            ->addColumn('status_admin', function($row) {
+                return ucfirst($row->status_admin);
+            })
+            ->addColumn('status_sarpras', function($row) {
+                return ucfirst($row->status_sarpras);
+            })
+            ->addColumn('aksi', function($row) {
+                $btn = '<button class="btn btn-info btn-sm" onclick="modalAction(\'' . url('/laporan/show_ajax/' . $row->laporan_id) . '\')">Detail</button> ';
+                $btn .= '<button class="btn btn-warning btn-sm" onclick="modalAction(\'' . url('/laporan/edit_ajax/' . $row->laporan_id) . '\')">Edit</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
+
 
     public function kelola()
     {
@@ -90,64 +112,59 @@ class LaporanController extends Controller
     public function list_kelola(Request $request)
     {
         $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi']);
-    
+
         if ($request->laporan_id) {
             $laporan->where('laporan_id', $request->laporan_id);
         }
-    
+
         if ($request->status) {
             $laporan->where('status', $request->status);
         }
-    
+
         return datatables()->of($laporan)
             ->addIndexColumn()
-            ->addColumn('gedung', function ($row) {
-                return $row->gedung->gedung_nama;
+            ->addColumn('laporan_judul', function ($row) {
+                return $row->laporan_judul;
             })
-            ->addColumn('lantai', function ($row) {
-                return $row->lantai->lantai_nama;
+            ->addColumn('lantai.lantai_nama', function ($row) {
+                return optional($row->lantai)->lantai_nama ?? '-';
             })
-            ->addColumn('ruang', function ($row) {
-                return $row->ruang->ruang_nama;
+            ->addColumn('ruang.ruang_nama', function ($row) {
+                return optional($row->ruang)->ruang_nama ?? '-';
             })
-            ->addColumn('sarana', function ($row) {
-                return $row->sarana->sarana_nama;
-            })
-            ->addColumn('user', function ($row) {
-                return $row->user->name;
-            })
-            ->addColumn('teknisi', function ($row) {
-                return $row->teknisi ? $row->teknisi->name : '-';
+            ->addColumn('sarana.sarana_nama', function ($row) {
+                return $row->sarana->barang->barang_nama ?? '-';
             })
             ->addColumn('status', function ($row) {
-                return $row->status;
+                return ucfirst($row->status); // Misalnya: 'Pending', 'Proses'
+            })
+            ->addColumn('created_at', function ($row) {
+                return $row->created_at->format('d-m-Y H:i');
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/laporan/show_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn = '<button onclick="modalAction(\'' . url('/laporan/show_kelola_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/laporan/edit_ajax/' . $row->laporan_id) . '\')" class="btn btn-warning btn-sm">Edit</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
+
         
     public function show_ajax($id)
     {
-        try {
-            $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
-                ->where('laporan_id', $id)
-                ->where('user_id', Auth::user()->user_id)
-                ->firstOrFail();
+        $laporan = LaporanModel::with([
+            'gedung',
+            'lantai',
+            'ruang',
+            'sarana',
+            'user',
+            'teknisi'
+        ])->findOrFail($id);
 
-            return view('laporan.show_ajax', [
-                'laporan' => $laporan
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Laporan tidak ditemukan atau Anda tidak memiliki akses.'
-            ], 404);
-        }
+        return view('laporan.show_ajax', [
+            'laporan' => $laporan
+        ]);
     }
 
     public function create_ajax()
@@ -171,11 +188,12 @@ class LaporanController extends Controller
                 'ruang_id' => 'required|exists:m_ruang,ruang_id',
                 'sarana_id' => 'required|exists:m_sarana,sarana_id',
                 'laporan_judul' => 'required|string|max:100',
-                'laporan_foto' => 'nullable|image|max:2048',
-                'tingkat_kerusakan' => 'required|in:rendah,sedang,tinggi',
+                'laporan_foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'tingkat_kerusakan' => 'required|in:rendah,sedang,tinggi,kritis',
                 'tingkat_urgensi' => 'required|in:rendah,sedang,tinggi,kritis',
                 'frekuensi_penggunaan' => 'required|in:harian,mingguan,bulanan,tahunan',
-                'tanggal_operasional' => 'required|date'
+                'dampak_kerusakan' => 'required|in:minor,kecil,sedang,besar',
+                'tanggal_operasional' => 'required|date',
             ]);
 
             if ($validator->fails()) {

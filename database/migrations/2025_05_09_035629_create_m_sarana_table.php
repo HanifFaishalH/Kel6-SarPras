@@ -21,6 +21,9 @@ return new class extends Migration
             $table->date('tanggal_operasional')->nullable();
             $table->timestamps();
 
+            $table->enum('tingkat_kerusakan_tertinggi', ['rendah', 'sedang', 'tinggi'])->nullable();
+            $table->float('skor_prioritas')->nullable(); // hasil kalkulasi SPK, update otomatis
+
             // Foreign key constraint
             $table->foreign('kategori_id')->references('kategori_id')->on('m_kategori')->onDelete('cascade');
             $table->foreign('barang_id')->references('barang_id')->on('m_barang')->onDelete('cascade');

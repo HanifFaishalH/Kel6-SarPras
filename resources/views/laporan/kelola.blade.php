@@ -1,9 +1,14 @@
 @extends('layout.template')
 
 @section('content')
-    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
-        data-keyboard="false" data-width="75%" aria-hidden="true">
-        //
+    {{-- Modal --}}
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static"
+        data-keyboard="false">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                {{-- Konten akan dimuat via Ajax --}}
+            </div>
+        </div>
     </div>
 
     <div class="main-content-inner">
@@ -21,7 +26,7 @@
                         @endif
 
                         <div class="form-group row">
-                            <label class="col-form-label col-sm-2">Filter Status:</label>
+                            <label for="status" class="col-form-label col-sm-2">Filter Status:</label>
                             <div class="col-sm-4">
                                 <select class="form-control" id="status" name="status">
                                     <option value="">- Semua Status -</option>
@@ -29,12 +34,12 @@
                                     <option value="proses">Proses</option>
                                     <option value="selesai">Selesai</option>
                                 </select>
-                                <small class="form-text text-muted">Status Laporan</small>
+                                <small class="form-text text-muted">Pilih status laporan untuk memfilter data</small>
                             </div>
                         </div>
 
                         <div class="data-tables">
-                            <table class="table table-bordered table-striped table-hover table-sm" id="table_laporan">
+                            <table class="table table-bordered table-striped table-hover table-sm" id="table_laporan" style="width: 100%">
                                 <thead class="bg-light text-capitalize">
                                     <tr>
                                         <th>No</th>
@@ -50,7 +55,6 @@
                                 <tbody></tbody>
                             </table>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -64,34 +68,46 @@
 @push('js')
     <script>
         function modalAction(url = '') {
-            $('#myModal').load(url, function (response, status, xhr) {
+            $('#myModal .modal-content').html('<div class="text-center p-4">Loading...</div>');
+            $('#myModal .modal-content').load(url, function (response, status, xhr) {
                 if (status == "error") {
-                    $('#myModal').html('<div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div>');
+                    $('#myModal .modal-content').html('<div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div>');
                 }
-                $('#myModal').modal('show');
             });
+            $('#myModal').modal('show');
         }
 
-        var dataLaporan;
         $(document).ready(function () {
-            dataLaporan = $('#table_laporan').DataTable({
+            let dataLaporan = $('#table_laporan').DataTable({
                 processing: true,
                 serverSide: true,
+                responsive: true,
                 ajax: {
                     url: "{{ url('laporan/list_kelola') }}",
                     data: function (d) {
-                        d.status = $('#status').val(); // Pass status filter to server
+                        d.status = $('#status').val();
                     }
                 },
                 columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false }, // No
-                    { data: 'laporan_judul', name: 'laporan_judul' }, // Judul
-                    { data: 'lantai.lantai_nama', name: 'lantai.lantai_nama' }, // Lantai
-                    { data: 'ruang.ruang_nama', name: 'ruang.ruang_nama' }, // Ruang
-                    { data: 'sarana.sarana_nama', name: 'sarana.sarana_nama' }, // Sarana
-                    { data: 'status', name: 'status' }, // Status
-                    { data: 'created_at', name: 'created_at' }, // Tanggal Laporan
-                    { data: 'aksi', name: 'aksi', orderable: false, searchable: false } // Aksi
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                    { data: 'laporan_judul', name: 'laporan_judul' },
+                    { data: 'lantai.lantai_nama', name: 'lantai.lantai_nama' },
+                    { data: 'ruang.ruang_nama', name: 'ruang.ruang_nama' },
+                    { data: "sarana", name: "sarana" },
+                    {
+                        data: 'status',
+                        name: 'status',
+                        render: function (data, type, row) {
+                            let badgeClass = {
+                                pending: 'badge badge-warning',
+                                proses: 'badge badge-primary',
+                                selesai: 'badge badge-success'
+                            };
+                            return '<span class="' + (badgeClass[data] || 'badge badge-secondary') + ' badge-status">' + data.charAt(0).toUpperCase() + data.slice(1) + '</span>';
+                        }
+                    },
+                    { data: 'created_at', name: 'created_at' },
+                    { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
                 ]
             });
 

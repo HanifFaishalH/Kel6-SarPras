@@ -167,6 +167,22 @@ class LaporanController extends Controller
         ]);
     }
 
+    public function show_kelola($id)
+    {
+        $laporan = LaporanModel::with([
+            'gedung',
+            'lantai',
+            'ruang',
+            'sarana',
+            'user',
+            'teknisi'
+        ])->findOrFail($id);
+
+        return view('laporan.show_kelola_detail', [
+            'laporan' => $laporan
+        ]);
+    }
+
     public function create_ajax()
     {
         $gedung = GedungModel::first(); // Fetch the single building

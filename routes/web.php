@@ -55,16 +55,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['authorize:admin,sarpras'])->group(function (): void {
         Route::group(['prefix' => 'laporan'], function () {
+            // Admin
             Route::get('/kelola', [LaporanController::class, 'kelola']);
             Route::get('/list_kelola', [LaporanController::class, 'list_kelola']);
-            Route::get('/show_kelola_ajax/{id}', [LaporanController::class, 'show_ajax']);
-        });
-    });
-    
-    Route::middleware(['authorize:admin,sarpras'])->group(function (): void {
-        Route::group(['prefix' => 'laporan'], function () {
+            Route::get('/show_kelola_ajax/{id}', [LaporanController::class, 'show_kelola'])->name('laporan.show_kelola_detail');
             Route::get('/edit_ajax/{id}', [LaporanController::class, 'edit_ajax']);
-            Route::post('/{id}/update_ajax', [LaporanController::class, 'update_ajax']);            
+            Route::post('/{id}/update_ajax', [LaporanController::class, 'update_ajax']);
+            // User
         });
     });
 

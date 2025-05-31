@@ -94,6 +94,23 @@
 </div>
 <!-- area menu sidebar selesai -->
 
+<!-- Add this modal at the bottom of sidebar.blade.php -->
+<div class="modal fade" id="accessDeniedModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Akses Ditolak</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- STYLE -->
 <style>
     .sidebar-menu {
@@ -143,5 +160,38 @@
 <script>
     $(document).ready(function () {
         $('#menu').metisMenu();
+        
+        // Intercept sidebar link clicks
+        $('.sidebar-menu a.nav-link').on('click', function(e) {
+            const href = $(this).attr('href');
+            
+            // Skip if it's a javascript link or current page
+            if (!href || href === 'javascript:void(0)' || href === window.location.pathname) {
+                return true;
+            }
+            
+            e.preventDefault();
+            
+            // Check access using AJAX
+            $.ajax({
+                url: href,
+                type: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    // Allow navigation if successful
+                    window.location.href = href;
+                },
+                error: function(xhr) {
+                    if (xhr.status === 403) {
+                        $('#accessDeniedModal').modal('show');
+                    } else {
+                        window.location.href = href;
+                    }
+                }
+            });
+        });
     });
 </script>

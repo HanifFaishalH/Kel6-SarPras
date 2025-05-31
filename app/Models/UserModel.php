@@ -41,4 +41,23 @@ class UserModel extends Authenticatable
     {
         return $this->level->level_kode;
     }
+
+    public function hasPermission($permission): bool
+    {
+        // Map permissions to roles (customize this based on your application)
+        $permissionMap = [
+            'admin' => ['admin'],
+            'sarpras' => ['sarpras', 'admin'],
+            'mhs' => ['mhs'],
+            'dosen' => ['dosen'],
+            'tendik' => ['tendik'],
+        ];
+
+        // Check if user has the required permission
+        if (array_key_exists($permission, $permissionMap)) {
+            return in_array($this->getRole(), $permissionMap[$permission]);
+        }
+
+        return false;
+    }
 }

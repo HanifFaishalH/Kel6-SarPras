@@ -8,10 +8,17 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-       public function index()
+    public function index()
     {
+        if (request()->ajax() || request()->wantsJson()) {
+            $user = UserModel::find(auth()->id());
+            if (!$user->hasPermission('admin')) {
+                return response()->json(['error' => 'Unauthorized access'], 403);
+            }
+        }
+        
         $user = UserModel::all();
-        $level= LevelModel::all();
+        $level = LevelModel::all();
         $breadcrumbs = [
             'title' => 'Daftar User',
             'list' => ['home', 'user']
@@ -32,20 +39,21 @@ class UserController extends Controller
         ]);
     }
 
-    public function list(Request $request) {
+    public function list(Request $request)
+    {
         $data = UserModel::select(
             'user_id',
             'no_induk',
             'username',
             'password',
-            'nama', 
+            'nama',
             'level_id',
             'foto',
         )->with('level')->get();
 
-        
+
         if ($request->level_id) {
-            $data = $data->where('level_id', $request->level_id)->get();
+            $data = $data->where('level_id', $request->level_id);
         }
 
         return datatables()->of($data)
@@ -66,9 +74,9 @@ class UserController extends Controller
                 return $row->foto ? '<img src="' . asset('storage/' . $row->foto) . '" class="img-thumbnail" style="width: 50px; height: 50px;">' : '-';
             })
             ->addColumn('aksi', function ($row) {
-                $btn  = '<button onclick="modalAction(\''.url('/user/' . $row->user_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\''.url('/user/' . $row->user_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\''.url('/user/' . $row->user_id . '/delete_ajax').'\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                $btn  = '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])

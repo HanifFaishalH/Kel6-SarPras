@@ -27,4 +27,16 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception)
+    {
+        // Handle unauthorized access for AJAX requests
+        if ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Unauthorized access'], 403);
+            }
+        }
+    
+        return parent::render($request, $exception);
+    }
 }

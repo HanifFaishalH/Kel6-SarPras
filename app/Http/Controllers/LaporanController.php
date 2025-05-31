@@ -153,18 +153,45 @@ class LaporanController extends Controller
         
     public function show_ajax($id)
     {
-        $laporan = LaporanModel::with([
-            'gedung',
-            'lantai',
-            'ruang',
-            'sarana',
-            'user',
-            'teknisi'
-        ])->findOrFail($id);
-
-        return view('laporan.show_ajax', [
-            'laporan' => $laporan
-        ]);
+        try {
+            $laporan = LaporanModel::with([
+                'gedung',
+                'lantai',
+                'ruang',
+                'sarana.barang',
+                'user',
+                'teknisi.user'
+            ])->findOrFail($id);
+    
+            // Restrict access for non-admin users
+            $user = auth()->user();
+            if ($user->level->level_name !== 'admin' && $laporan->user_id !== $user->user_id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Anda tidak memiliki akses ke laporan ini.'
+                ], 403);
+            }
+    
+            $html = view('laporan.show_ajax', [
+                'laporan' => $laporan
+            ])->render();
+    
+            return response()->json([
+                'status' => 'success',
+                'html' => $html
+            ], 200, ['Content-Type' => 'application/json']);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Laporan tidak ditemukan.'
+            ], 404, ['Content-Type' => 'application/json']);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error in show_ajax: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat mengambil data laporan.'
+            ], 500, ['Content-Type' => 'application/json']);
+        }
     }
 
     public function show_kelola($id)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LevelModel;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -74,12 +75,61 @@ class UserController extends Controller
                 return $row->foto ? '<img src="' . asset('storage/' . $row->foto) . '" class="img-thumbnail" style="width: 50px; height: 50px;">' : '-';
             })
             ->addColumn('aksi', function ($row) {
-                $btn  = '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn  = '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/edit') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
+
+    public function show(string $id)
+{
+    $user = UserModel::find($id);
+
+    if (!$user) {
+        abort(404, 'User tidak ditemukan');
+    }
+
+    return view('user.show', compact('user'));
 }
+
+
+    // Edit
+
+    public function edit($id)
+   {
+    $user = UserModel::find($id);
+    $level = LevelModel::all();
+
+    if (!$user) {
+        abort(404, 'User tidak ditemukan');
+    }
+
+    return view('user.edit', compact('user', 'level'));
+}
+
+
+    public function update(Request $request, $id)
+    {
+        $user = auth()->user();
+        $request->validate([
+            'username' => 'required|string|max:50',
+            'no_induk' => 'required|string|max:50|unique:m_users,no_induk,' . $id . ',user_id',
+            'nama' => 'required|string|max:50',
+            'level_id' => 'required|exists:m_level,level_id',
+            'password' => 'nullable|min:5',
+        ]);
+
+        if($request->filled('password')){
+            $user->password = Hash::make($request['password']);
+        }
+
+        $user = UserModel::findOrFail($id);
+        $user->update($request->only(['username', 'no_induk', 'nama', 'level_id']));
+
+        return back()->with('success', 'User berhasil diperbarui');
+    }
+}
+ 

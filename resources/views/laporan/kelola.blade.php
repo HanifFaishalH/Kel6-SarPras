@@ -46,7 +46,9 @@
                                         <th>No</th>
                                         <th>Judul</th>
                                         <th>Sarana</th>
-                                        <th>Status</th>
+                                        <th>Status Laporan</th>
+                                        <th>Persetujuan Admin</th>
+                                        <th>Status Sarpras</th>
                                         <th>Tanggal Laporan</th>
                                         <th>Bobot</th>
                                         <th>Aksi</th>
@@ -195,16 +197,14 @@
                     {
                         data: 'status_laporan',
                         name: 'status_laporan',
-                        render: function (data, type, row) {
-                            let badgeClass = {
-                                pending: 'badge badge-warning',
-                                proses: 'badge badge-primary',
-                                selesai: 'badge badge-success'
-                            };
-                            return '<span class="' + (badgeClass[data.toLowerCase()] || 'badge badge-secondary') +
-                                ' badge-status">' + data.charAt(0).toUpperCase() + data.slice(1) +
-                                '</span>';
-                        }
+                    },                    
+                    { 
+                        data: "status_admin", 
+                        name: "status_admin" 
+                    },
+                    { 
+                        data: "status_sarpras", 
+                        name: "status_sarpras" 
                     },
                     {
                         data: 'created_at',

@@ -49,12 +49,13 @@
                                         <th>No</th>
                                         <th>Judul</th>
                                         <th>Sarana</th>
-                                        <th>Status</th>
+                                        <th>Status Laporan</th>
+                                        <th>Persetujuan Admin</th>
+                                        <th>Status Sarpras</th>
                                         <th>Tanggal Laporan</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
@@ -114,6 +115,8 @@
                     { data: "laporan_judul", name: "laporan_judul" },
                     { data: "sarana", name: "sarana" },
                     { data: "status_laporan", name: "status_laporan" },
+                    { data: "status_admin", name: "status_admin" },
+                    { data: "status_sarpras", name: "status_sarpras" },
                     { data: "created_at", name: "created_at" },
                     {
                         data: "laporan_id",

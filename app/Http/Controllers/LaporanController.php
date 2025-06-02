@@ -81,7 +81,6 @@ class LaporanController extends Controller
             })
             ->addColumn('aksi', function ($row) {
                 $btn = '<button class="btn btn-info btn-sm" onclick="modalAction(\'' . url('/laporan/show_ajax/' . $row->laporan_id) . '\')">Detail</button> ';
-                $btn .= '<button class="btn btn-warning btn-sm" onclick="modalAction(\'' . url('/laporan/edit_ajax/' . $row->laporan_id) . '\')">Edit</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -130,7 +129,13 @@ class LaporanController extends Controller
                 return $row->sarana ? $row->sarana->barang->barang_nama ?? '-' : '-';
             })
             ->addColumn('status_laporan', function ($row) {
-                return ucfirst($row->status);
+                return ucfirst($row->status_laporan);
+            })
+            ->addColumn('status_admin', function ($row) {
+                return ucfirst($row->status_admin);
+            })
+            ->addColumn('status_sarpras', function ($row) {
+                return ucfirst($row->status_sarpras);
             })
             ->addColumn('created_at', function ($row) {
                 return $row->created_at->format('d-m-Y H:i');

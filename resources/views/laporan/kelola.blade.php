@@ -92,27 +92,38 @@
         function modalAction(url = '') {
             $('#myModal .modal-content').html('<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
             $('#myModal').modal('show');
+
             $.ajax({
                 url: url,
                 type: 'GET',
+                dataType: 'json', // Ensure we're expecting JSON response
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 success: function (response) {
-                    if (response.status === 'success') {
+                    console.log('Response:', response); // Debugging
+                    if (response.status === 'success' && response.html) {
                         $('#myModal .modal-content').html(response.html);
                     } else {
                         $('#myModal .modal-content').html(
-                            '<div class="alert alert-danger">' + (response.message || 'Gagal memuat konten.') + '</div>'
+                            '<div class="alert alert-danger">' +
+                            (response.message || 'Gagal memuat konten. Format respons tidak valid.') +
+                            '</div>'
                         );
                     }
                 },
-                error: function (xhr) {
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error:', status, error, xhr.responseText); // Debugging
                     let errorMsg = 'Gagal memuat konten. Silakan coba lagi.';
+
                     if (xhr.status === 403) {
                         errorMsg = 'Anda tidak memiliki akses untuk tindakan ini.';
                     } else if (xhr.status === 404) {
                         errorMsg = 'Konten tidak ditemukan.';
-                    } else if (xhr.status === 500) {
-                        errorMsg = 'Terjadi kesalahan server. Silakan coba lagi nanti.';
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
                     }
+
                     $('#myModal .modal-content').html(
                         '<div class="alert alert-danger">' + errorMsg + '</div>'
                     );
@@ -197,14 +208,14 @@
                     {
                         data: 'status_laporan',
                         name: 'status_laporan',
-                    },                    
-                    { 
-                        data: "status_admin", 
-                        name: "status_admin" 
                     },
-                    { 
-                        data: "status_sarpras", 
-                        name: "status_sarpras" 
+                    {
+                        data: "status_admin",
+                        name: "status_admin"
+                    },
+                    {
+                        data: "status_sarpras",
+                        name: "status_sarpras"
                     },
                     {
                         data: 'created_at',

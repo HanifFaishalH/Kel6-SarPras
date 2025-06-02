@@ -239,20 +239,38 @@ class LaporanController extends Controller
 
     public function show_kelola($id)
     {
-        $laporan = LaporanModel::with([
-            'gedung',
-            'lantai',
-            'ruang',
-            'sarana',
-            'user',
-            'teknisi'
-        ])->findOrFail($id);
-
-        return view('laporan.show_kelola_detail', [
-            'laporan' => $laporan
-        ]);
+        try {
+            $laporan = LaporanModel::with([
+                'gedung',
+                'lantai',
+                'ruang',
+                'sarana.barang',
+                'user',
+                'teknisi.user'
+            ])->findOrFail($id);
+    
+            $html = view('laporan.show_kelola_detail', [
+                'laporan' => $laporan
+            ])->render();
+    
+            return response()->json([
+                'status' => 'success',
+                'html' => $html
+            ]);
+    
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Laporan tidak ditemukan.'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat mengambil data laporan.'
+            ], 500);
+        }
     }
-
+    
     public function create_ajax()
     {
         $gedung = GedungModel::first(); // Fetch the single building

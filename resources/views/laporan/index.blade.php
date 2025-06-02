@@ -68,27 +68,28 @@
 @push('js')
     <script>
         function modalAction(url) {
-            console.log('Making AJAX request to:', url);
             $('#myModal').modal('hide'); // Close any open modals
-            $('#modal-content').empty(); // Clear existing content
+            $('#modal-content').html('<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
+            $('#myModal').modal('show');
+
             $.ajax({
                 url: url,
                 type: 'GET',
-                dataType: 'html',
                 success: function (response) {
-                    console.log('Response received');
-                    // Inject HTML into modal content
-                    $('#modal-content').html(response);
-                    // Reinitialize any scripts by appending them to the DOM
-                    $(response).filter('script').each(function () {
-                        $.globalEval(this.text || this.textContent || this.innerHTML || '');
-                    });
-                    // Show modal
-                    $('#myModal').modal('show');
+                    if (response.status === 'success' && response.html) {
+                        $('#modal-content').html(response.html);
+                    } else {
+                        $('#modal-content').html('<div class="alert alert-danger">Gagal memuat konten.</div>');
+                    }
                 },
-                error: function (xhr, status, error) {
-                    console.error('AJAX error:', status, error, xhr.responseText);
-                    alert('Terjadi kesalahan saat memuat form: ' + (xhr.responseJSON?.message || 'Silakan coba lagi.'));
+                error: function (xhr) {
+                    let errorMsg = 'Gagal memuat konten. Silakan coba lagi.';
+                    if (xhr.status === 403) {
+                        errorMsg = 'Anda tidak memiliki akses untuk tindakan ini.';
+                    } else if (xhr.status === 404) {
+                        errorMsg = 'Konten tidak ditemukan.';
+                    }
+                    $('#modal-content').html('<div class="alert alert-danger">' + errorMsg + '</div>');
                 }
             });
         }

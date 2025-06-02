@@ -57,6 +57,8 @@ return new class extends Migration
             $table->foreign('lantai_id')->references('lantai_id')->on('m_lantai')->onDelete('cascade');
             $table->foreign('gedung_id')->references('gedung_id')->on('m_gedung')->onDelete('cascade');
             $table->foreign('teknisi_id')->references('teknisi_id')->on('m_teknisi')->onDelete('cascade');
+
+            $table->decimal('bobot', 8, 3)->nullable();
         });
     }
 

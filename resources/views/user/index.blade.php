@@ -1,7 +1,8 @@
 @extends('layout.template')
 
 @section('content')
-    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" data-width="75%" aria-hidden="true">
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true">
         <!-- Konten modal akan dimuat di sini -->
     </div>
 
@@ -48,7 +49,7 @@
                                 <tbody></tbody>
                             </table>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
@@ -63,17 +64,20 @@
 @push('js')
 
     <script>
-        function modalAction(url = '') {
-            $('#myModal').load(url, function(response, status, xhr) {
-                if (status == "error") {
-                    $('#myModal').html('<div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div>');
-                }
-                $('#myModal').modal('show');
+        function modalAction(url) {
+            $.get(url, function (response) {
+                // Jika response adalah HTML langsung (bukan JSON), inject langsung ke modal
+                $('#myModal').remove(); // Hapus modal lama jika ada
+                $('body').append(response); // Tambahkan modal ke body
+                $('#myModal').modal('show'); // Tampilkan modal
+            }).fail(function () {
+                alert("Terjadi kesalahan: Tidak dapat memuat data.");
             });
         }
 
+
         var dataUser;
-        $(document).ready(function() {
+        $(document).ready(function () {
             dataUser = $('#table_user').DataTable({
                 processing: true,
                 serverSide: true,
@@ -102,7 +106,7 @@
                 order: [[0, 'asc']]
             });
 
-            $('#level_id').on('change', function() {
+            $('#level_id').on('change', function () {
                 dataUser.ajax.reload();
             });
         });

@@ -73,6 +73,10 @@ Route::middleware(['auth'])->group(function () {
         Route::group(['prefix' => 'user'], function () {
             Route::get('/', [UserController::class, 'index']);
             Route::get('/list', [UserController::class, 'list']);
+            Route::get('/{id}/show', [UserController::class, 'show']);
+            Route::get('/{id}/edit', [UserController::class, 'edit']);
+            Route::put('/{id}/update', [UserController::class, 'update'])->name('user.update');
+            Route::post('/{id}/update', [UserController::class, 'update'])->name('user.update');
         });
 
         Route::group(['prefix' => 'gedung'], function () {

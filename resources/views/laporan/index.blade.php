@@ -69,10 +69,11 @@
         function modalAction(url) {
             console.log('Making AJAX request to:', url);
             $('#myModal').modal('hide'); // Close any open modals
+            $('#modal-content').empty(); // Clear existing content
             $.ajax({
                 url: url,
                 type: 'GET',
-                dataType: 'html', // Expect HTML response
+                dataType: 'html',
                 success: function (response) {
                     console.log('Response received');
                     // Inject HTML into modal content
@@ -114,7 +115,15 @@
                     { data: "sarana", name: "sarana" },
                     { data: "status_laporan", name: "status_laporan" },
                     { data: "created_at", name: "created_at" },
-                    { data: "aksi", name: "aksi", orderable: false, searchable: false }
+                    {
+                        data: "laporan_id",
+                        name: "aksi",
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-sm btn-primary" onclick="modalAction(\'{{ url("laporan/show_ajax") }}/' + data + '\')">Detail</button>';
+                        }
+                    }
                 ]
             });
 

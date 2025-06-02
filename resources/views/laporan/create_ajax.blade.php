@@ -124,93 +124,100 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
         <button type="submit" class="btn btn-primary">Simpan Laporan</button>
     </div>
 </form>
 
 <script>
-$(document).ready(function() {
-    // Ambil data ruang & sarana berdasarkan lantai terpilih
-    $('select[name="lantai_id"]').on('change', function() {
-        var lantaiID = $(this).val();
-        var ruangSelect = $('select[name="ruang_id"]');
-        var saranaSelect = $('select[name="sarana_id"]');
-
-        // Kosongkan pilihan sebelumnya
-        ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>');
-        saranaSelect.empty().append('<option value="">- Pilih Sarana -</option>');
-
-        if (lantaiID) {
-            $.ajax({
-                url: "{{ url('laporan/ajax/ruang-sarana') }}/" + lantaiID,
-                type: "GET",
-                dataType: "json",
-                success: function(data) {
-                    // Isi ruang
-                    if (data.ruang && data.ruang.length > 0) {
-                        $.each(data.ruang, function(key, value) {
-                            ruangSelect.append('<option value="'+ value.ruang_id +'">'+ value.ruang_nama +'</option>');
-                        });
-                    } else {
-                        alert('Tidak ada ruang tersedia untuk lantai ini.');
+    $(document).ready(function() {
+        // Ambil data ruang & sarana berdasarkan lantai terpilih
+        $('select[name="lantai_id"]').on('change', function() {
+            var lantaiID = $(this).val();
+            var ruangSelect = $('select[name="ruang_id"]');
+            var saranaSelect = $('select[name="sarana_id"]');
+    
+            // Kosongkan pilihan sebelumnya
+            ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>');
+            saranaSelect.empty().append('<option value="">- Pilih Sarana -</option>');
+    
+            if (lantaiID) {
+                $.ajax({
+                    url: "{{ url('laporan/ajax/ruang-sarana') }}/" + lantaiID,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        // Isi ruang
+                        if (data.ruang && data.ruang.length > 0) {
+                            $.each(data.ruang, function(key, value) {
+                                ruangSelect.append('<option value="'+ value.ruang_id +'">'+ value.ruang_nama +'</option>');
+                            });
+                        } else {
+                            alert('Tidak ada ruang tersedia untuk lantai ini.');
+                        }
+    
+                        // Isi sarana
+                        if (data.sarana && data.sarana.length > 0) {
+                            $.each(data.sarana, function(key, value) {
+                                saranaSelect.append('<option value="'+ value.sarana_id +'">'+ value.sarana_kode + ' - ' + value.sarana_nama + '</option>');
+                            });
+                        } else {
+                            alert('Tidak ada sarana tersedia untuk lantai ini.');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error:', xhr.responseText);
+                        alert('Gagal memuat data ruang atau sarana. Silakan coba lagi.');
                     }
-
-                    // Isi sarana
-                    if (data.sarana && data.sarana.length > 0) {
-                        $.each(data.sarana, function(key, value) {
-                            saranaSelect.append('<option value="'+ value.sarana_id +'">'+ value.sarana_kode + ' - ' + value.sarana_nama + '</option>');
-                        });
+                });
+            }
+        });
+    
+        // Remove any existing submit handlers to prevent duplicates
+        $('#form-create-laporan').off('submit').on('submit', function(e) {
+            e.preventDefault();
+            // Clear previous error messages
+            $('.error-text').text('');
+            var formData = new FormData(this);
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function() {
+                    // Disable submit button to prevent multiple clicks
+                    $('#form-create-laporan button[type="submit"]').prop('disabled', true);
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        $('#form-create-laporan')[0].reset();
+                        // Reset dropdowns
+                        $('select[name="ruang_id"]').html('<option value="">- Pilih Ruang -</option>');
+                        $('select[name="sarana_id"]').html('<option value="">- Pilih Sarana -</option>');
+                        // Reset filter status jika ada di halaman utama
+                        if ($('#status').length) {
+                            $('#status').val('').trigger('change');
+                        }
+                        $('#myModal').modal('hide');
+                        $('#laporan-table').DataTable().ajax.reload(null, false);
                     } else {
-                        alert('Tidak ada sarana tersedia untuk lantai ini.');
+                        // Tampilkan error validasi
+                        $.each(response.errors, function(key, value) {
+                            $('#error-' + key).text(value[0]);
+                        });
+                        alert('Gagal menyimpan laporan. Periksa isian form.');
                     }
                 },
                 error: function(xhr) {
                     console.error('Error:', xhr.responseText);
-                    alert('Gagal memuat data ruang atau sarana. Silakan coba lagi.');
+                    alert('Gagal menyimpan laporan: ' + (xhr.responseJSON?.message || 'Silakan coba lagi.'));
+                },
+                complete: function() {
+                    // Re-enable submit button
+                    $('#form-create-laporan button[type="submit"]').prop('disabled', false);
                 }
             });
-        }
-    });
-
-    // Handle submit form create laporan
-    $('#form-create-laporan').on('submit', function(e) {
-        e.preventDefault();
-        // Clear previous error messages
-        $('.error-text').text('');
-        var formData = new FormData(this);
-        $.ajax({
-            url: $(this).attr('action'),
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                if (response.status === 'success') {
-                    alert(response.message);
-                    $('#form-create-laporan')[0].reset();
-                    // Reset dropdowns
-                    $('select[name="ruang_id"]').html('<option value="">- Pilih Ruang -</option>');
-                    $('select[name="sarana_id"]').html('<option value="">- Pilih Sarana -</option>');
-                    // Reset filter status jika ada di halaman utama
-                    if ($('#status').length) {
-                        $('#status').val('').trigger('change');
-                    }
-                    $('#myModal').modal('hide');
-                    $('#laporan-table').DataTable().ajax.reload(null, false);
-                } else {
-                    // Tampilkan error validasi
-                    $.each(response.errors, function(key, value) {
-                        $('#error-' + key).text(value[0]);
-                    });
-                    alert('Gagal menyimpan laporan. Periksa isian form.');
-                }
-            },
-            error: function(xhr) {
-                console.error('Error:', xhr.responseText);
-                alert('Gagal menyimpan laporan: ' + (xhr.responseJSON?.message || 'Silakan coba lagi.'));
-            }
         });
     });
-});
-</script>
+    </script>

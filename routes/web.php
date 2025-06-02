@@ -12,6 +12,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SaranaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LaporanKerusakanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,11 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::post('/feedback', [LaporanController::class, 'feedback']);
+    });
+
+    Route::middleware(['authorize:admin'])->group(function () {
+        Route::get('/laporan/per_tahun', [LaporanKerusakanController::class, 'laporanPerTahun']);
+        Route::get('/laporan/per_bulan', [LaporanKerusakanController::class, 'laporanPerBulan']);
     });
 
     Route::middleware(['authorize:admin,sarpras'])->group(function (): void {

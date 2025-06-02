@@ -1,6 +1,7 @@
 @extends('layout.template')
 
 @section('content')
+<<<<<<< HEAD
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
         data-keyboard="false" data-width="75%" aria-hidden="true">
         <!-- Konten modal akan dimuat di sini -->
@@ -114,6 +115,22 @@
                 </div>
             </div>
         </div>
+=======
+    <div class="table-responsive">
+        <table id="laporanTable" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Judul</th>
+                    <th>Sarana</th>
+                    <th>Teknisi</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+>>>>>>> parent of 7d31f35 (fix :)
     </div>
 @endsection
 
@@ -122,6 +139,7 @@
 
 @push('js')
     <script>
+<<<<<<< HEAD
         function modalAction(url = '') {
             $('#myModal').load(url, function(response, status, xhr) {
                 if (status == "error") {
@@ -135,36 +153,42 @@
         var dataLaporan;
         $(document).ready(function() {
             dataLaporan = $('#laporan-table').DataTable({
+=======
+        // Ensure modalAction is defined
+>>>>>>> parent of 7d31f35 (fix :)
         function modalAction(url) {
-            console.log('Making AJAX request to:', url);
-            $('#myModal').modal('hide'); // Close any open modals
+            console.log('Making AJAX request to:', url); // Debug
+            $('.modal').modal('hide'); // Close any open modals
             $.ajax({
                 url: url,
                 type: 'GET',
-                dataType: 'html', // Expect HTML response
-                success: function (response) {
-                    console.log('Response received');
-                    // Inject HTML into modal content
-                    $('#modal-content').html(response);
-                    // Reinitialize any scripts by appending them to the DOM
-                    $(response).filter('script').each(function () {
-                        $.globalEval(this.text || this.textContent || this.innerHTML || '');
-                    });
-                    // Show modal
-                    $('#myModal').modal('show');
+                dataType: 'json',
+                success: function(response) {
+                    console.log('Response:', response); // Debug
+                    if (response.status === 'success' && response.html) {
+                        // Remove existing modal to prevent duplicates
+                        $('#showModal').remove();
+                        // Append HTML to body, ensuring no script evaluation
+                        $('body').append(response.html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ''));
+                        // Show modal
+                        $('#showModal').modal('show');
+                    } else {
+                        console.error('Error response:', response.message);
+                        alert(response.message || 'Gagal memuat detail laporan.');
+                    }
                 },
-                error: function (xhr, status, error) {
-                    console.error('AJAX error:', status, error, xhr.responseText);
-                    alert('Terjadi kesalahan saat memuat form: ' + (xhr.responseJSON?.message || 'Silakan coba lagi.'));
+                error: function(xhr, status, error) {
+                    console.error('AJAX error:', status, error, xhr.responseText); // Debug
+                    alert('Terjadi kesalahan: ' + (xhr.responseJSON?.message || 'Tidak dapat memuat data.'));
                 }
             });
         }
 
-        var dataLaporan;
-        $(document).ready(function () {
-            dataLaporan = $('#laporan-table').DataTable({
+        $(document).ready(function() {
+            $('#laporanTable').DataTable({
                 processing: true,
                 serverSide: true,
+<<<<<<< HEAD
                 ajax: {
                     url: "{{ url('laporan/list') }}",
                     dataType: "json",
@@ -217,15 +241,19 @@
                         alert('Gagal memuat data tabel. Silakan coba lagi.');
                     }
                 },
+=======
+                ajax: '{{ url("/laporan/list") }}',
+>>>>>>> parent of 7d31f35 (fix :)
                 columns: [
-                    { data: "DT_RowIndex", name: "DT_RowIndex", orderable: false, searchable: false },
-                    { data: "laporan_judul", name: "laporan_judul" },
-                    { data: "sarana", name: "sarana" },
-                    { data: "status_laporan", name: "status_laporan" },
-                    { data: "created_at", name: "created_at" },
-                    { data: "aksi", name: "aksi", orderable: false, searchable: false }
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                    { data: 'laporan_judul', name: 'laporan_judul' },
+                    { data: 'sarana', name: 'sarana' },
+                    { data: 'teknisi', name: 'teknisi' },
+                    { data: 'status_laporan', name: 'status_laporan' },
+                    { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
                 ]
             });
+<<<<<<< HEAD
 
             $('#status').on('change', function() {
                 console.log('Status filter changed to:', $(this).val());
@@ -236,6 +264,8 @@
                 console.log('Status filter changed to:', $(this).val());
                 dataLaporan.ajax.reload();
             });
+=======
+>>>>>>> parent of 7d31f35 (fix :)
         });
     </script>
 @endpush

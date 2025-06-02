@@ -45,11 +45,10 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Judul</th>
-                                        <th>Lantai</th>
-                                        <th>Ruang</th>
                                         <th>Sarana</th>
                                         <th>Status</th>
                                         <th>Tanggal Laporan</th>
+                                        <th>Bobot</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -89,59 +88,120 @@
 @push('js')
     <script>
         function modalAction(url = '') {
-            $('#myModal .modal-content').html('<div class="text-center p-4">Loading...</div>');
-            $('#myModal .modal-content').load(url, function(response, status, xhr) {
-                if (status == "error") {
+            $('#myModal .modal-content').html('<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
+            $('#myModal').modal('show');
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        $('#myModal .modal-content').html(response.html);
+                    } else {
+                        $('#myModal .modal-content').html(
+                            '<div class="alert alert-danger">' + (response.message || 'Gagal memuat konten.') + '</div>'
+                        );
+                    }
+                },
+                error: function (xhr) {
+                    let errorMsg = 'Gagal memuat konten. Silakan coba lagi.';
+                    if (xhr.status === 403) {
+                        errorMsg = 'Anda tidak memiliki akses untuk tindakan ini.';
+                    } else if (xhr.status === 404) {
+                        errorMsg = 'Konten tidak ditemukan.';
+                    } else if (xhr.status === 500) {
+                        errorMsg = 'Terjadi kesalahan server. Silakan coba lagi nanti.';
+                    }
                     $('#myModal .modal-content').html(
-                        '<div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div>');
+                        '<div class="alert alert-danger">' + errorMsg + '</div>'
+                    );
                 }
             });
-            $('#myModal').modal('show');
         }
 
-        $(document).ready(function() {
+        function calculatePriority(laporanId) {
+            // Show loading state in modal
+            $('#myModal .modal-content').html('<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> Menghitung...</div>');
+            $('#myModal').modal('show');
+
+            $.ajax({
+                url: '{{ url("laporan/kalkulasi") }}/' + laporanId,
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: function () {
+                    // Optionally disable the button to prevent multiple clicks
+                    $('button[onclick*="kalkulasi/' + laporanId + '"]').prop('disabled', true);
+                },
+                success: function (response) {
+                    if (response.status === 'success' && response.html) {
+                        $('#myModal .modal-content').html(response.html);
+                        // Optionally update modal title
+                        $('#myModal .modal-content').prepend(
+                            '<div class="modal-header"><h5 class="modal-title">Hasil Kalkulasi Prioritas</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>'
+                        );
+                        console.log('Bobot:', response.bobot);
+
+                        // Reload the DataTables to reflect the new bobot value
+                        $('#table_laporan').DataTable().ajax.reload(null, false);
+                    } else {
+                        $('#myModal .modal-content').html(
+                            '<div class="alert alert-danger">' + (response.message || 'Gagal memproses kalkulasi.') + '</div>'
+                        );
+                    }
+                },
+                error: function (xhr) {
+                    let errorMsg = 'Terjadi kesalahan saat melakukan kalkulasi.';
+                    if (xhr.status === 403) {
+                        errorMsg = 'Anda tidak memiliki akses untuk melakukan kalkulasi ini.';
+                    } else if (xhr.status === 404) {
+                        errorMsg = 'Laporan tidak ditemukan.';
+                    } else if (xhr.status === 500) {
+                        errorMsg = 'Terjadi kesalahan server. Silakan coba lagi nanti.';
+                    }
+                    $('#myModal .modal-content').html(
+                        '<div class="alert alert-danger">' + errorMsg + '</div>'
+                    );
+                },
+                complete: function () {
+                    // Re-enable the button
+                    $('button[onclick*="kalkulasi/' + laporanId + '"]').prop('disabled', false);
+                }
+            });
+        }
+
+        $(document).ready(function () {
             let dataLaporan = $('#table_laporan').DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
                 ajax: {
                     url: "{{ url('laporan/list_kelola') }}",
-                    data: function(d) {
+                    data: function (d) {
                         d.status = $('#status').val();
                     }
                 },
-                columns: [{
+                columns: [
+                    {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
                     },
                     {
                         data: 'laporan_judul',
                         name: 'laporan_judul'
                     },
                     {
-                        data: 'lantai.lantai_nama',
-                        name: 'lantai.lantai_nama'
+                        data: 'sarana',
+                        name: 'sarana'
                     },
                     {
-                        data: 'ruang.ruang_nama',
-                        name: 'ruang.ruang_nama'
-                    },
-                    {
-                        data: "sarana",
-                        name: "sarana"
-                    },
-                    {
-                        data: 'status_laporan', // Changed from 'status' to 'status_laporan'
+                        data: 'status_laporan',
                         name: 'status_laporan',
-                        render: function(data, type, row) {
+                        render: function (data, type, row) {
                             let badgeClass = {
                                 pending: 'badge badge-warning',
                                 proses: 'badge badge-primary',
                                 selesai: 'badge badge-success'
                             };
-                            return '<span class="' + (badgeClass[data] || 'badge badge-secondary') +
+                            return '<span class="' + (badgeClass[data.toLowerCase()] || 'badge badge-secondary') +
                                 ' badge-status">' + data.charAt(0).toUpperCase() + data.slice(1) +
                                 '</span>';
                         }
@@ -151,15 +211,21 @@
                         name: 'created_at'
                     },
                     {
+                        data: 'bobot',
+                        name: 'bobot',
+                        render: function (data, type, row) {
+                            return data || '-'; // Handle null/undefined bobot
+                        }
+                    },
+                    {
                         data: 'aksi',
                         name: 'aksi',
-                        orderable: false,
-                        searchable: false
                     }
-                ]
+                ],
+                order: [[5, 'desc']] // Order by bobot column
             });
 
-            $('#status').on('change', function() {
+            $('#status').on('change', function () {
                 dataLaporan.ajax.reload();
             });
         });

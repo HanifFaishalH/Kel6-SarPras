@@ -45,7 +45,7 @@ class LaporanController extends Controller
         $statusFilter = $request->get('status');
 
         $query = LaporanModel::with(['user', 'teknisi', 'sarana.barang'])
-                    ->select('t_laporan_kerusakan.*');
+            ->select('t_laporan_kerusakan.*');
 
         // Filter status jika ada
         if ($statusFilter) {
@@ -61,25 +61,25 @@ class LaporanController extends Controller
 
         return datatables($query)
             ->addIndexColumn()
-            ->addColumn('role', function($row) {
+            ->addColumn('role', function ($row) {
                 return strtoupper($row->role);
             })
-            ->addColumn('sarana', function($row) {
+            ->addColumn('sarana', function ($row) {
                 return $row->sarana->barang->barang_nama ?? '-';
             })
-            ->addColumn('teknisi', function($row) {
+            ->addColumn('teknisi', function ($row) {
                 return $row->teknisi ? $row->teknisi->user->name : '-';
             })
-            ->addColumn('status_laporan', function($row) {
+            ->addColumn('status_laporan', function ($row) {
                 return ucfirst($row->status_laporan);
             })
-            ->addColumn('status_admin', function($row) {
+            ->addColumn('status_admin', function ($row) {
                 return ucfirst($row->status_admin);
             })
-            ->addColumn('status_sarpras', function($row) {
+            ->addColumn('status_sarpras', function ($row) {
                 return ucfirst($row->status_sarpras);
             })
-            ->addColumn('aksi', function($row) {
+            ->addColumn('aksi', function ($row) {
                 $btn = '<button class="btn btn-info btn-sm" onclick="modalAction(\'' . url('/laporan/show_ajax/' . $row->laporan_id) . '\')">Detail</button> ';
                 $btn .= '<button class="btn btn-warning btn-sm" onclick="modalAction(\'' . url('/laporan/edit_ajax/' . $row->laporan_id) . '\')">Edit</button>';
                 return $btn;
@@ -126,31 +126,69 @@ class LaporanController extends Controller
             ->addColumn('laporan_judul', function ($row) {
                 return $row->laporan_judul;
             })
-            ->addColumn('lantai.lantai_nama', function ($row) {
-                return optional($row->lantai)->lantai_nama ?? '-';
+            ->addColumn('sarana', function ($row) {
+                return $row->sarana ? $row->sarana->barang->barang_nama ?? '-' : '-';
             })
-            ->addColumn('ruang.ruang_nama', function ($row) {
-                return optional($row->ruang)->ruang_nama ?? '-';
-            })
-            ->addColumn('sarana.sarana_nama', function ($row) {
-                return $row->sarana->barang->barang_nama ?? '-';
-            })
-            ->addColumn('status', function ($row) {
-                return ucfirst($row->status); // Misalnya: 'Pending', 'Proses'
+            ->addColumn('status_laporan', function ($row) {
+                return ucfirst($row->status);
             })
             ->addColumn('created_at', function ($row) {
                 return $row->created_at->format('d-m-Y H:i');
             })
+            ->addColumn('bobot', function ($row) {
+                return $row->bobot ?? '-'; // Handle null/undefined bobot
+            })
             ->addColumn('aksi', function ($row) {
                 $btn = '<button onclick="modalAction(\'' . url('/laporan/show_kelola_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/laporan/edit_ajax/' . $row->laporan_id) . '\')" class="btn btn-warning btn-sm">Edit</button>';
+                $btn .= '<button onclick="calculatePriority(' . $row->laporan_id . ')" class="btn btn-success btn-sm">Kalkulasi</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
+            ->orderColumn('bobot', 'bobot $1')
             ->make(true);
     }
 
-        
+    public function kalkulasi($id)
+    {
+        $laporan = LaporanModel::findOrFail($id);
+
+        // Map values to scores
+        $kerusakanMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3, 'kritis' => 4];
+        $urgensiMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3, 'kritis' => 4];
+        $frekuensiMap = ['harian' => 1, 'mingguan' => 2, 'bulanan' => 3, 'tahunan' => 4];
+        $dampakMap = ['minor' => 1, 'kecil' => 2, 'sedang' => 3, 'besar' => 4];
+
+        $kerusakan = $kerusakanMap[strtolower($laporan->tingkat_kerusakan)] ?? 0;
+        $urgensi = $urgensiMap[strtolower($laporan->tingkat_urgensi)] ?? 0;
+        $frekuensi = $frekuensiMap[strtolower($laporan->frekuensi_penggunaan)] ?? 0;
+        $dampak = $dampakMap[strtolower($laporan->dampak_kerusakan)] ?? 0;
+
+        $bobot = $kerusakan * $urgensi * $frekuensi * $dampak;
+
+        // Save the bobot to the database
+        $laporan->bobot = $bobot;
+        $laporan->save();
+
+        $html = view('laporan.calculate_result', [
+            'laporan' => $laporan,
+            'bobot' => $bobot,
+            'factors' => [
+                'Kerusakan' => ['value' => $laporan->tingkat_kerusakan, 'score' => $kerusakan],
+                'Urgensi' => ['value' => $laporan->tingkat_urgensi, 'score' => $urgensi],
+                'Frekuensi' => ['value' => $laporan->frekuensi_penggunaan, 'score' => $frekuensi],
+                'Dampak' => ['value' => $laporan->dampak_kerusakan, 'score' => $dampak],
+            ]
+        ])->render();
+
+        return response()->json([
+            'status' => 'success',
+            'html' => $html,
+            'bobot' => $bobot,
+            'message' => 'Perhitungan bobot berhasil'
+        ]);
+    }
+
     public function show_ajax($id)
     {
         try {
@@ -162,7 +200,7 @@ class LaporanController extends Controller
                 'user',
                 'teknisi.user'
             ])->findOrFail($id);
-    
+
             // Restrict access for non-admin users
             $user = auth()->user();
             if ($user->level->level_name !== 'admin' && $laporan->user_id !== $user->user_id) {
@@ -171,11 +209,11 @@ class LaporanController extends Controller
                     'message' => 'Anda tidak memiliki akses ke laporan ini.'
                 ], 403);
             }
-    
+
             $html = view('laporan.show_ajax', [
                 'laporan' => $laporan
             ])->render();
-    
+
             return response()->json([
                 'status' => 'success',
                 'html' => $html

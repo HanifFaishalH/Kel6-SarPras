@@ -61,7 +61,7 @@
 @endpush
 
 @push('js')
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function modalAction(url) {
             $.get(url, function (response) {
@@ -102,6 +102,47 @@
             $('#level_id').on('change', function () {
                 dataUser.ajax.reload();
             });
+
+            $(document).on('click', '.btn-hapus', function () {
+    var id = $(this).data('id');
+
+    Swal.fire({
+        title: 'Yakin ingin menghapus?',
+        text: "Data pengguna tidak bisa dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/user/' + id,
+                type: 'DELETE',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    Swal.fire(
+                        'Berhasil!',
+                        response.message,
+                        'success'
+                    );
+                    dataUser.ajax.reload();
+                },
+                error: function (xhr) {
+                    Swal.fire(
+                        'Gagal!',
+                        xhr.status === 404 ? 'User tidak ditemukan.' : 'Terjadi kesalahan.',
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+});
         });
-    </script>
+</script>
+
 @endpush

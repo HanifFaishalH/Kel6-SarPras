@@ -74,7 +74,7 @@ class UserController extends Controller
             ->addColumn('aksi', function ($row) {
                 $btn  = '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/edit') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                $btn .= '<button class="btn btn-danger btn-sm btn-hapus" data-id="' . $row->user_id . '">Hapus</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -128,5 +128,20 @@ class UserController extends Controller
 
         return back()->with('success', 'User berhasil diperbarui');
     }
+
+    public function destroy($id)
+{
+    $user = UserModel::find($id);
+
+    if (!$user) {
+        return response()->json(['message' => 'User tidak ditemukan.'], 404);
+    }
+
+    try {
+        $user->delete();
+        return response()->json(['message' => 'User berhasil dihapus.']);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Terjadi kesalahan saat menghapus user.'], 500);
+    }
 }
- 
+}

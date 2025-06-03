@@ -11,7 +11,7 @@ class LaporanKerusakanController extends Controller
     // Laporan Kerusakan per Tahun
     public function laporanPerTahun()
     {
-        $activeMenu = 'laporan-tahunan'; // nama menu yang aktif
+        $activeMenu = 'laporan-tahunan';
 
         $laporan = DB::table('t_laporan_kerusakan')
             ->selectRaw('YEAR(tanggal_operasional) as tahun, COUNT(*) as jumlah_laporan')

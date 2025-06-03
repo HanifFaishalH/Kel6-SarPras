@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SettingProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +11,7 @@ class SettingController extends Controller
 {
     public function edit()
     {
+        /** @var SettingProfile $user */
         $user = Auth::user();
 
         return view('setting-profile.setting', [
@@ -20,6 +22,7 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
+        /** @var SettingProfile $user */
         $user = Auth::user();
 
         $request->validate([

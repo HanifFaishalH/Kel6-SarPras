@@ -42,7 +42,6 @@ class RegisterController extends Controller
             'username' => $request->username,
             'password' => Hash::make($request->password),
         ]);
-
-        return redirect('/login')->with('success', 'Registrasi berhasil. Silakan login.');
+        return redirect()->back()->with('success', 'Registrasi berhasil. Silakan login.');
     }
 }

@@ -19,8 +19,6 @@
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/responsive.css') }}">
     <script src="{{ asset('srtdash/assets/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 
-
-
     <style>
         body,
         html {
@@ -38,6 +36,7 @@
             justify-content: center;
         }
 
+        /* Jangan biarkan overlay ini blok klik */
         .login-area::before {
             content: "";
             position: absolute;
@@ -47,6 +46,7 @@
             bottom: 0;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1;
+            pointer-events: none; /* penting supaya klik diteruskan ke bawah */
         }
 
         .container {
@@ -63,12 +63,11 @@
             border-radius: 50%;
             padding: 10px;
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-            display: inline-block;
-            width: 140px;
-            overflow: visible;
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 140px;
+            overflow: visible;
         }
 
         .logo-jti {
@@ -76,8 +75,6 @@
             height: auto;
             display: block;
         }
-
-
 
         #loginForm {
             background-color: rgba(255, 255, 255, 0.9);
@@ -102,7 +99,6 @@
         .input-icon-wrapper input {
             width: 100%;
             padding-right: 35px;
-            /* ruang untuk ikon */
             padding-left: 10px;
             height: 40px;
             box-sizing: border-box;
@@ -114,12 +110,29 @@
             top: 50%;
             transform: translateY(-50%);
             color: #6c63ff;
-            /* ungu ringan */
             font-size: 18px;
         }
+
+        .submit-btn-area button {
+            width: 100%;
+            background-color: #815ef6;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .submit-btn-area button:hover {
+            background-color: #6a4de1;
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            font-size: 14px;
+        }
     </style>
-
-
 </head>
 
 <body>
@@ -127,7 +140,6 @@
     <div class="logo-jti-wrapper">
         <img src="{{ asset('jti.png') }}" alt="Logo JTI" class="logo-jti">
     </div>
-
 
     <div id="preloader">
         <div class="loader"></div>
@@ -164,8 +176,7 @@
                             <button type="submit">Submit <i class="ti-arrow-right"></i></button>
                         </div>
                         <div class="form-footer text-center mt-5">
-                            <p class="text-muted">Don't have an account? <a href="{{ url('/register') }}">Sign up</a>
-                            </p>
+                            <p class="text-muted">Don't have an account? <a href="{{ url('/register') }}">Sign up</a></p>
                         </div>
                     </div>
                 </form>
@@ -184,11 +195,16 @@
     <script src="{{ asset('srtdash/assets/js/plugins.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/scripts.js') }}"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- AJAX Login -->
     <script>
         $(document).ready(function() {
             $('#loginForm').submit(function(e) {
-                e.preventDefault(); // Prevent form from submitting normally
+                e.preventDefault();
+                console.log('Submit form triggered');
+
                 let formData = {
                     username: $('#username').val(),
                     password: $('#password').val(),
@@ -201,18 +217,35 @@
                     data: formData,
                     success: function(response) {
                         if (response.status) {
-                            window.location.href = response.redirect;
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Login Berhasil',
+                                text: 'Selamat datang!',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = response.redirect;
+                            });
                         } else {
-                            alert(response.message || 'Login Gagal');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Login Gagal',
+                                text: response.message || 'Username atau password salah'
+                            });
                         }
                     },
                     error: function(xhr) {
-                        alert("Terjadi kesalahan.");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Kesalahan',
+                            text: 'Terjadi kesalahan saat login, coba lagi.'
+                        });
                     }
                 });
             });
         });
     </script>
+
 </body>
 
 </html>

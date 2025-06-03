@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SaranaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaporanKerusakanController;
+use App\Http\Controllers\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +37,8 @@ Route::post('register', [RegisterController::class, 'store']);
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/setting', [SettingController::class, 'edit'])->name('profile.setting');
+    Route::post('/profile/setting', [SettingController::class, 'update'])->name('profile.setting.update');
 
     Route::get('/', [HomeController::class, 'index']);
 

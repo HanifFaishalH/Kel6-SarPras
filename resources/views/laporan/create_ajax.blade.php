@@ -1,132 +1,138 @@
-<form action="{{ url('/laporan/store_ajax') }}" method="POST" id="form-create-laporan" enctype="multipart/form-data">
-    @csrf
-    <div class="modal-header">
-        <h5 class="modal-title">Tambah Laporan Kerusakan</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
-            <span aria-hidden="true">×</span>
-        </button>
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <form action="{{ url('/laporan/store_ajax') }}" method="POST" id="form-create-laporan" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Laporan Kerusakan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{-- Gedung --}}
+                <div class="form-group">
+                    <label>Gedung</label>
+                    @if ($gedung)
+                        <input type="hidden" name="gedung_id" value="{{ $gedung->gedung_id }}">
+                        <input type="text" class="form-control" value="{{ $gedung->gedung_nama }}" readonly>
+                    @else
+                        <input type="hidden" name="gedung_id" value="">
+                        <input type="text" class="form-control" value="Tidak ada gedung tersedia" readonly>
+                    @endif
+                    <small id="error-gedung_id" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Lantai --}}
+                <div class="form-group">
+                    <label>Lantai</label>
+                    <select name="lantai_id" id="lantai_id" class="form-control" required>
+                        <option value="">- Pilih Lantai -</option>
+                        @foreach ($lantai as $l)
+                            <option value="{{ $l->lantai_id }}">{{ $l->lantai_nama }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-lantai_id" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Ruang --}}
+                <div class="form-group">
+                    <label>Ruang</label>
+                    <select name="ruang_id" id="ruang_id" class="form-control" required>
+                        <option value="">- Pilih Ruang -</option>
+                    </select>
+                    <small id="error-ruang_id" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Sarana --}}
+                <div class="form-group">
+                    <label>Sarana</label>
+                    <select name="sarana_id" id="sarana_id" class="form-control" required>
+                        <option value="">- Pilih Sarana -</option>
+                    </select>
+                    <small id="error-sarana_id" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Judul Laporan --}}
+                <div class="form-group">
+                    <label>Judul Laporan</label>
+                    <input type="text" name="laporan_judul" class="form-control" maxlength="100" required>
+                    <small id="error-laporan_judul" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Foto Kerusakan --}}
+                <div class="form-group">
+                    <label>Foto Kerusakan</label>
+                    <input type="file" name="laporan_foto" accept=".jpg,.jpeg,.png" class="form-control">
+                    <small id="error-laporan_foto" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Tingkat Kerusakan --}}
+                <div class="form-group">
+                    <label>Tingkat Kerusakan</label>
+                    <select name="tingkat_kerusakan" class="form-control" required>
+                        <option value="">- Pilih Tingkat Kerusakan -</option>
+                        <option value="rendah">Rendah</option>
+                        <option value="sedang">Sedang</option>
+                        <option value="tinggi">Tinggi</option>
+                        <option value="kritis">Kritis</option>
+                    </select>
+                    <small id="error-tingkat_kerusakan" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Tingkat Urgensi --}}
+                <div class="form-group">
+                    <label>Tingkat Urgensi</label>
+                    <select name="tingkat_urgensi" class="form-control" required>
+                        <option value="">- Pilih Tingkat Urgensi -</option>
+                        <option value="rendah">Rendah</option>
+                        <option value="sedang">Sedang</option>
+                        <option value="tinggi">Tinggi</option>
+                        <option value="kritis">Kritis</option>
+                    </select>
+                    <small id="error-tingkat_urgensi" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Frekuensi Penggunaan --}}
+                <div class="form-group">
+                    <label>Frekuensi Penggunaan</label>
+                    <select name="frekuensi_penggunaan" class="form-control" required>
+                        <option value="">- Pilih Frekuensi -</option>
+                        <option value="harian">Harian</option>
+                        <option value="mingguan">Mingguan</option>
+                        <option value="bulanan">Bulanan</option>
+                        <option value="tahunan">Tahunan</option>
+                    </select>
+                    <small id="error-frekuensi_penggunaan" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Dampak Kerusakan --}}
+                <div class="form-group">
+                    <label>Dampak Kerusakan</label>
+                    <select name="dampak_kerusakan" class="form-control" required>
+                        <option value="">- Pilih Dampak Kerusakan -</option>
+                        <option value="minor">Minor</option>
+                        <option value="kecil">Kecil</option>
+                        <option value="sedang">Sedang</option>
+                        <option value="besar">Besar</option>
+                    </select>
+                    <small id="error-dampak_kerusakan" class="error-text form-text text-danger"></small>
+                </div>
+
+                {{-- Tanggal Operasional --}}
+                <div class="form-group">
+                    <label>Tanggal Operasional</label>
+                    <input type="date" name="tanggal_operasional" class="form-control" required>
+                    <small id="error-tanggal_operasional" class="error-text form-text text-danger"></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Simpan Laporan</button>
+            </div>
+        </form>
     </div>
-    <div class="modal-body">
-        {{-- Gedung --}}
-        <div class="form-group">
-            <label>Gedung</label>
-            @if ($gedung)
-                <input type="hidden" name="gedung_id" value="{{ $gedung->gedung_id }}">
-                <input type="text" class="form-control" value="{{ $gedung->gedung_nama }}" readonly>
-            @else
-                <input type="hidden" name="gedung_id" value="">
-                <input type="text" class="form-control" value="Tidak ada gedung tersedia" readonly>
-            @endif
-            <small id="error-gedung_id" class="error-text form-text text-danger"></small>
-        </div>
+</div>
 
-        {{-- Lantai --}}
-        <div class="form-group">
-            <label>Lantai</label>
-            <select name="lantai_id" id="lantai_id" class="form-control" required>
-                <option value="">- Pilih Lantai -</option>
-                @foreach ($lantai as $l)
-                    <option value="{{ $l->lantai_id }}">{{ $l->lantai_nama }}</option>
-                @endforeach
-            </select>
-            <small id="error-lantai_id" class="error-text form-text text-danger"></small>
-        </div>
 
-        {{-- Ruang --}}
-        <div class="form-group">
-            <label>Ruang</label>
-            <select name="ruang_id" id="ruang_id" class="form-control" required>
-                <option value="">- Pilih Ruang -</option>
-            </select>
-            <small id="error-ruang_id" class="error-text form-text text-danger"></small>
-        </div>
-
-        {{-- Sarana --}}
-        <div class="form-group">
-            <label>Sarana</label>
-            <select name="sarana_id" id="sarana_id" class="form-control" required>
-                <option value="">- Pilih Sarana -</option>
-            </select>
-            <small id="error-sarana_id" class="error-text form-text text-danger"></small>
-        </div>
-
-        {{-- Judul Laporan --}}
-        <div class="form-group">
-            <label>Judul Laporan</label>
-            <input type="text" name="laporan_judul" class="form-control" maxlength="100" required>
-            <small id="error-laporan_judul" class="error-text form-text text-danger"></small>
-        </div>
-
-        {{-- Foto Kerusakan --}}
-        <div class="form-group">
-            <label>Foto Kerusakan</label>
-            <input type="file" name="laporan_foto" accept=".jpg,.jpeg,.png" class="form-control">
-            <small id="error-laporan_foto" class="error-text form-text text-danger"></small>
-        </div>
-
-        {{-- Tingkat Kerusakan --}}
-        <div class="form-group">
-            <label>Tingkat Kerusakan</label>
-            <select name="tingkat_kerusakan" class="form-control" required>
-                <option value="">- Pilih Tingkat Kerusakan -</option>
-                <option value="rendah">Rendah</option>
-                <option value="sedang">Sedang</option>
-                <option value="tinggi">Tinggi</option>
-                <option value="kritis">Kritis</option>
-            </select>
-            <small id="error-tingkat_kerusakan" class="error-text form-text text-danger"></small>
-        </div>
-
-        {{-- Tingkat Urgensi --}}
-        <div class="form-group">
-            <label>Tingkat Urgensi</label>
-            <select name="tingkat_urgensi" class="form-control" required>
-                <option value="">- Pilih Tingkat Urgensi -</option>
-                <option value="rendah">Rendah</option>
-                <option value="sedang">Sedang</option>
-                <option value="tinggi">Tinggi</option>
-                <option value="kritis">Kritis</option>
-            </select>
-            <small id="error-tingkat_urgensi" class="error-text form-text text-danger"></small>
-        </div>
-
-        {{-- Frekuensi Penggunaan --}}
-        <div class="form-group">
-            <label>Frekuensi Penggunaan</label>
-            <select name="frekuensi_penggunaan" class="form-control" required>
-                <option value="">- Pilih Frekuensi -</option>
-                <option value="harian">Harian</option>
-                <option value="mingguan">Mingguan</option>
-                <option value="bulanan">Bulanan</option>
-                <option value="tahunan">Tahunan</option>
-            </select>
-            <small id="error-frekuensi_penggunaan" class="error-text form-text text-danger"></small>
-        </div>
-
-        {{-- Dampak Kerusakan --}}
-        <div class="form-group">
-            <label>Dampak Kerusakan</label>
-            <select name="dampak_kerusakan" class="form-control" required>
-                <option value="">- Pilih Dampak Kerusakan -</option>
-                <option value="minor">Minor</option>
-                <option value="kecil">Kecil</option>
-                <option value="sedang">Sedang</option>
-                <option value="besar">Besar</option>
-            </select>
-            <small id="error-dampak_kerusakan" class="error-text form-text text-danger"></small>
-        </div>
-
-        {{-- Tanggal Operasional --}}
-        <div class="form-group">
-            <label>Tanggal Operasional</label>
-            <input type="date" name="tanggal_operasional" class="form-control" required>
-            <small id="error-tanggal_operasional" class="error-text form-text text-danger"></small>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Simpan Laporan</button>
-    </div>
-</form>
 
 <script>
     $(document).ready(function() {

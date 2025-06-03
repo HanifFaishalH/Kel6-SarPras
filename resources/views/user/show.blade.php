@@ -25,14 +25,6 @@
                   <input type="text" class="form-control" id="nama" value="{{ $user->nama ?? '-' }}" readonly>
               </div>
               <div class="form-group">
-                  <label for="foto"><strong>Foto</strong></label>
-                  @if($user->foto)
-                      <img src="{{ asset($user->foto) }}" alt="Foto User" class="img-fluid" style="max-width: 100%; height: auto;">
-                  @else
-                      <input type="text" class="form-control" id="foto" value="Tidak ada foto tersedia" readonly>
-                  @endif
-              </div>
-              <div class="form-group">
                   <label for="level_id"><strong>Level</strong></label>
                   <input type="text" class="form-control" id="level_id" value="{{ $user->level->level_nama?? '-' }}" readonly>
               </div>

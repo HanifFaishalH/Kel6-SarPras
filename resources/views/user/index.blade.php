@@ -41,7 +41,6 @@
                                         <th>Username</th>
                                         <th>No Induk</th>
                                         <th>Nama</th>
-                                        <th>Foto</th>
                                         <th>Level</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -94,12 +93,6 @@
                     { data: "username", name: "username" },
                     { data: "no_induk", name: "no_induk" },
                     { data: "nama", name: "nama" },
-                    {
-                        data: "foto",
-                        name: "foto",
-                        orderable: false,
-                        searchable: false,
-                    },
                     { data: "level_nama", name: "level_nama" },
                     { data: "aksi", name: "aksi", orderable: false, searchable: false }
                 ],

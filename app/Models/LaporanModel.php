@@ -78,7 +78,18 @@ class LaporanModel extends Model
     // Akses foto lengkap URL
     public function getLaporanFotoAttribute($value)
     {
-        return $value ? url('storage/' . $value) : null;
+        if (!$value) return null;
+    
+        // Remove any duplicate path segments
+        $value = str_replace('laporan_files/', '', $value);
+        
+        // Check if file exists in public path
+        $publicPath = public_path('laporan_files/' . $value);
+        if (file_exists($publicPath)) {
+            return asset('laporan_files/' . $value);
+        }
+    
+    return null; // or return a default image
     }
 
     public function scopeByUserLevel($query, $userLevel)

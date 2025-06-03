@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
+
 use Exception;
 
 class LaporanController extends Controller
@@ -80,7 +81,7 @@ class LaporanController extends Controller
                 return ucfirst($row->status_sarpras);
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button class="btn btn-info btn-sm" onclick="modalAction(\'' . url('/laporan/show_ajax/' . $row->laporan_id) . '\')">Detail</button> ';
+                $btn = '<button onclick="modalAction(\'' . url('/laporan/show_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -196,45 +197,33 @@ class LaporanController extends Controller
 
     public function show_ajax($id)
     {
-        try {
-            $laporan = LaporanModel::with([
-                'gedung',
-                'lantai',
-                'ruang',
-                'sarana.barang',
-                'user',
-                'teknisi.user'
-            ])->findOrFail($id);
+        $laporan = LaporanModel::with([
+            'gedung', 
+            'lantai', 
+            'ruang', 
+            'sarana.barang', 
+            'user', 
+            'teknisi.user'
+        ])->findOrFail($id);
 
-            // Restrict access for non-admin users
-            $user = auth()->user();
-            if ($user->level->level_name !== 'admin' && $laporan->user_id !== $user->user_id) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Anda tidak memiliki akses ke laporan ini.'
-                ], 403);
+        // Default file_exists ke false
+        $laporan->file_exists = false;
+
+        // Jika ada path foto, cek apakah file tersebut ada di filesystem
+        if ($laporan->getRawOriginal('laporan_foto')) {
+            $fotoPath = public_path($laporan->getRawOriginal('laporan_foto'));
+
+            if (file_exists($fotoPath)) {
+                $laporan->file_exists = true;
+                $laporan->laporan_foto = asset($laporan->getRawOriginal('laporan_foto'));
+            } else {
+                $laporan->laporan_foto = asset('images/default-image.jpg');
             }
-
-            $html = view('laporan.show_ajax', [
-                'laporan' => $laporan
-            ])->render();
-
-            return response()->json([
-                'status' => 'success',
-                'html' => $html
-            ], 200, ['Content-Type' => 'application/json']);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Laporan tidak ditemukan.'
-            ], 404, ['Content-Type' => 'application/json']);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error in show_ajax: ' . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan saat mengambil data laporan.'
-            ], 500, ['Content-Type' => 'application/json']);
+        } else {
+            $laporan->laporan_foto = null;
         }
+
+        return view('laporan.show_ajax', compact('laporan'));
     }
 
     public function show_kelola($id)
@@ -389,7 +378,7 @@ class LaporanController extends Controller
                 $data = $validator->validated();
 
                 if ($request->hasFile('laporan_foto')) {
-                    if ($laporan->laporan_foto && Storage::exists('public/' . $laporan->laporan_foto)) {
+                    if ($laporan->laporan_foto && Storage::exists('public/laporan_files/' . $laporan->laporan_foto)) {
                         Storage::delete('public/' . $laporan->laporan_foto);
                     }
                     $file = $request->file('laporan_foto');

@@ -41,10 +41,10 @@
         <div class="form-group row">
             <label class="col-sm-3 col-form-label">Foto Laporan</label>
             <div class="col-sm-9">
-                @if ($laporan->laporan_foto)
-                    <img src="{{ asset($laporan->laporan_foto) }}" alt="Foto Laporan" class="img-fluid" style="max-width: 100%; max-height: 300px;">
+                @if($laporan->laporan_foto)
+                    <img src="{{ asset($laporan->laporan_foto) }}" class="img-fluid" alt="Foto Laporan" style="max-width:100%; height:auto;">
                 @else
-                    <p>Tidak ada foto tersedia</p>
+                    <input type="text" class="form-control" value="Tidak ada foto tersedia" readonly>
                 @endif
             </div>
         </div>

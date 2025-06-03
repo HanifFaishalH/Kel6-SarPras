@@ -135,11 +135,6 @@
             background-color: #f8d7da;
             color: #721c24;
         }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-        }
     </style>
 </head>
 
@@ -168,13 +163,6 @@
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
-                            </div>
-                        @endif
-
-                        {{-- Pesan Sukses --}}
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
                             </div>
                         @endif
 
@@ -250,7 +238,26 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Modal Success -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color:#6c63ff; color:white;">
+            <h5 class="modal-title" id="successModalLabel">Pendaftaran Berhasil</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            {{ session('success') }}
+          </div>
+          <div class="modal-footer">
+            <a href="{{ url('/') }}" class="btn btn-primary">Login Sekarang</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="{{ asset('srtdash/assets/js/vendor/jquery-2.2.4.min.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/popper.min.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/bootstrap.min.js') }}"></script>
@@ -258,8 +265,15 @@
     <script src="{{ asset('srtdash/assets/js/metisMenu.min.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/jquery.slimscroll.min.js') }}"></script>
     <script src="{{ asset('srtdash/assets/js/jquery.slicknav.min.js') }}"></script>
-    <script src="{{ asset('srtdash/assets/js/plugins.js') }}"></script>
-    <script src="{{ asset('srtdash/assets/js/scripts.js') }}"></script>
+
+    <script>
+      $(document).ready(function(){
+        @if(session('success'))
+          $('#successModal').modal('show');
+        @endif
+      });
+    </script>
+
 </body>
 
 </html>

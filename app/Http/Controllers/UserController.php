@@ -71,9 +71,6 @@ class UserController extends Controller
             ->addColumn('nama', function ($row) {
                 return $row->nama ? $row->nama : '-';
             })
-            ->addColumn('foto', function ($row) {
-                return $row->foto ? '<img src="' . asset('storage/' . $row->foto) . '" class="img-thumbnail" style="width: 50px; height: 50px;">' : '-';
-            })
             ->addColumn('aksi', function ($row) {
                 $btn  = '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/edit') . '\')" class="btn btn-warning btn-sm">Edit</button> ';

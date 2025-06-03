@@ -90,7 +90,8 @@
 @push('js')
     <script>
         function modalAction(url = '') {
-            $('#myModal .modal-content').html('<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
+            $('#myModal .modal-content').html(
+                '<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
             $('#myModal').modal('show');
 
             $.ajax({
@@ -100,7 +101,7 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function (response) {
+                success: function(response) {
                     console.log('Response:', response); // Debugging
                     if (response.status === 'success' && response.html) {
                         $('#myModal .modal-content').html(response.html);
@@ -112,7 +113,7 @@
                         );
                     }
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     console.error('AJAX Error:', status, error, xhr.responseText); // Debugging
                     let errorMsg = 'Gagal memuat konten. Silakan coba lagi.';
 
@@ -133,18 +134,19 @@
 
         function calculatePriority(laporanId) {
             // Show loading state in modal
-            $('#myModal .modal-content').html('<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> Menghitung...</div>');
+            $('#myModal .modal-content').html(
+                '<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> Menghitung...</div>');
             $('#myModal').modal('show');
 
             $.ajax({
-                url: '{{ url("laporan/kalkulasi") }}/' + laporanId,
+                url: '{{ url('laporan/kalkulasi') }}/' + laporanId,
                 type: 'GET',
                 dataType: 'json',
-                beforeSend: function () {
+                beforeSend: function() {
                     // Optionally disable the button to prevent multiple clicks
                     $('button[onclick*="kalkulasi/' + laporanId + '"]').prop('disabled', true);
                 },
-                success: function (response) {
+                success: function(response) {
                     if (response.status === 'success' && response.html) {
                         $('#myModal .modal-content').html(response.html);
                         // Optionally update modal title
@@ -157,11 +159,12 @@
                         $('#table_laporan').DataTable().ajax.reload(null, false);
                     } else {
                         $('#myModal .modal-content').html(
-                            '<div class="alert alert-danger">' + (response.message || 'Gagal memproses kalkulasi.') + '</div>'
+                            '<div class="alert alert-danger">' + (response.message ||
+                                'Gagal memproses kalkulasi.') + '</div>'
                         );
                     }
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     let errorMsg = 'Terjadi kesalahan saat melakukan kalkulasi.';
                     if (xhr.status === 403) {
                         errorMsg = 'Anda tidak memiliki akses untuk melakukan kalkulasi ini.';
@@ -174,26 +177,25 @@
                         '<div class="alert alert-danger">' + errorMsg + '</div>'
                     );
                 },
-                complete: function () {
+                complete: function() {
                     // Re-enable the button
                     $('button[onclick*="kalkulasi/' + laporanId + '"]').prop('disabled', false);
                 }
             });
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             let dataLaporan = $('#table_laporan').DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
                 ajax: {
                     url: "{{ url('laporan/list_kelola') }}",
-                    data: function (d) {
+                    data: function(d) {
                         d.status = $('#status').val();
                     }
                 },
-                columns: [
-                    {
+                columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                     },
@@ -224,7 +226,7 @@
                     {
                         data: 'bobot',
                         name: 'bobot',
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
                             return data || '-'; // Handle null/undefined bobot
                         }
                     },
@@ -233,12 +235,62 @@
                         name: 'aksi',
                     }
                 ],
-                order: [[5, 'desc']] // Order by bobot column
+                order: [
+                    [5, 'desc']
+                ] // Order by bobot column
             });
 
-            $('#status').on('change', function () {
+            $('#status').on('change', function() {
                 dataLaporan.ajax.reload();
             });
         });
+
+        function acceptLaporan() {
+            let laporanId = $('#formDetailLaporan input[name="laporan_id"]').val();
+
+            if (!confirm('Apakah Anda yakin ingin menerima laporan ini? Status akan berubah menjadi "Proses".')) {
+                return;
+            }
+
+            // Pastikan token CSRF diambil dengan benar
+            let csrfToken = $('meta[name="csrf-token"]').attr('content');
+            if (!csrfToken) {
+                alert('Token CSRF tidak ditemukan. Silakan refresh halaman.');
+                return;
+            }
+
+            $.ajax({
+                url: '{{ url('laporan/accept') }}/' + laporanId,
+                type: 'POST',
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#myModal').modal('hide');
+                        alert(response.message ||
+                        'Laporan berhasil diterima dan status diubah menjadi Proses.');
+                        $('#table_laporan').DataTable().ajax.reload(null, false);
+                    } else {
+                        alert(response.message || 'Gagal menerima laporan.');
+                    }
+                },
+                error: function(xhr) {
+                    let errorMsg = 'Terjadi kesalahan saat menerima laporan.';
+                    if (xhr.status === 419) {
+                        errorMsg =
+                            'Token CSRF tidak cocok atau sesi telah kedaluwarsa. Silakan refresh halaman.';
+                    } else if (xhr.status === 403) {
+                        errorMsg = 'Anda tidak memiliki akses untuk tindakan ini.';
+                    } else if (xhr.status === 404) {
+                        errorMsg = 'Laporan tidak ditemukan.';
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    alert(errorMsg);
+                }
+            });
+        }
     </script>
 @endpush

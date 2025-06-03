@@ -59,12 +59,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/laporan/per_bulan', [LaporanKerusakanController::class, 'laporanPerBulan']);
     });
 
-    Route::middleware(['authorize:admin,sarpras'])->group(function () {
-       Route::group(['prefix' => 'laporan'], function () {
-           Route::get('/kalkulasi/{id}', [LaporanController::class, 'kalkulasi']);
-       });
-    });
-
     Route::middleware(['authorize:admin,sarpras'])->group(function (): void {
         Route::group(['prefix' => 'laporan'], function () {
             Route::get('/kelola', [LaporanController::class, 'kelola']);
@@ -72,6 +66,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/show_kelola_ajax/{id}', [LaporanController::class, 'show_kelola'])->name('laporan.show_kelola_detail');
             Route::get('/edit_ajax/{id}', [LaporanController::class, 'edit_ajax']);
             Route::post('/{id}/update_ajax', [LaporanController::class, 'update_ajax']);
+            Route::get('/kalkulasi/{id}', [LaporanController::class, 'kalkulasi']);
+            Route::post('/accept/{id}', [LaporanController::class, 'accept'])->name('laporan.accept');
         });
     });
 

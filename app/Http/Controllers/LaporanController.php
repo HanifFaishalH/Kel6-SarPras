@@ -195,14 +195,45 @@ class LaporanController extends Controller
         ]);
     }
 
+    public function accept($id)
+    {
+        try {
+            $laporan = LaporanModel::findOrFail($id);
+
+            // Cek jika status sudah tidak memungkinkan untuk diubah
+            if ($laporan->status_laporan === 'proses' || $laporan->status_laporan === 'selesai') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Laporan sudah dalam status Proses atau Selesai.'
+                ], 400);
+            }
+
+            // Ubah status
+            $laporan->status_laporan = 'Proses';
+            $laporan->status_admin = 'Disetujui';
+            $laporan->status_sarpras = 'Proses';
+            $laporan->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Laporan berhasil diterima, status Admin diubah menjadi Disetujui, dan status Sarpras diubah menjadi Proses.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui status laporan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function show_ajax($id)
     {
         $laporan = LaporanModel::with([
-            'gedung', 
-            'lantai', 
-            'ruang', 
-            'sarana.barang', 
-            'user', 
+            'gedung',
+            'lantai',
+            'ruang',
+            'sarana.barang',
+            'user',
             'teknisi.user'
         ])->findOrFail($id);
 
@@ -237,16 +268,15 @@ class LaporanController extends Controller
                 'user',
                 'teknisi.user'
             ])->findOrFail($id);
-    
+
             $html = view('laporan.show_kelola_detail', [
                 'laporan' => $laporan
             ])->render();
-    
+
             return response()->json([
                 'status' => 'success',
                 'html' => $html
             ]);
-    
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'status' => 'error',
@@ -259,7 +289,7 @@ class LaporanController extends Controller
             ], 500);
         }
     }
-    
+
     public function create_ajax()
     {
         $gedung = GedungModel::first(); // Fetch the single building

@@ -101,7 +101,7 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) {
+                success: function (response) {
                     console.log('Response:', response); // Debugging
                     if (response.status === 'success' && response.html) {
                         $('#myModal .modal-content').html(response.html);
@@ -113,7 +113,7 @@
                         );
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error('AJAX Error:', status, error, xhr.responseText); // Debugging
                     let errorMsg = 'Gagal memuat konten. Silakan coba lagi.';
 
@@ -142,11 +142,11 @@
                 url: '{{ url('laporan/kalkulasi') }}/' + laporanId,
                 type: 'GET',
                 dataType: 'json',
-                beforeSend: function() {
+                beforeSend: function () {
                     // Optionally disable the button to prevent multiple clicks
                     $('button[onclick*="kalkulasi/' + laporanId + '"]').prop('disabled', true);
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.status === 'success' && response.html) {
                         $('#myModal .modal-content').html(response.html);
                         // Optionally update modal title
@@ -164,7 +164,7 @@
                         );
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     let errorMsg = 'Terjadi kesalahan saat melakukan kalkulasi.';
                     if (xhr.status === 403) {
                         errorMsg = 'Anda tidak memiliki akses untuk melakukan kalkulasi ini.';
@@ -176,71 +176,75 @@
                     $('#myModal .modal-content').html(
                         '<div class="alert alert-danger">' + errorMsg + '</div>'
                     );
+                    // Add a close button to the error message
+                    $('#myModal .modal-content').append(
+                        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>'
+                    );
                 },
-                complete: function() {
+                complete: function () {
                     // Re-enable the button
                     $('button[onclick*="kalkulasi/' + laporanId + '"]').prop('disabled', false);
                 }
             });
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             let dataLaporan = $('#table_laporan').DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
                 ajax: {
                     url: "{{ url('laporan/list_kelola') }}",
-                    data: function(d) {
+                    data: function (d) {
                         d.status = $('#status').val();
                     }
                 },
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                    },
-                    {
-                        data: 'laporan_judul',
-                        name: 'laporan_judul'
-                    },
-                    {
-                        data: 'sarana',
-                        name: 'sarana'
-                    },
-                    {
-                        data: 'status_laporan',
-                        name: 'status_laporan',
-                    },
-                    {
-                        data: "status_admin",
-                        name: "status_admin"
-                    },
-                    {
-                        data: "status_sarpras",
-                        name: "status_sarpras"
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
-                    {
-                        data: 'bobot',
-                        name: 'bobot',
-                        render: function(data, type, row) {
-                            return data || '-'; // Handle null/undefined bobot
-                        }
-                    },
-                    {
-                        data: 'aksi',
-                        name: 'aksi',
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                },
+                {
+                    data: 'laporan_judul',
+                    name: 'laporan_judul'
+                },
+                {
+                    data: 'sarana',
+                    name: 'sarana'
+                },
+                {
+                    data: 'status_laporan',
+                    name: 'status_laporan',
+                },
+                {
+                    data: "status_admin",
+                    name: "status_admin"
+                },
+                {
+                    data: "status_sarpras",
+                    name: "status_sarpras"
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
+                {
+                    data: 'bobot',
+                    name: 'bobot',
+                    render: function (data, type, row) {
+                        return data || '-';
                     }
+                },
+                {
+                    data: 'aksi',
+                    name: 'aksi',
+                }
                 ],
                 order: [
-                    [5, 'desc']
-                ] // Order by bobot column
+                    [7, 'desc']
+                ]
             });
 
-            $('#status').on('change', function() {
+            $('#status').on('change', function () {
                 dataLaporan.ajax.reload();
             });
         });
@@ -266,17 +270,17 @@
                 headers: {
                     'X-CSRF-TOKEN': csrfToken
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.status === 'success') {
                         $('#myModal').modal('hide');
                         alert(response.message ||
-                        'Laporan berhasil diterima dan status diubah menjadi Proses.');
+                            'Laporan berhasil diterima dan status diubah menjadi Proses.');
                         $('#table_laporan').DataTable().ajax.reload(null, false);
                     } else {
                         alert(response.message || 'Gagal menerima laporan.');
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     let errorMsg = 'Terjadi kesalahan saat menerima laporan.';
                     if (xhr.status === 419) {
                         errorMsg =

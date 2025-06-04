@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\GedungController;
+use App\Http\Controllers\LantaiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SaranaController;
@@ -102,10 +103,24 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/delete_ajax/{id}', [RuangController::class, 'delete_ajax']);
             Route::delete('/destroy_ajax/{id}', [RuangController::class, 'destroy_ajax']);
         });
+
+        Route::group(['prefix' => 'lantai'], function () {
+            Route::get('/', [LantaiController::class, 'index']);
+            Route::get('/list', [LantaiController::class, 'list']);
+            Route::get('/show_ajax/{id}', [LantaiController::class, 'show_ajax']);
+            Route::get('/create_ajax', [LantaiController::class, 'create_ajax']);
+            Route::post('/store_ajax', [LantaiController::class, 'store_ajax']);
+            Route::get('/edit_ajax/{id}', [LantaiController::class, 'edit_ajax']);
+            Route::put('/update_ajax/{id}', [LantaiController::class, 'update_ajax']);
+            Route::get('/delete_ajax/{id}', [LantaiController::class, 'delete_ajax']);
+            Route::delete('/destroy_ajax/{id}', [LantaiController::class, 'destroy_ajax']);
+        });
+
         Route::group(['prefix' => 'barang'], function () {
             Route::get('/', [BarangController::class, 'index']);
             Route::get('/list', [BarangController::class, 'list']);
         });
+
         Route::group(['prefix' => 'sarana'], function () {
             Route::get('/', [SaranaController::class, 'index']);
             Route::get('/list', [SaranaController::class, 'list']);

@@ -13,7 +13,6 @@ class LantaiModel extends Model
     protected $primaryKey = 'lantai_id';
     protected $fillable = [
         'lantai_nama',
-        'lantai_kode',
         'gedung_id',
     ];
     public $timestamps = true;
@@ -21,5 +20,10 @@ class LantaiModel extends Model
     public function ruang()
     {
         return $this->hasMany(RuangModel::class, 'lantai_id', 'lantai_id');
+    }
+
+    public function gedung()
+    {
+        return $this->belongsTo(GedungModel::class, 'gedung_id', 'gedung_id');
     }
 }

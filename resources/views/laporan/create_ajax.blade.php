@@ -92,19 +92,6 @@
                     <small id="error-tingkat_urgensi" class="error-text form-text text-danger"></small>
                 </div>
 
-                {{-- Frekuensi Penggunaan --}}
-                <div class="form-group">
-                    <label>Frekuensi Penggunaan</label>
-                    <select name="frekuensi_penggunaan" class="form-control" required>
-                        <option value="">- Pilih Frekuensi -</option>
-                        <option value="harian">Harian</option>
-                        <option value="mingguan">Mingguan</option>
-                        <option value="bulanan">Bulanan</option>
-                        <option value="tahunan">Tahunan</option>
-                    </select>
-                    <small id="error-frekuensi_penggunaan" class="error-text form-text text-danger"></small>
-                </div>
-
                 {{-- Dampak Kerusakan --}}
                 <div class="form-group">
                     <label>Dampak Kerusakan</label>
@@ -116,13 +103,6 @@
                         <option value="besar">Besar</option>
                     </select>
                     <small id="error-dampak_kerusakan" class="error-text form-text text-danger"></small>
-                </div>
-
-                {{-- Tanggal Operasional --}}
-                <div class="form-group">
-                    <label>Tanggal Operasional</label>
-                    <input type="date" name="tanggal_operasional" class="form-control" required>
-                    <small id="error-tanggal_operasional" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">

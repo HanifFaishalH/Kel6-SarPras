@@ -95,6 +95,12 @@ Route::middleware(['auth'])->group(function () {
         Route::group(['prefix' => 'ruang'], function () {
             Route::get('/', [RuangController::class, 'index']);
             Route::get('/list', [RuangController::class, 'list']);
+            Route::get('/create_ajax', [RuangController::class, 'create_ajax']);
+            Route::post('/store_ajax', [RuangController::class, 'store_ajax']);
+            Route::get('/edit_ajax/{id}', [RuangController::class, 'edit_ajax']);
+            Route::put('/update_ajax/{id}', [RuangController::class, 'update_ajax']);
+            Route::get('/delete_ajax/{id}', [RuangController::class, 'delete_ajax']);
+            Route::delete('/destroy_ajax/{id}', [RuangController::class, 'destroy_ajax']);
         });
         Route::group(['prefix' => 'barang'], function () {
             Route::get('/', [BarangController::class, 'index']);
@@ -103,6 +109,10 @@ Route::middleware(['auth'])->group(function () {
         Route::group(['prefix' => 'sarana'], function () {
             Route::get('/', [SaranaController::class, 'index']);
             Route::get('/list', [SaranaController::class, 'list']);
+            Route::get('/create_ajax', [SaranaController::class, 'create_ajax']);
+            Route::post('/store_ajax', [SaranaController::class, 'store_ajax']);
+            Route::get('/ruang/{id}/edit', [RuangController::class, 'edit'])->name('ruang.edit');
+
         });
     });
 

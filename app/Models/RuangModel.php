@@ -15,6 +15,7 @@ class RuangModel extends Model
         'lantai_id',
         'ruang_nama',
         'ruang_kode',
+        'ruang_tipe',
     ];
     public $timestamps = true;
 

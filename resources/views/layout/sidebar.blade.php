@@ -26,12 +26,39 @@
                             <i class="fa fa-gear"></i>
                             <span>Kelola</span>
                         </a>
-                        <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas']) ? 'in' : '' }}">
-                            <li><a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}"><i class="fa fa-list"></i> Level</a></li>
-                            <li><a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'kelola-periode' ? 'active' : '' }}"><i class="fa fa-calendar"></i> Kelola Periode</a></li>
-                            <li><a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}"><i class="fa fa-users"></i> Kelola Pengguna</a></li>
-                            <li><a href="{{ url('/prioritas') }}" class="nav-link {{ $activeMenu == 'kelola-prioritas' ? 'active' : '' }}"><i class="fa fa-exclamation-circle"></i> Kelola Prioritas</a></li>
-                        </ul>
+                        <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas', 'lantai', 'ruang']) ? 'in' : '' }}">
+                        <li>
+                            <a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
+                                <i class="fa fa-list"></i> Level
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/lantai') }}" class="nav-link {{ $activeMenu == 'lantai' ? 'active' : '' }}">
+                                <i class="fa fa-layer-group"></i> Kelola Lantai
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/ruang') }}" class="nav-link {{ $activeMenu == 'ruang' ? 'active' : '' }}">
+                                <i class="fa fa-door-open"></i> Kelola Ruang
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'kelola-periode' ? 'active' : '' }}">
+                                <i class="fa fa-calendar"></i> Kelola Periode
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
+                                <i class="fa fa-users"></i> Kelola Pengguna
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/prioritas') }}" class="nav-link {{ $activeMenu == 'kelola-prioritas' ? 'active' : '' }}">
+                                <i class="fa fa-exclamation-circle"></i> Kelola Prioritas
+                            </a>
+                        </li>
+                    </ul>
+
                     </li>
 
                     <!-- Sarana Prasarana -->

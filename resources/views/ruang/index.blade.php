@@ -19,6 +19,19 @@
                          <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
+                    <div class="form-group row">
+                        <label class="col-form-label col-sm-2">Filter Lantai:</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="lantai_id" name="lantai_id">
+                                <option value="">- Pilih Lantai -</option>
+                                @foreach ($lantai as $l)
+                                    <option value="{{ $l->lantai_id }}">{{ $l->lantai_nama }}</option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">Lantai Ruangan</small>
+                        </div>
+                    </div>
+
                     <button onclick="modalAction('{{ url('/ruang/create_ajax') }}')" class="btn btn-info mb-3">Tambah Ruang</button>
 
                     <div class="data-tables">
@@ -26,9 +39,9 @@
                             <thead class="bg-light text-capitalize">
                                 <tr>
                                     <th>No</th>
-                                    <th>Kode</th>
-                                    <th>Nama</th>
-                                    <th>Tipe</th>
+                                    <th>Kode Ruang</th>
+                                    <th>Nama Ruang</th>
+                                    <th>Tipe Ruang</th>
                                     <th>Lantai</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -68,7 +81,7 @@
                 dataType: "json",
                 type: "GET",
                 data: function(d) {
-                    // Jika ingin menambahkan filter lantai, bisa ditambahkan di sini
+                    d.lantai_id = $('#lantai_id').val();
                 },
                 error: function(xhr) {
                     console.error('DataTable AJAX error:', xhr.responseText);
@@ -81,8 +94,13 @@
                 { data: "ruang_nama", name: "ruang_nama" },
                 { data: "ruang_tipe", name: "ruang_tipe" },
                 { data: "lantai", name: "lantai.lantai_nama", orderable: false, searchable: false },
-                { data: "action", name: "action", orderable: false, searchable: false }
+                { data: "aksi", name: "aksi", orderable: false, searchable: false }
             ]
+        });
+
+        // reload data ketika filter lantai berubah
+        $('#lantai_id').change(function() {
+            dataRuang.ajax.reload(null, false); // Reload DataTables tanpa reset paging
         });
     });
 </script>

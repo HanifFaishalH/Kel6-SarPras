@@ -38,7 +38,6 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Nama Level</th>
-                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -85,7 +84,6 @@
                 columns: [
                     { data: "DT_RowIndex", name: "level_id" },
                     { data: "level_nama", name: "level_nama" },
-                    { data: "aksi", name: "aksi", orderable: false, searchable: false }
                 ],
                 order: [[0, 'asc']]
             });

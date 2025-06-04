@@ -145,8 +145,7 @@ class LaporanController extends Controller
                 return $row->bobot ?? '-'; // Handle null/undefined bobot
             })
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/laporan/show_kelola_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/laporan/edit_ajax/' . $row->laporan_id) . '\')" class="btn btn-warning btn-sm">Edit</button>';
+                $btn = '<button onclick="modalAction(\'' . url('/laporan/show_kelola_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm" style="margin-bottom: 5px;">Detail</button> ';
                 $btn .= '<button onclick="calculatePriority(' . $row->laporan_id . ')" class="btn btn-success btn-sm">Kalkulasi</button>';
                 return $btn;
             })
@@ -347,34 +346,6 @@ class LaporanController extends Controller
         }
 
         return view('/laporan');
-    }
-
-    public function edit_ajax($id)
-    {
-        try {
-            $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana'])
-                ->where('laporan_id', $id)
-                ->where('user_id', Auth::user()->user_id)
-                ->firstOrFail();
-
-            $gedung = GedungModel::all();
-            $lantai = LantaiModel::where('gedung_id', $laporan->gedung_id)->get();
-            $ruang = RuangModel::where('lantai_id', $laporan->lantai_id)->get();
-            $sarana = SaranaModel::where('ruang_id', $laporan->ruang_id)->with('barang')->get();
-
-            return view('laporan.edit', [
-                'laporan' => $laporan,
-                'gedung' => $gedung,
-                'lantai' => $lantai,
-                'ruang' => $ruang,
-                'sarana' => $sarana
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Laporan tidak ditemukan atau Anda tidak memiliki akses.'
-            ], 404);
-        }
     }
 
     public function update_ajax(Request $request, $id)

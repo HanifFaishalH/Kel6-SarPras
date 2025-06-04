@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('kategori_id');
             $table->unsignedBigInteger('barang_id');
             $table->integer('jumlah_laporan');
-            $table->string('frekuensi_penggunaan', ['harian', 'mingguan', 'bulanan', 'tahunan'])->default('harian');
+            $table->enum('frekuensi_penggunaan', ['harian', 'mingguan', 'bulanan', 'tahunan'])->default('harian');
             $table->date('tanggal_operasional');
             $table->timestamps();
 

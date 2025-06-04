@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SaranaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaporanKerusakanController;
+use App\Http\Controllers\RuangController;
 use App\Http\Controllers\SettingController;
 
 /*
@@ -101,6 +102,10 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{id}/delete', [GedungController::class, 'destroy'])->name('gedung.destroy');
         });
 
+        Route::group(['prefix' => 'ruang'], function () {
+            Route::get('/', [RuangController::class, 'index']);
+            Route::get('/list', [RuangController::class, 'list']);
+        });
         Route::group(['prefix' => 'barang'], function () {
             Route::get('/', [BarangController::class, 'index']);
             Route::get('/list', [BarangController::class, 'list']);

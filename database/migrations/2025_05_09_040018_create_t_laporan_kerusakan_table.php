@@ -31,24 +31,18 @@ return new class extends Migration
             $table->string('laporan_foto')->nullable();
 
             // kriteria kerusakan (AHP)
-            $table->enum('tingkat_kerusakan', ['rendah', 'sedang', 'tinggi', 'kritis']);
-            $table->enum('tingkat_urgensi', ['rendah', 'sedang', 'tinggi', 'kritis']);
-            $table->enum('frekuensi_penggunaan', ['harian', 'mingguan', 'bulanan', 'tahunan']);
-            $table->enum('dampak_kerusakan', ['minor', 'kecil', 'sedang', 'besar']);
-            $table->date('tanggal_operasional');
+            $table->enum('tingkat_kerusakan', ['rendah', 'sedang', 'tinggi']);
+            $table->enum('tingkat_urgensi', ['rendah', 'sedang', 'tinggi',]);
+            $table->enum('dampak_kerusakan', ['kecil', 'sedang', 'besar']);
             $table->timestamps();
 
             // proses laporan
             $table->enum('status_laporan', ['pending', 'proses', 'selesai'])->default('pending');
             $table->timestamp('tanggal_diproses')->nullable();
-            $table->timestamp('tanggal_perbaikan')->nullable();
             $table->timestamp('tanggal_selesai')->nullable();
 
-
             // proses persetujuan
-            $table->enum('status_admin', ['pending', 'disetujui', 'ditolak'])->default('pending');
             $table->enum('status_sarpras', ['belum diproses', 'proses', 'selesai'])->default('belum diproses');
-
 
             // Foreign key constraints
             $table->foreign('user_id')->references('user_id')->on('m_users')->onDelete('cascade');

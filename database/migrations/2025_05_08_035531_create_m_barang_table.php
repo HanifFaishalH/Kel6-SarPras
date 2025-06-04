@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('kategori_id');
             $table->string('barang_nama', 50);
             $table->text('spesifikasi', 200)->nullable();
+            
             $table->timestamps();
 
             // Foreign key constraint

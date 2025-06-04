@@ -17,8 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('ruang_id');
             $table->unsignedBigInteger('kategori_id');
             $table->unsignedBigInteger('barang_id');
-            $table->unsignedInteger('jumlah_laporan');
-            $table->date('tanggal_operasional')->nullable();
+            $table->integer('jumlah_laporan');
+            $table->string('frekuensi_penggunaan', ['harian', 'mingguan', 'bulanan', 'tahunan'])->default('harian');
+            $table->date('tanggal_operasional');
             $table->timestamps();
 
             $table->enum('tingkat_kerusakan_tertinggi', ['rendah', 'sedang', 'tinggi'])->nullable();

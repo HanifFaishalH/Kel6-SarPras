@@ -12,9 +12,9 @@ class RuangModel extends Model
     protected $table = 'm_ruang';
     protected $primaryKey = 'ruang_id';
     protected $fillable = [
+        'lantai_id',
         'ruang_nama',
         'ruang_kode',
-        'lantai_id',
     ];
     public $timestamps = true;
 

@@ -74,12 +74,6 @@ class LaporanController extends Controller
             ->addColumn('status_laporan', function ($row) {
                 return ucfirst($row->status_laporan);
             })
-            ->addColumn('status_admin', function ($row) {
-                return ucfirst($row->status_admin);
-            })
-            ->addColumn('status_sarpras', function ($row) {
-                return ucfirst($row->status_sarpras);
-            })
             ->addColumn('aksi', function ($row) {
                 $btn = '<button onclick="modalAction(\'' . url('/laporan/show_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 return $btn;
@@ -131,12 +125,6 @@ class LaporanController extends Controller
             })
             ->addColumn('status_laporan', function ($row) {
                 return ucfirst($row->status_laporan);
-            })
-            ->addColumn('status_admin', function ($row) {
-                return ucfirst($row->status_admin);
-            })
-            ->addColumn('status_sarpras', function ($row) {
-                return ucfirst($row->status_sarpras);
             })
             ->addColumn('created_at', function ($row) {
                 return $row->created_at->format('d-m-Y H:i');
@@ -231,30 +219,33 @@ class LaporanController extends Controller
             'gedung',
             'lantai',
             'ruang',
+            'sarana',
             'sarana.barang',
             'user',
             'teknisi.user'
         ])->findOrFail($id);
 
-        // Default file_exists ke false
-        $laporan->file_exists = false;
+        return view('laporan.show_ajax', [
+            'laporan' => $laporan
+        ]);
+    }
 
-        // Jika ada path foto, cek apakah file tersebut ada di filesystem
-        if ($laporan->getRawOriginal('laporan_foto')) {
-            $fotoPath = public_path($laporan->getRawOriginal('laporan_foto'));
+    public function getLaporanFotoAttribute($value)
+    {
+        if (!$value) return null;
 
-            if (file_exists($fotoPath)) {
-                $laporan->file_exists = true;
-                $laporan->laporan_foto = asset($laporan->getRawOriginal('laporan_foto'));
-            } else {
-                $laporan->laporan_foto = asset('images/default-image.jpg');
-            }
-        } else {
-            $laporan->laporan_foto = null;
+        // Hapus duplikasi path
+        $filename = str_replace('laporan_files/', '', $value);
+
+        // Path absolut di sistem
+        $fullPath = public_path('laporan_files/' . $filename);
+        if (file_exists($fullPath)) {
+            return asset('laporan_files/' . $filename);
         }
 
-        return view('laporan.show_ajax', compact('laporan'));
+        return null;
     }
+
 
     public function show_kelola($id)
     {
@@ -313,9 +304,7 @@ class LaporanController extends Controller
                 'laporan_foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
                 'tingkat_kerusakan' => 'required|in:rendah,sedang,tinggi,kritis',
                 'tingkat_urgensi' => 'required|in:rendah,sedang,tinggi,kritis',
-                'frekuensi_penggunaan' => 'required|in:harian,mingguan,bulanan,tahunan',
-                'dampak_kerusakan' => 'required|in:minor,kecil,sedang,besar',
-                'tanggal_operasional' => 'required|date',
+                'dampak_kerusakan' => 'required|in:kecil,sedang,besar',
             ]);
 
             if ($validator->fails()) {
@@ -365,8 +354,7 @@ class LaporanController extends Controller
                     'laporan_foto' => 'nullable|image|max:2048',
                     'tingkat_kerusakan' => 'required|in:rendah,sedang,tinggi',
                     'tingkat_urgensi' => 'required|in:rendah,sedang,tinggi,kritis',
-                    'frekuensi_penggunaan' => 'required|in:harian,mingguan,bulanan,tahunan',
-                    'tanggal_operasional' => 'required|date'
+                    'dampak_kerusakan' => 'required|in:minor,kecil,sedang,besar',
                 ]);
 
                 if ($validator->fails()) {

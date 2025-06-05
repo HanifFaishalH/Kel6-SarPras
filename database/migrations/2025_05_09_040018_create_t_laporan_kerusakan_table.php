@@ -36,13 +36,10 @@ return new class extends Migration
             $table->enum('dampak_kerusakan', ['kecil', 'sedang', 'besar']);
             $table->timestamps();
 
-            // proses laporan
-            $table->enum('status_laporan', ['pending', 'proses', 'selesai'])->default('pending');
+            // status laporan
+            $table->enum('status_laporan', ['pending',  'ditolak',  'diproses', 'selesai'])->default('pending');
             $table->timestamp('tanggal_diproses')->nullable();
             $table->timestamp('tanggal_selesai')->nullable();
-
-            // proses persetujuan
-            $table->enum('status_sarpras', ['belum diproses', 'proses', 'selesai'])->default('belum diproses');
 
             // Foreign key constraints
             $table->foreign('user_id')->references('user_id')->on('m_users')->onDelete('cascade');

@@ -24,21 +24,14 @@ class LaporanModel extends Model
         'laporan_foto',
         'tingkat_kerusakan',
         'tingkat_urgensi',
-        'frekuensi_penggunaan',
         'dampak_kerusakan',
-        'tanggal_operasional',
         'status_laporan',
         'tanggal_diproses',
-        'tanggal_perbaikan',
         'tanggal_selesai',
-        'status_admin',
-        'status_sarpras',
     ];
 
     protected $dates = [
-        'tanggal_operasional',
         'tanggal_diproses',
-        'tanggal_perbaikan',
         'tanggal_selesai',
         'created_at',
         'updated_at',
@@ -94,18 +87,19 @@ class LaporanModel extends Model
 
     public function scopeByUserLevel($query, $userLevel)
     {
-        if ($userLevel == 'admin') {
-            return $query; // admin lihat semua data
-        } elseif ($userLevel == 'sarpras') {
-            return $query->where('status_admin', 'disetujui'); // sarpras lihat laporan yang sudah disetujui admin
-        } elseif ($userLevel == 'teknisi') {
-            // teknisi lihat laporan yang sudah ditugaskan ke teknisi itu sendiri
-            return $query->where('teknisi_id', auth()->user()->teknisi->teknisi_id);
+        if ($userLevel === 'sarpras') {
+            // Sarpras bisa melihat semua laporan, termasuk yang belum disetujui
+            return $query;
+        } elseif ($userLevel === 'teknisi') {
+            // Teknisi hanya bisa melihat laporan yang ditugaskan ke dirinya
+            $teknisiId = optional(auth()->user()->teknisi)->teknisi_id;
+            return $query->where('teknisi_id', $teknisiId);
         } else {
-            // level lain mungkin hanya lihat laporan pelapor sendiri
+            // Level lain (mhs, dosen, tendik) hanya bisa melihat laporan mereka sendiri
             return $query->where('user_id', auth()->id());
         }
     }
+
     public function scopeFilterByStatus($query, $status)
     {
         if ($status) {

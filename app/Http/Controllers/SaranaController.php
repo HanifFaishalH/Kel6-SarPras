@@ -55,15 +55,15 @@ class SaranaController extends Controller
             ->addColumn('barang_nama', fn($row) => $row->barang->barang_nama ?? '-')
             ->addColumn('ruang_nama', fn($row) => $row->ruang->ruang_nama ?? '-')
             ->addColumn('lantai_nama', fn($row) => $row->ruang->lantai->lantai_nama ?? '-')
+            ->addColumn('nomor_urut', fn($row) => $row->nomor_urut ?? '-')
             ->addColumn('aksi', function ($row) {
                 return '
-                    <a href="javascript:void(0)" onclick="modalAction(\''.url('sarana/detail/'.$row->sarana_id).'\')" class="btn btn-sm btn-info">Detail</a>
-                    <a href="javascript:void(0)" onclick="modalAction(\''.url('sarana/edit/'.$row->sarana_id).'\')" class="btn btn-sm btn-warning">Edit</a>
-                    <a href="javascript:void(0)" onclick="modalAction(\''.url('sarana/delete/'.$row->sarana_id).'\')" class="btn btn-sm btn-danger">Hapus</a>
+                    <a href="javascript:void(0)" onclick="modalAction(\'' . url('sarana/detail/' . $row->sarana_id) . '\')" class="btn btn-sm btn-info">Detail</a>
+                    <a href="javascript:void(0)" onclick="modalAction(\'' . url('sarana/edit/' . $row->sarana_id) . '\')" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="javascript:void(0)" onclick="modalAction(\'' . url('sarana/delete/' . $row->sarana_id) . '\')" class="btn btn-sm btn-danger">Hapus</a>
                 ';
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
-
 }

@@ -863,23 +863,36 @@ class SaranaSeeder extends Seeder
 
         ];
 
+        $nomorUrutCounter = [];
+
         foreach ($roomConfigurations as $roomId => $items) {
             foreach ($items as $item) {
+                // Mereset Setiap Ruangan/Barang
+                if (!isset($nomorUrutCounter[$roomId][$item['barang_id']])) {
+                    $nomorUrutCounter[$roomId][$item['barang_id']] = 1;
+                }
+
                 for ($i = 0; $i < $item['jumlah']; $i++) {
                     $saranaKode = "SARANA-{$counter}";
                     $counter++;
+
                     $data[] = [
                         'ruang_id' => $roomId,
                         'kategori_id' => $item['kategori_id'],
                         'barang_id' => $item['barang_id'],
                         'sarana_kode' => $saranaKode,
                         'jumlah_laporan' => 0,
+                        'nomor_urut' => $nomorUrutCounter[$roomId][$item['barang_id']], // Set nomor urut
+                        'frekuensi_penggunaan' => 'harian', // Default value
                         'tanggal_operasional' => $now,
                         'created_at' => $now,
                         'updated_at' => $now,
                     ];
 
-                    // Masukkan setiap 500 data untuk efisiensi
+                    // Menambah/Increment Nomor Ururt Setiap Barang
+                    $nomorUrutCounter[$roomId][$item['barang_id']]++;
+
+                    
                     if (count($data) >= 500) {
                         DB::table('m_sarana')->insertOrIgnore($data);
                         $data = [];
@@ -888,7 +901,7 @@ class SaranaSeeder extends Seeder
             }
         }
 
-        // Sisanya
+        // Masukkan sisa data yang belum diinsert
         if (!empty($data)) {
             DB::table('m_sarana')->insertOrIgnore($data);
         }

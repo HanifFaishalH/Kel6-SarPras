@@ -35,12 +35,12 @@
                                 </li>
                                 <li>
                                     <a href="{{ url('/lantai') }}" class="nav-link {{ $activeMenu == 'lantai' ? 'active' : '' }}">
-                                        <i class="fa fa-layer-group"></i> Kelola Lantai
+                                        <i class="fa fa-building"></i> Kelola Lantai
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ url('/ruang') }}" class="nav-link {{ $activeMenu == 'ruang' ? 'active' : '' }}">
-                                        <i class="fa fa-door-open"></i> Kelola Ruang
+                                        <i class="fa fa-home"></i> Kelola Ruang
                                     </a>
                                 </li>
                                 <li>
@@ -97,7 +97,7 @@
                         </li>
                     @endif
 
-                    @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras', 'admin']))
+                    @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras']))
                         <!-- Laporan Management (for sarpras and admin) -->
                         <li class="nav-item has-submenu {{ in_array($activeMenu, ['kelola', 'riwayat']) ? 'mm-active' : '' }}">
                             <a href="javascript:void(0)" class="nav-link section-title">
@@ -106,7 +106,6 @@
                             </a>
                             <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['kelola', 'riwayat']) ? 'in' : '' }}">
                                 <li><a href="{{ url('/laporan/kelola') }}" class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}"><i class="fa fa-wrench"></i> Kelola Laporan</a></li>
-                                <li><a href="{{ url('/riwayat') }}" class="nav-link {{ $activeMenu == 'riwayat' ? 'active' : '' }}"><i class="fa fa-history"></i> Riwayat Laporan</a></li>
                             </ul>
                         </li>
                     @endif

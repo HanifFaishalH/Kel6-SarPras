@@ -97,7 +97,6 @@
                     <label>Dampak Kerusakan</label>
                     <select name="dampak_kerusakan" class="form-control" required>
                         <option value="">- Pilih Dampak Kerusakan -</option>
-                        <option value="minor">Minor</option>
                         <option value="kecil">Kecil</option>
                         <option value="sedang">Sedang</option>
                         <option value="besar">Besar</option>

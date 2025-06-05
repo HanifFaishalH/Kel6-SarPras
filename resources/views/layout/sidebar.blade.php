@@ -22,39 +22,47 @@
 
                     @if (Auth::check() && Auth::user()->getRole() === 'admin')
                         <!-- Kelola (admin only) -->
-                        <li class="nav-item has-submenu {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas', 'lantai', 'ruang']) ? 'mm-active' : '' }}">
+                        <li
+                            class="nav-item has-submenu {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas', 'lantai', 'ruang']) ? 'mm-active' : '' }}">
                             <a href="javascript:void(0)" class="nav-link section-title">
                                 <i class="fa fa-gear"></i>
                                 <span>Kelola</span>
                             </a>
-                            <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas', 'lantai', 'ruang']) ? 'in' : '' }}">
+                            <ul
+                                class="nav nav-second-level collapse {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas', 'lantai', 'ruang']) ? 'in' : '' }}">
                                 <li>
-                                    <a href="{{ url('/level') }}" class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
+                                    <a href="{{ url('/level') }}"
+                                        class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
                                         <i class="fa fa-list"></i> Level
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ url('/lantai') }}" class="nav-link {{ $activeMenu == 'lantai' ? 'active' : '' }}">
+                                    <a href="{{ url('/lantai') }}"
+                                        class="nav-link {{ $activeMenu == 'lantai' ? 'active' : '' }}">
                                         <i class="fa fa-building"></i> Kelola Lantai
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ url('/ruang') }}" class="nav-link {{ $activeMenu == 'ruang' ? 'active' : '' }}">
+                                    <a href="{{ url('/ruang') }}"
+                                        class="nav-link {{ $activeMenu == 'ruang' ? 'active' : '' }}">
                                         <i class="fa fa-home"></i> Kelola Ruang
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'kelola-periode' ? 'active' : '' }}">
+                                    <a href="{{ url('/periode') }}"
+                                        class="nav-link {{ $activeMenu == 'kelola-periode' ? 'active' : '' }}">
                                         <i class="fa fa-calendar"></i> Kelola Periode
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
+                                    <a href="{{ url('/user') }}"
+                                        class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                                         <i class="fa fa-users"></i> Kelola Pengguna
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ url('/prioritas') }}" class="nav-link {{ $activeMenu == 'kelola-prioritas' ? 'active' : '' }}">
+                                    <a href="{{ url('/prioritas') }}"
+                                        class="nav-link {{ $activeMenu == 'kelola-prioritas' ? 'active' : '' }}">
                                         <i class="fa fa-exclamation-circle"></i> Kelola Prioritas
                                     </a>
                                 </li>
@@ -62,27 +70,41 @@
                         </li>
 
                         <!-- Sarana Prasarana (admin only) -->
-                        <li class="nav-item has-submenu {{ in_array($activeMenu, ['sarana', 'gedung', 'barang']) ? 'mm-active' : '' }}">
+                        <li
+                            class="nav-item has-submenu {{ in_array($activeMenu, ['sarana', 'gedung', 'barang']) ? 'mm-active' : '' }}">
                             <a href="javascript:void(0)" class="nav-link section-title">
                                 <i class="fa fa-building"></i>
                                 <span>Sarana Prasarana</span>
                             </a>
-                            <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['sarana', 'gedung', 'barang']) ? 'in' : '' }}">
-                                <li><a href="{{ url('/sarana') }}" class="nav-link {{ $activeMenu == 'sarana' ? 'active' : '' }}"><i class="fa fa-building"></i> Kelola Sarana</a></li>
-                                <li><a href="{{ url('/gedung') }}" class="nav-link {{ $activeMenu == 'gedung' ? 'active' : '' }}"><i class="fa fa-university"></i> Kelola Gedung</a></li>
-                                <li><a href="{{ url('/barang') }}" class="nav-link {{ $activeMenu == 'barang' ? 'active' : '' }}"><i class="fa fa-cube"></i> Kelola Barang</a></li>
+                            <ul
+                                class="nav nav-second-level collapse {{ in_array($activeMenu, ['sarana', 'gedung', 'barang']) ? 'in' : '' }}">
+                                <li><a href="{{ url('/sarana') }}"
+                                        class="nav-link {{ $activeMenu == 'sarana' ? 'active' : '' }}"><i
+                                            class="fa fa-building"></i> Kelola Sarana</a></li>
+                                <li><a href="{{ url('/gedung') }}"
+                                        class="nav-link {{ $activeMenu == 'gedung' ? 'active' : '' }}"><i
+                                            class="fa fa-university"></i> Kelola Gedung</a></li>
+                                <li><a href="{{ url('/barang') }}"
+                                        class="nav-link {{ $activeMenu == 'barang' ? 'active' : '' }}"><i
+                                            class="fa fa-cube"></i> Kelola Barang</a></li>
                             </ul>
                         </li>
 
                         <!-- Statistik (admin only) -->
-                        <li class="nav-item has-submenu {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan']) ? 'mm-active' : '' }}">
+                        <li
+                            class="nav-item has-submenu {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan']) ? 'mm-active' : '' }}">
                             <a href="javascript:void(0)" class="nav-link section-title">
                                 <i class="fa fa-bar-chart"></i>
                                 <span>Kelola Statistik</span>
                             </a>
-                            <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan']) ? 'in' : '' }}">
-                                <li><a href="{{ url('/laporan/per_tahun') }}" class="nav-link {{ $activeMenu == 'laporan-tahunan' ? 'active' : '' }}"><i class="fa fa-calendar"></i> Laporan per Tahun</a></li>
-                                <li><a href="{{ url('/laporan/per_bulan') }}" class="nav-link {{ $activeMenu == 'laporan-bulanan' ? 'active' : '' }}"><i class="fa fa-calendar-o"></i> Laporan per Bulan</a></li>
+                            <ul
+                                class="nav nav-second-level collapse {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan']) ? 'in' : '' }}">
+                                <li><a href="{{ url('/laporan/per_tahun') }}"
+                                        class="nav-link {{ $activeMenu == 'laporan-tahunan' ? 'active' : '' }}"><i
+                                            class="fa fa-calendar"></i> Laporan per Tahun</a></li>
+                                <li><a href="{{ url('/laporan/per_bulan') }}"
+                                        class="nav-link {{ $activeMenu == 'laporan-bulanan' ? 'active' : '' }}"><i
+                                            class="fa fa-calendar-o"></i> Laporan per Bulan</a></li>
                             </ul>
                         </li>
                     @endif
@@ -99,20 +121,18 @@
 
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras']))
                         <!-- Laporan Management (for sarpras and admin) -->
-                        <li class="nav-item has-submenu {{ in_array($activeMenu, ['kelola', 'riwayat']) ? 'mm-active' : '' }}">
-                            <a href="javascript:void(0)" class="nav-link section-title">
-                                <i class="fa fa-file-text"></i>
-                                <span>Kelola Laporan</span>
-                            </a>
-                            <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['kelola', 'riwayat']) ? 'in' : '' }}">
-                                <li><a href="{{ url('/laporan/kelola') }}" class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}"><i class="fa fa-wrench"></i> Kelola Laporan</a></li>
-                            </ul>
+                        <li
+                            class="nav nav-second-level collapse {{ in_array($activeMenu, ['kelola', 'riwayat']) ? 'in' : '' }}">
+                        <li><a href="{{ url('/laporan/kelola') }}"
+                                class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}"><i class="fa fa-wrench"></i>
+                                Kelola Laporan</a></li>
                         </li>
                     @endif
 
                     <!-- Umpan Balik (accessible to all) -->
                     <li class="nav-item">
-                        <a href="{{ url('/feedback') }}" class="nav-link {{ $activeMenu == 'berikan-umpan-balik' ? 'active' : '' }}">
+                        <a href="{{ url('/feedback') }}"
+                            class="nav-link {{ $activeMenu == 'berikan-umpan-balik' ? 'active' : '' }}">
                             <i class="fa fa-comment"></i>
                             <span>Berikan Umpan Balik</span>
                         </a>
@@ -121,7 +141,8 @@
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras', 'admin']))
                         <!-- Riwayat Perbaikan (sarpras and admin) -->
                         <li class="nav-item">
-                            <a href="{{ url('/riwayat-perbaikan') }}" class="nav-link {{ $activeMenu == 'riwayat-perbaikan' ? 'active' : '' }}">
+                            <a href="{{ url('/riwayat-perbaikan') }}"
+                                class="nav-link {{ $activeMenu == 'riwayat-perbaikan' ? 'active' : '' }}">
                                 <i class="fa fa-wrench"></i>
                                 <span>Riwayat Perbaikan</span>
                             </a>
@@ -200,18 +221,18 @@
 <script>
     $(document).ready(function () {
         $('#menu').metisMenu();
-        
+
         // Intercept sidebar link clicks
-        $('.sidebar-menu a.nav-link').on('click', function(e) {
+        $('.sidebar-menu a.nav-link').on('click', function (e) {
             const href = $(this).attr('href');
-            
+
             // Skip if it's a javascript link or current page
             if (!href || href === 'javascript:void(0)' || href === window.location.pathname) {
                 return true;
             }
-            
+
             e.preventDefault();
-            
+
             // Check access using AJAX
             $.ajax({
                 url: href,
@@ -220,11 +241,11 @@
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
                 },
-                success: function(response) {
+                success: function (response) {
                     // Allow navigation if successful
                     window.location.href = href;
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     if (xhr.status === 403) {
                         $('#accessDeniedModal').modal('show');
                     } else {

@@ -47,8 +47,6 @@
                                         <th>Judul</th>
                                         <th>Sarana</th>
                                         <th>Status Laporan</th>
-                                        <th>Persetujuan Admin</th>
-                                        <th>Status Sarpras</th>
                                         <th>Tanggal Laporan</th>
                                         <th>Bobot</th>
                                         <th>Aksi</th>
@@ -213,15 +211,7 @@
                 },
                 {
                     data: 'status_laporan',
-                    name: 'status_laporan',
-                },
-                {
-                    data: "status_admin",
-                    name: "status_admin"
-                },
-                {
-                    data: "status_sarpras",
-                    name: "status_sarpras"
+                    name: 'status_laporan'
                 },
                 {
                     data: 'created_at',
@@ -231,16 +221,17 @@
                     data: 'bobot',
                     name: 'bobot',
                     render: function (data, type, row) {
-                        return data || '-';
+                        return data ? Math.floor(data) : '-';
                     }
                 },
                 {
                     data: 'aksi',
                     name: 'aksi',
+
                 }
                 ],
                 order: [
-                    [7, 'desc']
+                    [5, 'desc']
                 ]
             });
 
@@ -249,44 +240,34 @@
             });
         });
 
-        function acceptLaporan() {
-            let laporanId = $('#formDetailLaporan input[name="laporan_id"]').val();
+        // Remove this function completely or replace with:
+        $(document).on('submit', '#formDetailLaporan', function (e) {
+            e.preventDefault();
 
             if (!confirm('Apakah Anda yakin ingin menerima laporan ini? Status akan berubah menjadi "Proses".')) {
                 return;
             }
 
-            // Pastikan token CSRF diambil dengan benar
-            let csrfToken = $('meta[name="csrf-token"]').attr('content');
-            if (!csrfToken) {
-                alert('Token CSRF tidak ditemukan. Silakan refresh halaman.');
-                return;
-            }
-
             $.ajax({
-                url: '{{ url('laporan/accept') }}/' + laporanId,
+                url: $(this).attr('action'),
                 type: 'POST',
+                data: $(this).serialize(),
                 dataType: 'json',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
                 success: function (response) {
+                    console.log('Success Response:', response);
                     if (response.status === 'success') {
                         $('#myModal').modal('hide');
-                        alert(response.message ||
-                            'Laporan berhasil diterima dan status diubah menjadi Proses.');
+                        alert(response.message || 'Laporan berhasil diterima dan status diubah menjadi Proses.');
                         $('#table_laporan').DataTable().ajax.reload(null, false);
                     } else {
                         alert(response.message || 'Gagal menerima laporan.');
                     }
                 },
                 error: function (xhr) {
+                    console.error('Error Response:', xhr);
                     let errorMsg = 'Terjadi kesalahan saat menerima laporan.';
                     if (xhr.status === 419) {
-                        errorMsg =
-                            'Token CSRF tidak cocok atau sesi telah kedaluwarsa. Silakan refresh halaman.';
-                    } else if (xhr.status === 403) {
-                        errorMsg = 'Anda tidak memiliki akses untuk tindakan ini.';
+                        errorMsg = 'Token CSRF tidak cocok atau sesi telah kedaluwarsa. Silakan refresh halaman.';
                     } else if (xhr.status === 404) {
                         errorMsg = 'Laporan tidak ditemukan.';
                     } else if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -295,6 +276,6 @@
                     alert(errorMsg);
                 }
             });
-        }
+        });
     </script>
 @endpush

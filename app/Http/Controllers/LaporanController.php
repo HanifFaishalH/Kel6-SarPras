@@ -142,22 +142,26 @@ class LaporanController extends Controller
             ->make(true);
     }
 
+    // LaporanController.php - in kalkulasi method
     public function kalkulasi($id)
     {
         $laporan = LaporanModel::findOrFail($id);
+        $sarana = SaranaModel::findOrFail($laporan->sarana_id); // Changed to use sarana_id from laporan
 
         // Map values to scores
         $kerusakanMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3, 'kritis' => 4];
         $urgensiMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3, 'kritis' => 4];
-        $frekuensiMap = ['harian' => 1, 'mingguan' => 2, 'bulanan' => 3, 'tahunan' => 4];
-        $dampakMap = ['minor' => 1, 'kecil' => 2, 'sedang' => 3, 'besar' => 4];
+        $frekuensiMap = ['tahunan' => 1, 'bulanan' => 2, 'harian' => 3];
+        $dampakMap = ['kecil' => 1, 'sedang' => 2, 'besar' => 3];
+
 
         $kerusakan = $kerusakanMap[strtolower($laporan->tingkat_kerusakan)] ?? 0;
         $urgensi = $urgensiMap[strtolower($laporan->tingkat_urgensi)] ?? 0;
-        $frekuensi = $frekuensiMap[strtolower($laporan->frekuensi_penggunaan)] ?? 0;
+        $frekuensi = $frekuensiMap[strtolower($sarana->frekuensi_penggunaan)] ?? 0;
         $dampak = $dampakMap[strtolower($laporan->dampak_kerusakan)] ?? 0;
 
-        $bobot = $kerusakan * $urgensi * $frekuensi * $dampak;
+        $jumlahLaporan = $sarana->jumlah_laporan ?? 1;
+        $bobot = $kerusakan * $urgensi * $frekuensi * $dampak * $jumlahLaporan;
 
         // Save the bobot to the database
         $laporan->bobot = $bobot;
@@ -169,8 +173,9 @@ class LaporanController extends Controller
             'factors' => [
                 'Kerusakan' => ['value' => $laporan->tingkat_kerusakan, 'score' => $kerusakan],
                 'Urgensi' => ['value' => $laporan->tingkat_urgensi, 'score' => $urgensi],
-                'Frekuensi' => ['value' => $laporan->frekuensi_penggunaan, 'score' => $frekuensi],
+                'Frekuensi' => ['value' => $sarana->frekuensi_penggunaan, 'score' => $frekuensi],
                 'Dampak' => ['value' => $laporan->dampak_kerusakan, 'score' => $dampak],
+                'Jumlah Laporan' => ['value' => $jumlahLaporan, 'score' => $jumlahLaporan]
             ]
         ])->render();
 
@@ -186,21 +191,14 @@ class LaporanController extends Controller
     {
         try {
             $laporan = LaporanModel::findOrFail($id);
-
-            // Cek jika status sudah tidak memungkinkan untuk diubah
             if ($laporan->status_laporan === 'proses' || $laporan->status_laporan === 'selesai') {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Laporan sudah dalam status Proses atau Selesai.'
                 ], 400);
             }
-
-            // Ubah status
             $laporan->status_laporan = 'Proses';
-            $laporan->status_admin = 'Disetujui';
-            $laporan->status_sarpras = 'Proses';
             $laporan->save();
-
             return response()->json([
                 'status' => 'success',
                 'message' => 'Laporan berhasil diterima, status Admin diubah menjadi Disetujui, dan status Sarpras diubah menjadi Proses.'
@@ -250,17 +248,12 @@ class LaporanController extends Controller
     public function show_kelola($id)
     {
         try {
-            $laporan = LaporanModel::with([
-                'gedung',
-                'lantai',
-                'ruang',
-                'sarana.barang',
-                'user',
-                'teknisi.user'
-            ])->findOrFail($id);
+            $laporan = LaporanModel::findOrFail($id);
+            $sarana = SaranaModel::findOrFail($id);
 
             $html = view('laporan.show_kelola_detail', [
-                'laporan' => $laporan
+                'laporan' => $laporan,
+                'sarana' => $sarana
             ])->render();
 
             return response()->json([
@@ -327,6 +320,10 @@ class LaporanController extends Controller
 
             $laporan = LaporanModel::create($data);
 
+            if ($laporan->sarana_id) {
+                SaranaModel::where('sarana_id', $laporan->sarana_id)
+                    ->increment('jumlah_laporan');
+            }
             return response()->json([
                 'status' => 'success',
                 'message' => 'Laporan berhasil dibuat',
@@ -353,8 +350,8 @@ class LaporanController extends Controller
                     'laporan_judul' => 'required|string|max:100',
                     'laporan_foto' => 'nullable|image|max:2048',
                     'tingkat_kerusakan' => 'required|in:rendah,sedang,tinggi',
-                    'tingkat_urgensi' => 'required|in:rendah,sedang,tinggi,kritis',
-                    'dampak_kerusakan' => 'required|in:minor,kecil,sedang,besar',
+                    'tingkat_urgensi' => 'required|in:rendah,sedang,tinggi',
+                    'dampak_kerusakan' => 'required|in:kecil,sedang,besar',
                 ]);
 
                 if ($validator->fails()) {

@@ -11,12 +11,14 @@ class SaranaModel extends Model
 
     protected $table = 'm_sarana';
     protected $primaryKey = 'sarana_id';
+    // SaranaModel.php
     protected $fillable = [
         'ruang_id',
         'kategori_id',
         'barang_id',
         'tanggal_operasional',
         'nomor_urut',
+        'jumlah_laporan' // Add this line
     ];
 
     public function ruang()

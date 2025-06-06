@@ -174,21 +174,26 @@ class LaporanController extends Controller
         }
 
         if ($request->isMethod('post')) {
+            // Cek apakah laporan sudah dikerjakan
+            if ($laporan->status_laporan === 'dikerjakan') {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => 'Laporan sudah dalam status Dikerjakan. Tidak dapat menugaskan ulang teknisi.'
+                ], 400);
+            }
+
             // Validasi input
             $request->validate([
                 'teknisi_id' => 'required|exists:m_teknisi,teknisi_id',
                 'catatan' => 'nullable|string'
             ]);
 
-            // Update laporan dengan teknisi_id dan status
+            // Update laporan
             $laporan->update([
                 'teknisi_id' => $request->teknisi_id,
-                'status_laporan' => 'proses',
+                'status_laporan' => 'Dikerjakan',
                 'tanggal_diproses' => now(),
             ]);
-
-            // Optional: Simpan catatan ke tabel lain jika diperlukan
-            // Misalnya, simpan ke tabel log atau notifikasi
 
             return response()->json([
                 'status' => 'success',
@@ -201,6 +206,7 @@ class LaporanController extends Controller
             'message' => 'Metode tidak diizinkan.'
         ], 405);
     }
+
 
     // LaporanController.php - in kalkulasi method
     public function kalkulasi($id)
@@ -251,10 +257,20 @@ class LaporanController extends Controller
     {
         try {
             $laporan = LaporanModel::findOrFail($id);
-            if ($laporan->status_laporan === 'diproses' || $laporan->status_laporan === 'selesai') {
+            if ($laporan->status_laporan === 'diproses') {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Laporan sudah dalam status Proses atau Selesai.'
+                    'message' => 'Laporan sudah dalam status Proses.'
+                ], 400);
+            } elseif ($laporan->status_laporan === 'dikerjakan') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Laporan sudah dalam status Dikerjakan.'
+                ], 400);
+            } elseif ($laporan->status_laporan === 'selesai') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Laporan sudah dalam status Selesai.'
                 ], 400);
             }
             $laporan->status_laporan = 'Diproses';

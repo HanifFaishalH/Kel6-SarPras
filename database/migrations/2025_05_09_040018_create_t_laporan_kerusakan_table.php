@@ -37,7 +37,7 @@ return new class extends Migration
             $table->timestamps();
 
             // status laporan
-            $table->enum('status_laporan', ['pending',  'ditolak',  'diproses', 'selesai'])->default('pending');
+            $table->enum('status_laporan', ['pending',  'ditolak',  'diproses', 'selesai', 'dikerjakan'])->default('pending');
             $table->timestamp('tanggal_diproses')->nullable();
             $table->timestamp('tanggal_selesai')->nullable();
 

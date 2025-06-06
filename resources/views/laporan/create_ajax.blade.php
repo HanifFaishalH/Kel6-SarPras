@@ -74,7 +74,6 @@
                         <option value="rendah">Rendah</option>
                         <option value="sedang">Sedang</option>
                         <option value="tinggi">Tinggi</option>
-                        <option value="kritis">Kritis</option>
                     </select>
                     <small id="error-tingkat_kerusakan" class="error-text form-text text-danger"></small>
                 </div>
@@ -87,7 +86,6 @@
                         <option value="rendah">Rendah</option>
                         <option value="sedang">Sedang</option>
                         <option value="tinggi">Tinggi</option>
-                        <option value="kritis">Kritis</option>
                     </select>
                     <small id="error-tingkat_urgensi" class="error-text form-text text-danger"></small>
                 </div>

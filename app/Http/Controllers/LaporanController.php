@@ -8,6 +8,7 @@ use App\Models\GedungModel;
 use App\Models\LantaiModel;
 use App\Models\RuangModel;
 use App\Models\SaranaModel;
+use App\Models\TeknisiModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -135,11 +136,70 @@ class LaporanController extends Controller
             ->addColumn('aksi', function ($row) {
                 $btn = '<button onclick="modalAction(\'' . url('/laporan/show_kelola_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="calculatePriority(' . $row->laporan_id . ')" class="btn btn-success btn-sm">Kalkulasi</button>';
+
+                if ($row->status_laporan === 'diproses') {
+                    $btn .= '<br><a href="' . url('/laporan/tugaskan_teknisi/' . $row->laporan_id) . '" class="btn btn-warning btn-sm mt-1" onclick="modalAction(this.href); return false;">Tugaskan Teknisi</a>';
+                }
+
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->orderColumn('bobot', 'bobot $1')
             ->make(true);
+    }
+
+    public function tugaskan_teknisi($id, Request $request)
+    {
+        $laporan = LaporanModel::findOrFail($id);
+
+        // Cek apakah user memiliki akses (misalnya hanya sarpras)
+        if (Auth::user()->username !== 'sarpras') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Anda tidak memiliki akses untuk tindakan ini.'
+            ], 403);
+        }
+
+        if ($request->isMethod('get')) {
+            // Ambil daftar teknisi
+            $teknisi = TeknisiModel::with('user')->get();
+
+            // Render view untuk pop-up
+            $html = view('laporan.tugaskan_teknisi', compact('laporan', 'teknisi'))->render();
+
+            return response()->json([
+                'status' => 'success',
+                'html' => $html
+            ]);
+        }
+
+        if ($request->isMethod('post')) {
+            // Validasi input
+            $request->validate([
+                'teknisi_id' => 'required|exists:m_teknisi,teknisi_id',
+                'catatan' => 'nullable|string'
+            ]);
+
+            // Update laporan dengan teknisi_id dan status
+            $laporan->update([
+                'teknisi_id' => $request->teknisi_id,
+                'status_laporan' => 'proses',
+                'tanggal_diproses' => now(),
+            ]);
+
+            // Optional: Simpan catatan ke tabel lain jika diperlukan
+            // Misalnya, simpan ke tabel log atau notifikasi
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Teknisi berhasil ditugaskan.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Metode tidak diizinkan.'
+        ], 405);
     }
 
     // LaporanController.php - in kalkulasi method

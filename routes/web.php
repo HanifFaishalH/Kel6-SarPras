@@ -138,6 +138,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/{id}/update_ajax', [LaporanController::class, 'update_ajax']);
             Route::get('/kalkulasi/{id}', [LaporanController::class, 'kalkulasi']);
             Route::post('/accept/{id}', [LaporanController::class, 'accept'])->name('laporan.accept');
+            Route::get('/tugaskan_teknisi/{id}', [LaporanController::class, 'tugaskan_teknisi']);
+            Route::post('/tugaskan_teknisi/{id}', [LaporanController::class, 'tugaskan_teknisi']);
         });
     });
 

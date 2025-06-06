@@ -191,17 +191,17 @@ class LaporanController extends Controller
     {
         try {
             $laporan = LaporanModel::findOrFail($id);
-            if ($laporan->status_laporan === 'proses' || $laporan->status_laporan === 'selesai') {
+            if ($laporan->status_laporan === 'diproses' || $laporan->status_laporan === 'selesai') {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Laporan sudah dalam status Proses atau Selesai.'
                 ], 400);
             }
-            $laporan->status_laporan = 'Proses';
+            $laporan->status_laporan = 'Diproses';
             $laporan->save();
             return response()->json([
                 'status' => 'success',
-                'message' => 'Laporan berhasil diterima, status Admin diubah menjadi Disetujui, dan status Sarpras diubah menjadi Proses.'
+                'message' => 'Laporan berhasil diterima, Laporan akan segera diproses.'
             ]);
         } catch (\Exception $e) {
             return response()->json([

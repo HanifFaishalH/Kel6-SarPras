@@ -140,6 +140,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/accept/{id}', [LaporanController::class, 'accept'])->name('laporan.accept');
             Route::get('/tugaskan_teknisi/{id}', [LaporanController::class, 'tugaskan_teknisi']);
             Route::post('/tugaskan_teknisi/{id}', [LaporanController::class, 'tugaskan_teknisi']);
+            Route::post('/reject/{id}', [LaporanController::class, 'reject'])->name('laporan.reject');
         });
     });
 

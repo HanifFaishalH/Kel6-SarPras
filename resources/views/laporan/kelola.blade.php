@@ -321,5 +321,48 @@
                 }
             });
         });
+
+        $(document).on('submit', '#formRejectLaporan', function(e) {
+            e.preventDefault();
+
+            if (!confirm('Apakah Anda yakin ingin menolak laporan ini?')) {
+                return;
+            }
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    console.log('Success Response:', response);
+                    if (response.status === 'success') {
+                        $('#myModal').modal('hide');
+                        alert(response.message || 'Laporan berhasil ditolak.');
+                        $('#table_laporan').DataTable().ajax.reload(null, false);
+                    } else {
+                        alert(response.message || 'Gagal menolak laporan.');
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error Response:', xhr);
+                    let errorMsg = 'Terjadi kesalahan saat menolak laporan.';
+                    if (xhr.status === 419) {
+                        errorMsg =
+                            'Token CSRF tidak cocok atau sesi telah kedaluwarsa. Silakan refresh halaman.';
+                    } else if (xhr.status === 404) {
+                        errorMsg = 'Laporan tidak ditemukan.';
+                    } else if (xhr.status === 403) {
+                        errorMsg = 'Anda tidak memiliki akses untuk tindakan ini.';
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    alert(errorMsg);
+                }
+            });
+        });
     </script>
 @endpush

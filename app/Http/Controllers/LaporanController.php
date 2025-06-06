@@ -106,7 +106,8 @@ class LaporanController extends Controller
 
     public function list_kelola(Request $request)
     {
-        $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi']);
+        $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
+            ->where('status_laporan', '!=', 'ditolak');
 
         if ($request->laporan_id) {
             $laporan->where('laporan_id', $request->laporan_id);
@@ -285,6 +286,54 @@ class LaporanController extends Controller
                 'message' => 'Gagal memperbarui status laporan: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function reject($id, Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Anda harus login terlebih dahulu.'
+            ], 401);
+        }
+
+        $laporan = LaporanModel::findOrFail($id);
+
+        // Cek apakah pengguna memiliki akses (misalnya hanya sarpras)
+        if (Auth::user()->username !== 'sarpras') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Anda tidak memiliki akses untuk tindakan ini.'
+            ], 403);
+        }
+
+        if ($laporan->status_laporan === 'diproses') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Laporan Tidak bisa ditolak karena sedang diproses!'
+            ], 400);
+        } elseif ($laporan->status_laporan === 'dikerjakan') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Laporan Tidak bisa ditolak karena sedang dikerjakan!'
+            ], 400);
+        } elseif ($laporan->status_laporan === 'selesai') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Laporan Tidak bisa ditolak karena sudah selesai!'
+            ], 400);
+        }
+
+        // Proses penolakan laporan
+        $laporan->update([
+            'status_laporan' => 'ditolak',
+            'tanggal_selesai' => now(),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Laporan berhasil ditolak.'
+        ]);
     }
 
     public function show_ajax($id)

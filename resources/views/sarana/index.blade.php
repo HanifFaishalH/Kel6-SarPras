@@ -10,7 +10,7 @@
             <div class="col-12 mt-1">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="header-title">{{ $page->title }}</h4>
+                        <h4 class="header-title">{{ $page->title ?? 'Data Sarana' }}</h4>
 
                         @if (session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
@@ -32,7 +32,7 @@
                             </div>
                             <div class="col-sm-6 text-right">
                                 <button type="button" class="btn btn-primary"
-                                    onclick="modalAction('{{ url('sarana/create') }}')">
+                                    onclick="modalAction('{{ url('sarana/create_ajax') }}')">
                                     <i class="fa fa-plus"></i> Tambah Sarana
                                 </button>
                             </div>
@@ -48,7 +48,7 @@
                                         <th>Kode</th>
                                         <th>Nama Barang</th>
                                         <th>Kategori</th>
-                                        <th>Nomor Urut
+                                        <th>Nomor Urut</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -70,10 +70,93 @@
     <script>
         function modalAction(url = '') {
             $('#myModal').load(url, function(response, status, xhr) {
-                if (status == "error") {
-                    $('#myModal').html('<div class="alert alert-danger">Belum buat</div>');
+                if (status === "error") {
+                    $('#myModal').html(
+                        '<div class="modal-dialog"><div class="modal-content"><div class="modal-body"><div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div></div></div></div>'
+                    );
                 }
                 $('#myModal').modal('show');
+
+                // Handle form create sarana
+                $('#form-create-sarana').on('submit', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                alert(response.message);
+                                dataSarana.ajax.reload(null, false); // Reload tabel
+                            }
+                        },
+                        error: function(xhr) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                let errorMsg = 'Gagal tambah sarana:\n';
+                                $.each(errors, function(key, value) {
+                                    errorMsg += `- ${value}\n`;
+                                });
+                                alert(errorMsg);
+                            } else {
+                                alert('Gagal tambah sarana. Silakan coba lagi.');
+                            }
+                        }
+                    });
+                });
+
+                // Handle form update sarana
+                $('#form-update-sarana').on('submit', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'PUT',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                alert(response.message);
+                                dataSarana.ajax.reload(null, false); // Reload tabel
+                            }
+                        },
+                        error: function(xhr) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                let errorMsg = 'Gagal update sarana:\n';
+                                $.each(errors, function(key, value) {
+                                    errorMsg += `- ${value}\n`;
+                                });
+                                alert(errorMsg);
+                            } else {
+                                alert('Gagal update sarana. Silakan coba lagi.');
+                            }
+                        }
+                    });
+                });
+
+                // Handle form delete sarana
+                $('#form-delete-sarana').on('submit', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'DELETE',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                alert(response.message);
+                                dataSarana.ajax.reload(null, false); // Reload tabel
+                            }
+                        },
+                        error: function(xhr) {
+                            alert('Gagal menghapus sarana. Silakan coba lagi.');
+                        }
+                    });
+                });
             });
         }
 
@@ -85,21 +168,32 @@
                 ajax: {
                     url: "{{ url('sarana/list') }}",
                     type: "GET",
+                    dataType: "json",
                     data: function(d) {
                         d.kategori_id = $('#kategori_id').val();
+                    },
+                    error: function(xhr) {
+                        console.error('DataTable AJAX error:', xhr.responseText);
+                        alert('Gagal memuat data tabel. Silakan coba lagi.');
                     }
                 },
                 columns: [{
                         data: "DT_RowIndex",
-                        name: "sarana_id"
+                        name: "DT_RowIndex",
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: "lantai_nama",
-                        name: "lantai_nama"
+                        name: "lantai_nama",
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: "ruang_nama",
-                        name: "ruang_nama"
+                        name: "ruang_nama",
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: "sarana_kode",
@@ -107,11 +201,15 @@
                     },
                     {
                         data: "barang_nama",
-                        name: "barang_nama"
+                        name: "barang_nama",
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: "kategori_nama",
-                        name: "kategori_nama"
+                        name: "kategori_nama",
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: "nomor_urut",
@@ -130,7 +228,7 @@
             });
 
             $('#kategori_id').on('change', function() {
-                dataSarana.ajax.reload();
+                dataSarana.ajax.reload(null, false);
             });
         });
     </script>

@@ -10,7 +10,8 @@ use Yajra\DataTables\DataTables;
 
 class RuangController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $ruang = RuangModel::all();
         $lantai = LantaiModel::all();
 
@@ -33,10 +34,8 @@ class RuangController extends Controller
 
     public function list(Request $request)
     {
-        // Query builder with eager loading
         $ruang = RuangModel::with('lantai');
 
-        // Apply filters if any
         if ($request->lantai_id) {
             $ruang->where('lantai_id', $request->lantai_id);
         }
@@ -46,14 +45,25 @@ class RuangController extends Controller
             ->addColumn('lantai', function ($row) {
                 return $row->lantai ? $row->lantai->lantai_nama : '-';
             })
-            ->addColumn('aksi', function ($row)  {
-                $btn = '<button onclick="modalAction(\'' . url('/ruang/show_kelola_ajax/' . $row->ruang_id) . '\')" class="btn btn-info btn-sm" style="margin-bottom: 5px;">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/ruang/edit_ajax/' . $row->ruang_id) . '\')" class="btn btn-warning btn-sm" style="margin-bottom: 5px;">Edit</button> ';
+            ->addColumn('aksi', function ($row) {
+                $btn = '<button onclick="modalAction(\'' . url('/ruang/show/' . $row->ruang_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/ruang/edit_ajax/' . $row->ruang_id) . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/ruang/delete_ajax/' . $row->ruang_id) . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
+    }
+
+    public function show(string $id)
+    {
+        $ruang = RuangModel::find($id);
+
+        if (!$ruang) {
+            abort(404, 'Ruang tidak ditemukan');
+        }
+
+        return view('ruang.show', compact('ruang'));
     }
 
     public function create_ajax()

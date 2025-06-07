@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [RuangController::class, 'index']);
             Route::get('/list', [RuangController::class, 'list']);
             Route::get('/create_ajax', [RuangController::class, 'create_ajax']);
+            Route::get('/show/{id}', [RuangController::class, 'show']);
             Route::post('/store_ajax', [RuangController::class, 'store_ajax']);
             Route::get('/edit_ajax/{id}', [RuangController::class, 'edit_ajax']);
             Route::put('/update_ajax/{id}', [RuangController::class, 'update_ajax']);

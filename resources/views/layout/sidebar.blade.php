@@ -119,13 +119,15 @@
                         </li>
                     @endif
 
-                    @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras']))
+                    @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras', 'teknisi']))
                         <!-- Laporan Management (for sarpras and admin) -->
                         <li
                             class="nav nav-second-level collapse {{ in_array($activeMenu, ['kelola', 'riwayat']) ? 'in' : '' }}">
-                        <li><a href="{{ url('/laporan/kelola') }}"
+                        <li>
+                            <a href="{{ url('/laporan/kelola') }}"
                                 class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}"><i class="fa fa-wrench"></i>
-                                Kelola Laporan</a></li>
+                                <span>
+                                </span>Kelola Laporan</a>
                         </li>
                     @endif
 

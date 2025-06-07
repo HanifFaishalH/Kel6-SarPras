@@ -9,6 +9,7 @@ use App\Models\LantaiModel;
 use App\Models\RuangModel;
 use App\Models\SaranaModel;
 use App\Models\TeknisiModel;
+use App\Models\UserModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -136,7 +137,11 @@ class LaporanController extends Controller
             })
             ->addColumn('aksi', function ($row) {
                 $btn = '<button onclick="modalAction(\'' . url('/laporan/show_kelola_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="calculatePriority(' . $row->laporan_id . ')" class="btn btn-success btn-sm">Kalkulasi</button>';
+                if (empty($row->bobot)) {
+                    if ($row->status_laporan === 'diproses') {
+                        $btn .= '<button onclick="calculatePriority(' . $row->laporan_id . ')" class="btn btn-success btn-sm">Kalkulasi</button>';
+                    }
+                }
 
                 if ($row->status_laporan === 'diproses') {
                     $btn .= '<br><a href="' . url('/laporan/tugaskan_teknisi/' . $row->laporan_id) . '" class="btn btn-warning btn-sm mt-1" onclick="modalAction(this.href); return false;">Tugaskan Teknisi</a>';
@@ -207,9 +212,34 @@ class LaporanController extends Controller
             'message' => 'Metode tidak diizinkan.'
         ], 405);
     }
+    
+    public function finish($id)
+    {
+        try {
+            $laporan = LaporanModel::findOrFail($id);
+            if ($laporan->status_laporan !== 'dikerjakan') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Laporan tidak dalam status Dikerjakan.'
+                ], 400);
+            }
+    
+            $laporan->status_laporan = 'selesai';
+            $laporan->tanggal_selesai = now();
+            $laporan->save();
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Laporan berhasil diselesaikan.'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui status laporan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
-
-    // LaporanController.php - in kalkulasi method
     public function kalkulasi($id)
     {
         $laporan = LaporanModel::findOrFail($id);
@@ -280,7 +310,7 @@ class LaporanController extends Controller
                 'status' => 'success',
                 'message' => 'Laporan berhasil diterima, Laporan akan segera diproses.'
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal memperbarui status laporan: ' . $e->getMessage()
@@ -390,7 +420,7 @@ class LaporanController extends Controller
                 'status' => 'error',
                 'message' => 'Laporan tidak ditemukan.'
             ], 404);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Terjadi kesalahan saat mengambil data laporan.'

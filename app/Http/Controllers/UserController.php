@@ -17,7 +17,7 @@ class UserController extends Controller
                 return response()->json(['error' => 'Unauthorized access'], 403);
             }
         }
-        
+
         $user = UserModel::all();
         $level = LevelModel::all();
         $breadcrumbs = [
@@ -82,30 +82,30 @@ class UserController extends Controller
     }
 
     public function show(string $id)
-{
-    $user = UserModel::find($id);
+    {
+        $user = UserModel::find($id);
 
-    if (!$user) {
-        abort(404, 'User tidak ditemukan');
+        if (!$user) {
+            abort(404, 'User tidak ditemukan');
+        }
+
+        return view('user.show', compact('user'));
     }
-
-    return view('user.show', compact('user'));
-}
 
 
     // Edit
 
     public function edit($id)
-   {
-    $user = UserModel::find($id);
-    $level = LevelModel::all();
+    {
+        $user = UserModel::find($id);
+        $level = LevelModel::all();
 
-    if (!$user) {
-        abort(404, 'User tidak ditemukan');
+        if (!$user) {
+            abort(404, 'User tidak ditemukan');
+        }
+
+        return view('user.edit', compact('user', 'level'));
     }
-
-    return view('user.edit', compact('user', 'level'));
-}
 
 
     public function update(Request $request, $id)
@@ -119,7 +119,7 @@ class UserController extends Controller
             'password' => 'nullable|min:5',
         ]);
 
-        if($request->filled('password')){
+        if ($request->filled('password')) {
             $user->password = Hash::make($request['password']);
         }
 
@@ -130,18 +130,53 @@ class UserController extends Controller
     }
 
     public function destroy($id)
-{
-    $user = UserModel::find($id);
+    {
+        $user = UserModel::find($id);
 
-    if (!$user) {
-        return response()->json(['message' => 'User tidak ditemukan.'], 404);
+        if (!$user) {
+            return response()->json(['message' => 'User tidak ditemukan.'], 404);
+        }
+
+        try {
+            $user->delete();
+            return response()->json(['message' => 'User berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Terjadi kesalahan saat menghapus user.'], 500);
+        }
     }
 
-    try {
-        $user->delete();
-        return response()->json(['message' => 'User berhasil dihapus.']);
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Terjadi kesalahan saat menghapus user.'], 500);
+    public function create_ajax(Request $request)
+    {
+        $level = LevelModel::all();
+        return view('user.create_ajax', compact('level'));
     }
-}
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'level_id' => 'required|exists:m_level,level_id',
+            'username' => 'required|unique:m_users,username',
+            'password' => 'required|min:6',
+            'nama' => 'required',
+            'no_induk' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // Upload foto jika ada
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('foto_user', 'public');
+        }
+
+        UserModel::create([
+            'level_id' => $request->level_id,
+            'username' => $request->username,
+            'password' => bcrypt($request->password),
+            'nama' => $request->nama,
+            'no_induk' => $request->no_induk,
+            'foto' => $fotoPath,
+        ]);
+
+        return response()->json(['status' => 'success']);
+    }
 }

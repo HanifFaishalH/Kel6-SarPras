@@ -19,6 +19,8 @@
                         @if (session('error'))
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
+                        <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-info">Tambah
+                            User</button>
 
                         <div class="form-group row">
                             <label class="col-form-label col-sm-2">Filter Level:</label>
@@ -104,45 +106,36 @@
             });
 
             $(document).on('click', '.btn-hapus', function () {
-    var id = $(this).data('id');
-
-    Swal.fire({
-        title: 'Yakin ingin menghapus?',
-        text: "Data pengguna tidak bisa dikembalikan!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Ya, hapus!',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: '/user/' + id,
-                type: 'DELETE',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (response) {
-                    Swal.fire(
-                        'Berhasil!',
-                        response.message,
-                        'success'
-                    );
-                    dataUser.ajax.reload();
-                },
-                error: function (xhr) {
-                    Swal.fire(
-                        'Gagal!',
-                        xhr.status === 404 ? 'User tidak ditemukan.' : 'Terjadi kesalahan.',
-                        'error'
-                    );
-                }
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    text: "Data pengguna tidak bisa dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/user/' + id, // Sesuai dengan route /user/{id}
+                            type: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Header CSRF
+                            },
+                            success: function (response) {
+                                Swal.fire('Berhasil!', response.message, 'success');
+                                dataUser.ajax.reload();
+                            },
+                            error: function (xhr) {
+                                Swal.fire('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan.', 'error');
+                                console.log(xhr.responseText); // Untuk debugging
+                            }
+                        });
+                    }
+                });
             });
-        }
-    });
-});
         });
-</script>
-
+    </script>
 @endpush

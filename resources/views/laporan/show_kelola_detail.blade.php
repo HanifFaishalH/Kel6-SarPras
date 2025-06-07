@@ -29,8 +29,7 @@
 
         <div class="form-group">
             <label>Sarana</label>
-            <input type="text" class="form-control" value="{{ $laporan->sarana->barang->barang_nama ?? '-' }}"
-                readonly>
+            <input type="text" class="form-control" value="{{ $laporan->sarana->barang->barang_nama ?? '-' }}" readonly>
         </div>
 
         <div class="form-group">
@@ -66,35 +65,43 @@
 
         <div class="form-group">
             <label>Tanggal Operasional</label>
-            <input type="text" class="form-control" value="{{ $laporan->sarana->tanggal_operasional ?? '-' }}"
-                readonly>
+            <input type="text" class="form-control" value="{{ $laporan->sarana->tanggal_operasional ?? '-' }}" readonly>
         </div>
 
         <div class="form-group">
             <label>Usia (Sejak Operasional)</label>
-            <input type="text" class="form-control"
-                value="@if ($laporan->sarana->tanggal_operasional) @php
+            <input type="text" class="form-control" value="@if ($laporan->sarana->tanggal_operasional) @php
                     $operasional = \Carbon\Carbon::parse($laporan->sarana->tanggal_operasional);
                     $now = \Carbon\Carbon::now();
                     $usia = $operasional->diff($now);
                 @endphp
-                {{ $usia->y }} tahun, {{ $usia->m }} bulan, {{ $usia->d }} hari
+                                {{ $usia->y }} tahun, {{ $usia->m }} bulan, {{ $usia->d }} hari
             @else
-                - @endif"
-                readonly>
+            - @endif" readonly>
         </div>
     </div>
     <div class="modal-footer">
-        <form id="formDetailLaporan" method="POST" action="{{ route('laporan.accept', $laporan->laporan_id) }}">
-            @csrf
-            <input type="hidden" name="laporan_id" value="{{ $laporan->laporan_id }}">
-            <button type="submit" class="btn btn-primary">Terima Laporan</button>            
-        </form>
-        <form id="formRejectLaporan" method="POST" action="{{ route('laporan.reject', $laporan->laporan_id) }}">
-            @csrf
-            <input type="hidden" name="laporan_id" value="{{ $laporan->laporan_id }}">
-            <button type="submit" class="btn btn-danger">Tolak Laporan</button>
-        </form>
+        @if(strtolower($laporan->status_laporan) === 'pending')
+            <form id="formDetailLaporan" method="POST" action="{{ route('laporan.accept', $laporan->laporan_id) }}">
+                @csrf
+                <input type="hidden" name="laporan_id" value="{{ $laporan->laporan_id }}">
+                <button type="submit" class="btn btn-primary">Terima Laporan</button>
+            </form>
+            <form id="formRejectLaporan" method="POST" action="{{ route('laporan.reject', $laporan->laporan_id) }}">
+                @csrf
+                <input type="hidden" name="laporan_id" value="{{ $laporan->laporan_id }}">
+                <button type="submit" class="btn btn-danger">Tolak Laporan</button>
+            </form>
+        @endif
+
+        @if(strtolower($laporan->status_laporan) === 'dikerjakan')
+            <form id="formFinishLaporan" method="POST" action="{{ route('laporan.finish', $laporan->laporan_id) }}">
+                @csrf
+                <input type="hidden" name="laporan_id" value="{{ $laporan->laporan_id }}">
+                <button type="submit" class="btn btn-success">Kerjakan</button>
+            </form>
+        @endif
+
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
     </div>
 </div>

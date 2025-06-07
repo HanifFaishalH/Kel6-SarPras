@@ -130,11 +130,22 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    Route::middleware(['authorize:sarpras'])->group(function (): void {
+    Route::middleware(['authorize:sarpras,teknisi'])->group(function (): void {
         Route::group(['prefix' => 'laporan'], function () {
             Route::get('/kelola', [LaporanController::class, 'kelola']);
             Route::get('/list_kelola', [LaporanController::class, 'list_kelola']);
             Route::get('/show_kelola_ajax/{id}', [LaporanController::class, 'show_kelola'])->name('laporan.show_kelola_detail');
+        });
+    });
+
+    Route::middleware(['authorize:teknisi'])->group(function (): void {
+        Route::group(['prefix' => 'laporan'], function () {
+            Route::post('/finish/{id}', [LaporanController::class, 'finish'])->name('laporan.finish');
+        });
+    });
+
+    Route::middleware(['authorize:sarpras'])->group(function (): void {
+        Route::group(['prefix' => 'laporan'], function () {
             Route::post('/{id}/update_ajax', [LaporanController::class, 'update_ajax']);
             Route::get('/kalkulasi/{id}', [LaporanController::class, 'kalkulasi']);
             Route::post('/accept/{id}', [LaporanController::class, 'accept'])->name('laporan.accept');

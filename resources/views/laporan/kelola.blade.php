@@ -98,7 +98,7 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) {
+                success: function (response) {
                     console.log('Response:', response); // Debugging
                     if (response.status === 'success' && response.html) {
                         $('#myModal .modal-content').html(response.html);
@@ -110,7 +110,7 @@
                         );
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error('AJAX Error:', status, error, xhr.responseText); // Debugging
                     let errorMsg = 'Gagal memuat konten. Silakan coba lagi.';
 
@@ -139,11 +139,11 @@
                 url: '{{ url('laporan/kalkulasi') }}/' + laporanId,
                 type: 'GET',
                 dataType: 'json',
-                beforeSend: function() {
+                beforeSend: function () {
                     // Optionally disable the button to prevent multiple clicks
                     $('button[onclick*="kalkulasi/' + laporanId + '"]').prop('disabled', true);
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.status === 'success' && response.html) {
                         $('#myModal .modal-content').html(response.html);
                         // Optionally update modal title
@@ -161,7 +161,7 @@
                         );
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     let errorMsg = 'Terjadi kesalahan saat melakukan kalkulasi.';
                     if (xhr.status === 403) {
                         errorMsg = 'Anda tidak memiliki akses untuk melakukan kalkulasi ini.';
@@ -178,69 +178,69 @@
                         '<button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>'
                     );
                 },
-                complete: function() {
+                complete: function () {
                     // Re-enable the button
                     $('button[onclick*="kalkulasi/' + laporanId + '"]').prop('disabled', false);
                 }
             });
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             let dataLaporan = $('#table_laporan').DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
                 ajax: {
                     url: "{{ url('laporan/list_kelola') }}",
-                    data: function(d) {
+                    data: function (d) {
                         d.status = $('#status').val();
                     }
                 },
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                    },
-                    {
-                        data: 'laporan_judul',
-                        name: 'laporan_judul'
-                    },
-                    {
-                        data: 'sarana',
-                        name: 'sarana'
-                    },
-                    {
-                        data: 'status_laporan',
-                        name: 'status_laporan'
-                    },
-                    {
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
-                    {
-                        data: 'bobot',
-                        name: 'bobot',
-                        render: function(data, type, row) {
-                            return data ? Math.floor(data) : '-';
-                        }
-                    },
-                    {
-                        data: 'aksi',
-                        name: 'aksi',
-
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                },
+                {
+                    data: 'laporan_judul',
+                    name: 'laporan_judul'
+                },
+                {
+                    data: 'sarana',
+                    name: 'sarana'
+                },
+                {
+                    data: 'status_laporan',
+                    name: 'status_laporan'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
+                {
+                    data: 'bobot',
+                    name: 'bobot',
+                    render: function (data, type, row) {
+                        return data ? Math.floor(data) : '-';
                     }
+                },
+                {
+                    data: 'aksi',
+                    name: 'aksi',
+
+                }
                 ],
                 order: [
                     [5, 'desc']
                 ]
             });
 
-            $('#status').on('change', function() {
+            $('#status').on('change', function () {
                 dataLaporan.ajax.reload();
             });
         });
 
         // Remove this function completely or replace with:
-        $(document).on('submit', '#formDetailLaporan', function(e) {
+        $(document).on('submit', '#formDetailLaporan', function (e) {
             e.preventDefault();
 
             if (!confirm('Apakah Anda yakin ingin menerima laporan ini? Status akan berubah menjadi "Proses".')) {
@@ -252,7 +252,7 @@
                 type: 'POST',
                 data: $(this).serialize(),
                 dataType: 'json',
-                success: function(response) {
+                success: function (response) {
                     console.log('Success Response:', response);
                     if (response.status === 'success') {
                         $('#myModal').modal('hide');
@@ -263,7 +263,7 @@
                         alert(response.message || 'Gagal menerima laporan.');
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error('Error Response:', xhr);
                     let errorMsg = 'Terjadi kesalahan saat menerima laporan.';
                     if (xhr.status === 419) {
@@ -279,7 +279,7 @@
             });
         });
 
-        $(document).on('submit', '#formTugaskanTeknisi', function(e) {
+        $(document).on('submit', '#formTugaskanTeknisi', function (e) {
             e.preventDefault();
 
             if (!confirm('Apakah Anda yakin ingin menugaskan teknisi ini?')) {
@@ -294,7 +294,7 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) {
+                success: function (response) {
                     console.log('Success Response:', response);
                     if (response.status === 'success') {
                         $('#myModal').modal('hide');
@@ -304,7 +304,7 @@
                         alert(response.message || 'Gagal menugaskan teknisi.');
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error('Error Response:', xhr);
                     let errorMsg = 'Terjadi kesalahan saat menugaskan teknisi.';
                     if (xhr.status === 419) {
@@ -322,7 +322,7 @@
             });
         });
 
-        $(document).on('submit', '#formRejectLaporan', function(e) {
+        $(document).on('submit', '#formRejectLaporan', function (e) {
             e.preventDefault();
 
             if (!confirm('Apakah Anda yakin ingin menolak laporan ini?')) {
@@ -337,7 +337,7 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) {
+                success: function (response) {
                     console.log('Success Response:', response);
                     if (response.status === 'success') {
                         $('#myModal').modal('hide');
@@ -347,9 +347,52 @@
                         alert(response.message || 'Gagal menolak laporan.');
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error('Error Response:', xhr);
                     let errorMsg = 'Terjadi kesalahan saat menolak laporan.';
+                    if (xhr.status === 419) {
+                        errorMsg =
+                            'Token CSRF tidak cocok atau sesi telah kedaluwarsa. Silakan refresh halaman.';
+                    } else if (xhr.status === 404) {
+                        errorMsg = 'Laporan tidak ditemukan.';
+                    } else if (xhr.status === 403) {
+                        errorMsg = 'Anda tidak memiliki akses untuk tindakan ini.';
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    alert(errorMsg);
+                }
+            });
+        });
+
+        $(document).on('submit', '#formFinishLaporan', function (e) {
+            e.preventDefault();
+
+            if (!confirm('Apakah Anda yakin ingin menandai laporan ini sebagai selesai?')) {
+                return;
+            }
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    console.log('Success Response:', response);
+                    if (response.status === 'success') {
+                        $('#myModal').modal('hide');
+                        alert(response.message || 'Laporan berhasil diselesaikan.');
+                        $('#table_laporan').DataTable().ajax.reload(null, false);
+                    } else {
+                        alert(response.message || 'Gagal menandai laporan sebagai selesai.');
+                    }
+                },
+                error: function (xhr) {
+                    console.error('Error Response:', xhr);
+                    let errorMsg = 'Terjadi kesalahan saat menandai laporan sebagai selesai.';
                     if (xhr.status === 419) {
                         errorMsg =
                             'Token CSRF tidak cocok atau sesi telah kedaluwarsa. Silakan refresh halaman.';

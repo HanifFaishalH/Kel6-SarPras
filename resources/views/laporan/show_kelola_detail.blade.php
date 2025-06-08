@@ -38,6 +38,11 @@
         </div>
 
         <div class="form-group">
+            <label>Teknisi yang Ditugaskan</label>
+            <input type="text" class="form-control" value="{{ $laporan->teknisi->user->username ?? 'Belum ditugaskan' }}" readonly>
+        </div>
+
+        <div class="form-group">
             <label>Foto Laporan</label>
             @if ($laporan->laporan_foto)
                 <img src="{{ $laporan->laporan_foto }}" alt="Foto Laporan" class="img-fluid"

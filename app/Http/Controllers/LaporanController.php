@@ -107,6 +107,8 @@ class LaporanController extends Controller
 
     public function list_kelola(Request $request)
     {
+        $user = auth()->user();
+        $teknisi = TeknisiModel::where('user_id', $user->user_id)->first();
         $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
             ->where('status_laporan', '!=', 'ditolak');
 
@@ -116,6 +118,11 @@ class LaporanController extends Controller
 
         if ($request->status) {
             $laporan->where('status', $request->status);
+        }
+
+        if ($user->level->level_name !== 'admin') {
+            // Bukan admin, batasi hanya laporan milik user ini
+            $laporan->where('teknisi_id', $teknisi->teknisi_id);
         }
 
         return datatables()->of($laporan)

@@ -19,6 +19,7 @@
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
 
+                        {{-- filter kategori --}}
                         <div class="form-group row">
                             <label class="col-form-label col-sm-2">Filter Kategori:</label>
                             <div class="col-sm-4">
@@ -30,6 +31,23 @@
                                 </select>
                                 <small class="form-text text-muted">Kategori Sarana</small>
                             </div>
+                        </div>
+
+                        {{-- filter lantai --}}
+                        <div class="form-group row">
+                            <label class="col-form-label col-sm-2">Filter Lantai:</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" id="lantai_id" name="lantai_id">
+                                    <option value="">- Pilih lantai -</option>
+                                    @foreach ($lantai as $item)
+                                        <option value="{{ $item->lantai_id }}">{{ $item->lantai_nama }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="form-text text-muted">Lantai Sarana</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <div class="col-sm-6 text-right">
                                 <button type="button" class="btn btn-primary"
                                     onclick="modalAction('{{ url('sarana/create_ajax') }}')">
@@ -171,6 +189,7 @@
                     dataType: "json",
                     data: function(d) {
                         d.kategori_id = $('#kategori_id').val();
+                        d.lantai_id = $('#lantai_id').val();
                     },
                     error: function(xhr) {
                         console.error('DataTable AJAX error:', xhr.responseText);
@@ -228,6 +247,9 @@
             });
 
             $('#kategori_id').on('change', function() {
+                dataSarana.ajax.reload(null, false);
+            });
+            $('#lantai_id').on('change', function() {
                 dataSarana.ajax.reload(null, false);
             });
         });

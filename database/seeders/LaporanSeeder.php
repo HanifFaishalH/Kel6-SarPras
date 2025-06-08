@@ -4,61 +4,85 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class LaporanSeeder extends Seeder
 {
     public function run(): void
     {
-        $ruangs = DB::table('m_ruang')->get();
-        $laporan = [];
-        $count = 0;
+        DB::table('t_laporan_kerusakan')->insert([
+            [
+                'user_id' => 3,
+                'role' => 'mhs',
+                'gedung_id' => 1,
+                'lantai_id' => 5,
+                'ruang_id' => 6,
+                'sarana_id' => 178,
+                'teknisi_id' => 1,
 
-        foreach ($ruangs as $index => $ruang) {
-            $lantai = DB::table('m_lantai')->where('lantai_id', $ruang->lantai_id)->first();
-            $gedung = DB::table('m_gedung')->where('gedung_id', $lantai->gedung_id ?? 1)->first();
-            $sarana = DB::table('m_sarana')->where('ruang_id', $ruang->ruang_id)->first();
+                'laporan_judul' => 'Kerusakan Proyektor',
+                'laporan_foto' => 'laporan_files/proyektor_rusak.jpg',
 
-            if (!$sarana) continue;
+                'tingkat_kerusakan' => 'tinggi',
+                'tingkat_urgensi' => 'sedang',
+                'dampak_kerusakan' => 'besar',
 
-            $barang = DB::table('m_barang')->where('barang_id', $sarana->barang_id)->first();
+                'status_laporan' => 'diproses',
+                'tanggal_diproses' => Carbon::now()->subDays(2),
+                'tanggal_selesai' => null,
 
-            $laporan[] = [
-                'user_id' => rand(2, 4),
-                'role' => ['mhs', 'dosen', 'tendik'][rand(0, 2)],
-                'gedung_id' => $gedung->gedung_id,
-                'lantai_id' => $lantai->lantai_id,
-                'ruang_id' => $ruang->ruang_id,
-                'sarana_id' => $sarana->sarana_id,
-                'teknisi_id' => null,
+                'bobot' => 0.752,
+                'created_at' => Carbon::now()->subDays(3),
+                'updated_at' => Carbon::now()->subDays(1),
+            ],
+            [
+                'user_id' => 4,
+                'role' => 'dosen',
+                'gedung_id' => 1,
+                'lantai_id' => 6,
+                'ruang_id' => 22,
+                'sarana_id' => 594,
+                'teknisi_id' => 2,
 
-                'laporan_judul' => 'Kerusakan pada ' . $barang->barang_nama . ' (' . $sarana->sarana_kode . ') di ' . $ruang->ruang_nama,
+                'laporan_judul' => 'Lemari rusak',
+                'laporan_foto' => 'laporan_files/kursi_dosen.jpg',
+
+                'tingkat_kerusakan' => 'sedang',
+                'tingkat_urgensi' => 'rendah',
+                'dampak_kerusakan' => 'sedang',
+
+                'status_laporan' => 'selesai',
+                'tanggal_diproses' => Carbon::now()->subDays(5),
+                'tanggal_selesai' => Carbon::now()->subDays(1),
+
+                'bobot' => 0.483,
+                'created_at' => Carbon::now()->subDays(6),
+                'updated_at' => Carbon::now()->subDays(1),
+            ],
+            [
+                'user_id' => 5,
+                'role' => 'tendik',
+                'gedung_id' => 1,
+                'lantai_id' => 8,
+                'ruang_id' => 67,
+                'sarana_id' => 1644,
+                'teknisi_id' => null, // Belum ditugaskan
+
+                'laporan_judul' => 'AC tidak dingin',
                 'laporan_foto' => null,
 
-                'tingkat_kerusakan' => ['rendah', 'sedang', 'tinggi', 'kritis'][rand(0, 3)],
-                'tingkat_urgensi' => ['rendah', 'sedang', 'tinggi', 'kritis'][rand(0, 3)],
-                'frekuensi_penggunaan' => ['harian', 'mingguan', 'bulanan', 'tahunan'][rand(0, 3)],
-                'dampak_kerusakan' => ['minor', 'kecil', 'sedang', 'besar'][rand(0, 3)],
-                'tanggal_operasional' => Carbon::now()->subDays(rand(10, 100)),
+                'tingkat_kerusakan' => 'rendah',
+                'tingkat_urgensi' => 'rendah',
+                'dampak_kerusakan' => 'kecil',
 
                 'status_laporan' => 'pending',
                 'tanggal_diproses' => null,
-                'tanggal_perbaikan' => null,
                 'tanggal_selesai' => null,
 
-                'status_admin' => 'pending',
-                'status_sarpras' => 'belum diproses',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-
-            $count++;
-            if ($count >= 10) {
-                break; // Batasi jumlah laporan yang dibuat
-            }
-        }
-
-        DB::table('t_laporan_kerusakan')->insert($laporan);
+                'bobot' => null,
+                'created_at' => Carbon::now()->subDay(),
+                'updated_at' => Carbon::now()->subDay(),
+            ]
+        ]);
     }
 }

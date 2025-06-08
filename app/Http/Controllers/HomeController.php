@@ -8,6 +8,7 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
         $breadcrumbs = [
             'title' => 'Dashboard',
             'list' => ['home']
@@ -22,7 +23,8 @@ class HomeController extends Controller
         return view('layout.welcome', [
             'breadcrumbs' => $breadcrumbs,
             'page' => $page,
-            'activeMenu' => $activeMenu
+            'activeMenu' => $activeMenu,
+            'user' => $user,
         ]);
     }
 }

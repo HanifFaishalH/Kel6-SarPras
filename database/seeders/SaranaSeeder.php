@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class SaranaSeeder extends Seeder
 {
@@ -20,7 +19,6 @@ class SaranaSeeder extends Seeder
         $data = [];
         $counter = 1;
 
-        // Define room configurations in a more readable way
         $roomConfigurations = [
             // Room ID 1: Ruang Laboratorium Praktik
             1 => [
@@ -859,51 +857,63 @@ class SaranaSeeder extends Seeder
                 ['kategori_id' => 6, 'barang_id' => 24, 'jumlah' => 1],
                 ['kategori_id' => 6, 'barang_id' => 25, 'jumlah' => 1],
             ],
-
-
         ];
 
+        $counter = 1;
         $nomorUrutCounter = [];
+        $frekuensiOptions = ['harian', 'mingguan', 'bulanan', 'tahunan'];
+        $tingkatKerusakanOptions = ['rendah', 'sedang', 'tinggi'];
 
         foreach ($roomConfigurations as $roomId => $items) {
             foreach ($items as $item) {
-                // Mereset Setiap Ruangan/Barang
                 if (!isset($nomorUrutCounter[$roomId][$item['barang_id']])) {
                     $nomorUrutCounter[$roomId][$item['barang_id']] = 1;
                 }
 
                 for ($i = 0; $i < $item['jumlah']; $i++) {
-                    $saranaKode = "SARANA-{$counter}";
+                    $saranaKode = "SAR-".str_pad($counter, 4, '0', STR_PAD_LEFT);
                     $counter++;
 
+                    // Randomize some values for realism
+                    $frekuensi = $frekuensiOptions[array_rand($frekuensiOptions)];
+                    $tingkatKerusakan = $tingkatKerusakanOptions[array_rand($tingkatKerusakanOptions)];
+                    $skorPrioritas = $tingkatKerusakan ? mt_rand(10, 100) / 100 : null;
+                    
+                    // Random operational date (within last 5 years)
+                    $tanggalOperasional = Carbon::now()
+                        ->subYears(rand(0, 5))
+                        ->subMonths(rand(0, 12))
+                        ->subDays(rand(0, 30));
+
                     $data[] = [
+                        'sarana_kode' => $saranaKode,
                         'ruang_id' => $roomId,
                         'kategori_id' => $item['kategori_id'],
                         'barang_id' => $item['barang_id'],
-                        'sarana_kode' => $saranaKode,
-                        'jumlah_laporan' => 0,
-                        'nomor_urut' => $nomorUrutCounter[$roomId][$item['barang_id']], // Set nomor urut
-                        'frekuensi_penggunaan' => 'harian', // Default value
-                        'tanggal_operasional' => $now,
+                        'jumlah_laporan' => rand(0, 10), // Random report count
+                        'nomor_urut' => $nomorUrutCounter[$roomId][$item['barang_id']],
+                        'frekuensi_penggunaan' => $frekuensi,
+                        'tanggal_operasional' => $tanggalOperasional,
+                        'tingkat_kerusakan_tertinggi' => $tingkatKerusakan,
+                        'skor_prioritas' => $skorPrioritas,
                         'created_at' => $now,
                         'updated_at' => $now,
                     ];
 
-                    // Menambah/Increment Nomor Ururt Setiap Barang
                     $nomorUrutCounter[$roomId][$item['barang_id']]++;
 
-                    
+                    // Insert in batches of 500
                     if (count($data) >= 500) {
-                        DB::table('m_sarana')->insertOrIgnore($data);
+                        DB::table('m_sarana')->insert($data);
                         $data = [];
                     }
                 }
             }
         }
 
-        // Masukkan sisa data yang belum diinsert
+        // Insert remaining records
         if (!empty($data)) {
-            DB::table('m_sarana')->insertOrIgnore($data);
+            DB::table('m_sarana')->insert($data);
         }
     }
 }

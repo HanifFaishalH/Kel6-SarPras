@@ -65,6 +65,8 @@ Route::middleware(['auth'])->group(function () {
         Route::group(['prefix' => 'laporan'], function () {
             Route::get('/per_tahun', [LaporanKerusakanController::class, 'laporanPerTahun']);
             Route::get('/per_bulan', [LaporanKerusakanController::class, 'laporanPerBulan']);
+            Route::get('/per_barang', [LaporanKerusakanController::class, 'laporanPerBarang']);
+
         });
 
         Route::group(['prefix' => 'level'], function () {

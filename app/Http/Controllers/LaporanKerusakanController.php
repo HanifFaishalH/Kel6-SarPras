@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\SaranaModel;
 
 class LaporanKerusakanController extends Controller
 {
@@ -47,4 +48,30 @@ class LaporanKerusakanController extends Controller
 
         return view('laporan.per_bulan', compact('laporan', 'labels', 'data', 'activeMenu'));
     }
+
+
+    public function laporanPerBarang()
+    {
+        $activeMenu = 'laporan-per-barang';
+
+        $barang = SaranaModel::selectRaw('m_barang.barang_nama, SUM(m_sarana.jumlah_laporan) as total_laporan')
+            ->join('m_barang', 'm_sarana.barang_id', '=', 'm_barang.barang_id')
+            ->groupBy('m_sarana.barang_id', 'm_barang.barang_nama')
+            ->orderByDesc('total_laporan')
+            ->take(10) // ambil 10 barang teratas
+            ->get();
+
+        return view('laporan.per_barang', [
+            'barang' => $barang,
+            'activeMenu' => $activeMenu,
+            'page' => (object) [
+                'title' => "Laporan Kerusakan per Barang"
+            ],
+            'breadcrumbs' => [
+                'title' => 'Laporan Kerusakan per Barang',
+                'list' => ['home', 'Laporan Kerusakan', 'Per Barang']
+            ]
+        ]);
+    }
+
 }

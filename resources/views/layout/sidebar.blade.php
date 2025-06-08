@@ -92,19 +92,19 @@
 
                         <!-- Statistik (admin only) -->
                         <li
-                            class="nav-item has-submenu {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan']) ? 'mm-active' : '' }}">
+                            class="nav-item has-submenu {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan', 'laporan-per-barang']) ? 'mm-active' : '' }}">
                             <a href="javascript:void(0)" class="nav-link section-title">
                                 <i class="fa fa-bar-chart"></i>
                                 <span>Kelola Statistik</span>
                             </a>
-                            <ul
-                                class="nav nav-second-level collapse {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan']) ? 'in' : '' }}">
+                            <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan', 'laporan-per-barang']) ? 'in' : '' }}">
                                 <li><a href="{{ url('/laporan/per_tahun') }}"
                                         class="nav-link {{ $activeMenu == 'laporan-tahunan' ? 'active' : '' }}"><i
                                             class="fa fa-calendar"></i> Laporan per Tahun</a></li>
                                 <li><a href="{{ url('/laporan/per_bulan') }}"
                                         class="nav-link {{ $activeMenu == 'laporan-bulanan' ? 'active' : '' }}"><i
                                             class="fa fa-calendar-o"></i> Laporan per Bulan</a></li>
+                                <li><a href="{{ url('/laporan/per_barang') }}" class="nav-link {{ $activeMenu == 'laporan-per-barang' ? 'active' : '' }}"><i class="fa fa-cube"></i> Laporan per Barang</a></li>
                             </ul>
                         </li>
                     @endif
@@ -131,7 +131,8 @@
                         </li>
                     @endif
 
-                    <!-- Umpan Balik (accessible to all) -->
+                    <!-- Umpan Balik (user only) -->
+                    @if (Auth::check() && in_array(Auth::user()->getRole(), ['mhs', 'dosen', 'tendik']))
                     <li class="nav-item">
                         <a href="{{ url('/feedback') }}"
                             class="nav-link {{ $activeMenu == 'berikan-umpan-balik' ? 'active' : '' }}">
@@ -139,6 +140,7 @@
                             <span>Berikan Umpan Balik</span>
                         </a>
                     </li>
+                    @endif
 
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras', 'admin']))
                         <!-- Riwayat Perbaikan (sarpras and admin) -->

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SaranaModel;
 use App\Models\BarangModel;
 use App\Models\KategoriModel;
+use App\Models\LantaiModel;
 use App\Models\RuangModel;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
@@ -19,6 +20,7 @@ class SaranaController extends Controller
         $kategori = KategoriModel::all();
         $barang = BarangModel::all();
         $ruang = RuangModel::all();
+        $lantai = LantaiModel::all();
 
         $breadcrumbs = [
             'title' => 'Daftar Sarana',
@@ -36,6 +38,7 @@ class SaranaController extends Controller
             'kategori' => $kategori,
             'barang' => $barang,
             'ruang' => $ruang,
+            'lantai' => $lantai,
             'breadrumbs' => $breadcrumbs,
             'page' => $page,
             'activeMenu' => $activeMenu
@@ -46,9 +49,17 @@ class SaranaController extends Controller
     {
         $data = SaranaModel::with(['kategori', 'barang', 'ruang.lantai']);
 
+
         if ($request->kategori_id) {
             $data->where('kategori_id', $request->kategori_id);
         }
+
+        if ($request->lantai_id) {
+            $data->whereHas('ruang', function ($query) use ($request) {
+                $query->where('lantai_id', $request->lantai_id);
+            });
+        }
+
 
         return datatables()->of($data)
             ->addIndexColumn()

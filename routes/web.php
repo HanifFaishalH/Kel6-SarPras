@@ -65,8 +65,6 @@ Route::middleware(['auth'])->group(function () {
         Route::group(['prefix' => 'laporan'], function () {
             Route::get('/per_tahun', [LaporanKerusakanController::class, 'laporanPerTahun']);
             Route::get('/per_bulan', [LaporanKerusakanController::class, 'laporanPerBulan']);
-            Route::get('/per_barang', [LaporanKerusakanController::class, 'laporanPerBarang']);
-
         });
 
         Route::group(['prefix' => 'level'], function () {
@@ -79,9 +77,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/list', [UserController::class, 'list']);
             Route::get('/{id}/show', [UserController::class, 'show']);
             Route::get('/{id}/edit', [UserController::class, 'edit']);
-            Route::get('/create_ajax', [UserController::class, 'create_ajax']);
-            Route::post('/store', [UserController::class, 'store']);
-            Route::delete('/{id}', [UserController::class, 'destroy']);
+            Route::delete('/user/{id}', [UserController::class, 'destroy']);
             Route::put('/{id}/update', [UserController::class, 'update'])->name('user.update');
             Route::post('/{id}/update', [UserController::class, 'update'])->name('user.update');
         });
@@ -101,8 +97,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [RuangController::class, 'index']);
             Route::get('/list', [RuangController::class, 'list']);
             Route::get('/create_ajax', [RuangController::class, 'create_ajax']);
-            Route::get('/show/{id}', [RuangController::class, 'show']);
             Route::post('/store_ajax', [RuangController::class, 'store_ajax']);
+            Route::get('/show/{id}', [RuangController::class, 'show']);
             Route::get('/edit_ajax/{id}', [RuangController::class, 'edit_ajax']);
             Route::put('/update_ajax/{id}', [RuangController::class, 'update_ajax']);
             Route::get('/delete_ajax/{id}', [RuangController::class, 'delete_ajax']);
@@ -130,20 +126,27 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [SaranaController::class, 'index']);
             Route::get('/list', [SaranaController::class, 'list']);
             Route::get('/create_ajax', [SaranaController::class, 'create_ajax']);
-            Route::get('/show/{id}', [SaranaController::class, 'show']);
             Route::post('/store_ajax', [SaranaController::class, 'store_ajax']);
-            Route::get('/edit_ajax/{id}', [SaranaController::class, 'edit_ajax']);
-            Route::put('/update_ajax/{id}', [SaranaController::class, 'update_ajax']);
-            Route::get('/delete_ajax/{id}', [SaranaController::class, 'delete_ajax']);
-            Route::delete('/destroy_ajax/{id}', [SaranaController::class, 'destroy_ajax']);
+            Route::get('/ruang/{id}/edit', [RuangController::class, 'edit'])->name('ruang.edit');
+        });
+    });
+
+    Route::middleware(['authorize:sarpras,teknisi'])->group(function (): void {
+        Route::group(['prefix' => 'laporan'], function () {
+            Route::get('/kelola', [LaporanController::class, 'kelola']);
+            Route::get('/list_kelola', [LaporanController::class, 'list_kelola']);
+            Route::get('/show_kelola_ajax/{id}', [LaporanController::class, 'show_kelola'])->name('laporan.show_kelola_detail');
+        });
+    });
+
+    Route::middleware(['authorize:teknisi'])->group(function (): void {
+        Route::group(['prefix' => 'laporan'], function () {
+            Route::post('/finish/{id}', [LaporanController::class, 'finish'])->name('laporan.finish');
         });
     });
 
     Route::middleware(['authorize:sarpras'])->group(function (): void {
         Route::group(['prefix' => 'laporan'], function () {
-            Route::get('/kelola', [LaporanController::class, 'kelola']);
-            Route::get('/list_kelola', [LaporanController::class, 'list_kelola']);
-            Route::get('/show_kelola_ajax/{id}', [LaporanController::class, 'show_kelola'])->name('laporan.show_kelola_detail');
             Route::post('/{id}/update_ajax', [LaporanController::class, 'update_ajax']);
             Route::get('/kalkulasi/{id}', [LaporanController::class, 'kalkulasi']);
             Route::post('/accept/{id}', [LaporanController::class, 'accept'])->name('laporan.accept');
@@ -160,4 +163,3 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 });
-

@@ -63,8 +63,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['authorize:admin'])->group(function () {
         Route::group(['prefix' => 'laporan'], function () {
-            Route::get('/per_tahun', [LaporanKerusakanController::class, 'laporanPerTahun']);
-            Route::get('/per_bulan', [LaporanKerusakanController::class, 'laporanPerBulan']);
+            Route::get('/periode', [LaporanKerusakanController::class, 'index'])->name('laporan.periode');
+            Route::get('/periode/data', [LaporanKerusakanController::class, 'getData'])->name('laporan.periode.data');
+            Route::get('/periode/chart', [LaporanKerusakanController::class, 'getChartData'])->name('laporan.periode.chart');
         });
 
         Route::group(['prefix' => 'level'], function () {

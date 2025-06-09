@@ -26,8 +26,8 @@
                     aria-haspopup="true" aria-expanded="false">
                     <img class="avatar user-thumb mr-2" src="{{ Auth::user()->foto && file_exists(public_path('uploads/foto/' . Auth::user()->foto))
     ? asset('uploads/foto/' . Auth::user()->foto)
-    : asset('srtdash/assets/images/author/avatar.png') }}" alt="avatar" width="40"
-                        height="40" style="border-radius: 50%;">
+    : asset('srtdash/assets/images/author/avatar.png') }}" alt="avatar" width="40" height="40"
+                        style="border-radius: 50%;">
                     <span class="user-name">{{ Auth::user()->nama }}</span>
                 </a>
 

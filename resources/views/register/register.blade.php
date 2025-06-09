@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/metisMenu.css') }}">
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/owl.carousel.min.css') }}">
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/slicknav.min.css') }}">
-    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css"
+        media="all" />
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/typography.css') }}">
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/default-css.css') }}">
     <link rel="stylesheet" href="{{ asset('srtdash/assets/css/styles.css') }}">
@@ -21,7 +22,8 @@
     <script src="{{ asset('srtdash/assets/js/vendor/modernizr-2.8.3.min.js') }}"></script>
 
     <style>
-        body, html {
+        body,
+        html {
             height: 100%;
             margin: 0;
         }
@@ -39,7 +41,10 @@
         .login-area::before {
             content: "";
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1;
         }
@@ -172,8 +177,10 @@
                             <div class="input-icon-wrapper">
                                 <select name="level_id" id="level_id" class="form-control" required>
                                     <option value="">- Pilih Level -</option>
-                                    @foreach($level as $l)
-                                        <option value="{{ $l->level_id }}" {{ old('level_id') == $l->level_id ? 'selected' : '' }}>{{ $l->level_nama }}</option>
+                                    @foreach($level->whereIn('level_id', [2, 3, 4,5]) as $l)
+                                        <option value="{{ $l->level_id }}" {{ old('level_id') == $l->level_id ? 'selected' : '' }}>
+                                            {{ $l->level_nama }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 <i class="ti-user"></i>
@@ -184,7 +191,8 @@
                         <div class="form-gp">
                             <label for="no_induk">No Induk (NIM/NIP)</label>
                             <div class="input-icon-wrapper">
-                                <input type="text" name="no_induk" id="no_induk" placeholder="Masukkan NIM/NIP anda" value="{{ old('no_induk') }}" required>
+                                <input type="text" name="no_induk" id="no_induk" placeholder="Masukkan NIM/NIP anda"
+                                    value="{{ old('no_induk') }}" required>
                                 <i class="ti-id-badge"></i>
                             </div>
                         </div>
@@ -193,7 +201,8 @@
                         <div class="form-gp">
                             <label for="nama">Nama Lengkap</label>
                             <div class="input-icon-wrapper">
-                                <input type="text" name="nama" id="nama" placeholder="Masukkan nama lengkap anda" value="{{ old('nama') }}" required>
+                                <input type="text" name="nama" id="nama" placeholder="Masukkan nama lengkap anda"
+                                    value="{{ old('nama') }}" required>
                                 <i class="ti-user"></i>
                             </div>
                         </div>
@@ -202,7 +211,8 @@
                         <div class="form-gp">
                             <label for="username">Username</label>
                             <div class="input-icon-wrapper">
-                                <input type="text" name="username" id="username" placeholder="Masukkan username" value="{{ old('username') }}" required>
+                                <input type="text" name="username" id="username" placeholder="Masukkan username"
+                                    value="{{ old('username') }}" required>
                                 <i class="ti-user"></i>
                             </div>
                         </div>
@@ -211,7 +221,8 @@
                         <div class="form-gp">
                             <label for="password">Password</label>
                             <div class="input-icon-wrapper">
-                                <input type="password" name="password" id="password" placeholder="Masukkan password" required>
+                                <input type="password" name="password" id="password" placeholder="Masukkan password"
+                                    required>
                                 <i class="ti-lock"></i>
                             </div>
                         </div>
@@ -220,7 +231,8 @@
                         <div class="form-gp">
                             <label for="confirm_password">Konfirmasi Password</label>
                             <div class="input-icon-wrapper">
-                                <input type="password" name="confirm_password" id="confirm_password" placeholder="Ulangi password anda" required>
+                                <input type="password" name="confirm_password" id="confirm_password"
+                                    placeholder="Ulangi password anda" required>
                                 <i class="ti-lock"></i>
                             </div>
                         </div>
@@ -239,23 +251,24 @@
     </div>
 
     <!-- Modal Success -->
-    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header" style="background-color:#6c63ff; color:white;">
-            <h5 class="modal-title" id="successModalLabel">Pendaftaran Berhasil</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            {{ session('success') }}
-          </div>
-          <div class="modal-footer">
-            <a href="{{ url('/') }}" class="btn btn-primary">Login Sekarang</a>
-          </div>
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#6c63ff; color:white;">
+                    <h5 class="modal-title" id="successModalLabel">Pendaftaran Berhasil</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ session('success') }}
+                </div>
+                <div class="modal-footer">
+                    <a href="{{ url('/') }}" class="btn btn-primary">Login Sekarang</a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
     <script src="{{ asset('srtdash/assets/js/vendor/jquery-2.2.4.min.js') }}"></script>
@@ -267,10 +280,10 @@
     <script src="{{ asset('srtdash/assets/js/jquery.slicknav.min.js') }}"></script>
 
     <script>
-      $(document).ready(function(){
-        @if(session('success'))
-          $('#successModal').modal('show');
-        @endif
+        $(document).ready(function () {
+            @if(session('success'))
+                $('#successModal').modal('show');
+            @endif
       });
     </script>
 

@@ -39,7 +39,8 @@
 
         <div class="form-group">
             <label>Teknisi yang Ditugaskan</label>
-            <input type="text" class="form-control" value="{{ $laporan->teknisi->user->username ?? 'Belum ditugaskan' }}" readonly>
+            <input type="text" class="form-control"
+                value="{{ $laporan->teknisi->user->username ?? 'Belum ditugaskan' }}" readonly>
         </div>
 
         <div class="form-group">
@@ -80,7 +81,7 @@
                     $now = \Carbon\Carbon::now();
                     $usia = $operasional->diff($now);
                 @endphp
-                                {{ $usia->y }} tahun, {{ $usia->m }} bulan, {{ $usia->d }} hari
+                                    {{ $usia->y }} tahun, {{ $usia->m }} bulan, {{ $usia->d }} hari
             @else
             - @endif" readonly>
         </div>
@@ -99,12 +100,17 @@
             </form>
         @endif
 
-        @if(strtolower($laporan->status_laporan) === 'dikerjakan')
+        {{-- @if(strtolower($laporan->status_laporan) === 'dikerjakan')
             <form id="formFinishLaporan" method="POST" action="{{ route('laporan.finish', $laporan->laporan_id) }}">
                 @csrf
                 <input type="hidden" name="laporan_id" value="{{ $laporan->laporan_id }}">
                 <button type="submit" class="btn btn-success">Kerjakan</button>
             </form>
+        @endif --}}
+
+        @if($laporan->status_laporan === 'dikerjakan')
+            <button id="finishLaporanButton" data-id="{{ $laporan->laporan_id }}"
+                class="btn btn-success btn-sm">Kerjakan</button>
         @endif
 
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>

@@ -9,7 +9,7 @@ use App\Models\LantaiModel;
 use App\Models\RuangModel;
 use App\Models\SaranaModel;
 use App\Models\TeknisiModel;
-use App\Models\UserModel;
+use App\Models\RiwayatPerbaikanModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -108,7 +108,6 @@ class LaporanController extends Controller
     public function list_kelola(Request $request)
     {
         $user = auth()->user();
-        $teknisi = TeknisiModel::where('user_id', $user->user_id)->first();
         $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
             ->where('status_laporan', '!=', 'ditolak');
 
@@ -128,7 +127,7 @@ class LaporanController extends Controller
             // If the user is neither sarpras nor teknisi, show nothing
             $laporan->whereRaw('1 = 0');
         }
-            
+
         return datatables()->of($laporan)
             ->addIndexColumn()
             ->addColumn('laporan_judul', function ($row) {
@@ -223,7 +222,7 @@ class LaporanController extends Controller
             'message' => 'Metode tidak diizinkan.'
         ], 405);
     }
-    
+
     public function finish($id)
     {
         try {
@@ -234,11 +233,11 @@ class LaporanController extends Controller
                     'message' => 'Laporan tidak dalam status Dikerjakan.'
                 ], 400);
             }
-    
+
             $laporan->status_laporan = 'selesai';
             $laporan->tanggal_selesai = now();
             $laporan->save();
-    
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Laporan berhasil diselesaikan.'
@@ -255,20 +254,20 @@ class LaporanController extends Controller
     {
         $laporan = LaporanModel::findOrFail($id);
         $sarana = SaranaModel::findOrFail($laporan->sarana_id);
-    
+
         // Map values to scores
         $kerusakanMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3];
         $urgensiMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3];
-        $frekuensiMap = ['tahunan' => 1, 'bulanan' => 2,'mingguan' => 3, 'harian' => 4];
+        $frekuensiMap = ['tahunan' => 1, 'bulanan' => 2, 'mingguan' => 3, 'harian' => 4];
         $dampakMap = ['kecil' => 1, 'sedang' => 2, 'besar' => 3];
-    
+
         $kerusakan = $kerusakanMap[strtolower($laporan->tingkat_kerusakan)] ?? 0;
         $urgensi = $urgensiMap[strtolower($laporan->tingkat_urgensi)] ?? 0;
         $frekuensi = $frekuensiMap[strtolower($sarana->frekuensi_penggunaan)] ?? 0;
         $dampak = $dampakMap[strtolower($laporan->dampak_kerusakan)] ?? 0;
-    
+
         $jumlahLaporan = $sarana->jumlah_laporan ?? 1;
-    
+
         // Normalize jumlah_laporan as a cost criterion
         // Assuming the maximum possible value for jumlah_laporan is 100
         $totalJumlahLaporan = SaranaModel::sum('jumlah_laporan');
@@ -278,8 +277,8 @@ class LaporanController extends Controller
         $now = \Carbon\Carbon::now();
         $usia = $now->diffInDays($tanggalOperasional);
         $maxUsia = 3650;
-        $normalizedUsia = 1 - ($usia / $maxUsia);    
-    
+        $normalizedUsia = 1 - ($usia / $maxUsia);
+
         // AHP Method
         // Define criteria bobot (normalized)
         $bobot = [
@@ -290,15 +289,15 @@ class LaporanController extends Controller
             'jumlah_laporan' => 0.2,
             'usia' => 0.1
         ];
-    
+
         // Calculate AHP score
         $ahpScore = $bobot['kerusakan'] * $kerusakan +
-                    $bobot['urgensi'] * $urgensi +
-                    $bobot['frekuensi'] * $frekuensi +
-                    $bobot['dampak'] * $dampak +
-                    $bobot['jumlah_laporan'] * $normalizedJumlahLaporan +
-                    $bobot['usia'] * $normalizedUsia;
-    
+            $bobot['urgensi'] * $urgensi +
+            $bobot['frekuensi'] * $frekuensi +
+            $bobot['dampak'] * $dampak +
+            $bobot['jumlah_laporan'] * $normalizedJumlahLaporan +
+            $bobot['usia'] * $normalizedUsia;
+
         // SAW Method
         // Define criteria bobot (normalized)
         $sawBobot = [
@@ -309,22 +308,22 @@ class LaporanController extends Controller
             'jumlah_laporan' => 0.2,
             'usia' => 0.1
         ];
-    
+
         // Calculate SAW score
         $sawScore = $sawBobot['kerusakan'] * $kerusakan +
-                    $sawBobot['urgensi'] * $urgensi +
-                    $sawBobot['frekuensi'] * $frekuensi +
-                    $sawBobot['dampak'] * $dampak +
-                    $sawBobot['jumlah_laporan'] * $normalizedJumlahLaporan +
-                    $sawBobot['usia'] * $normalizedUsia;
+            $sawBobot['urgensi'] * $urgensi +
+            $sawBobot['frekuensi'] * $frekuensi +
+            $sawBobot['dampak'] * $dampak +
+            $sawBobot['jumlah_laporan'] * $normalizedJumlahLaporan +
+            $sawBobot['usia'] * $normalizedUsia;
 
 
         $bobot = (($ahpScore + $sawScore) / 2) * 100;
-    
+
         // Save the scores to the 
         $laporan->bobot = $bobot;
         $laporan->save();
-    
+
         $html = view('laporan.calculate_result', [
             'laporan' => $laporan,
             'bobot' => $bobot,
@@ -337,7 +336,7 @@ class LaporanController extends Controller
                 'Usia' => ['value' => $usia, 'score' => $normalizedUsia]
             ]
         ])->render();
-    
+
         return response()->json([
             'status' => 'success',
             'html' => $html,
@@ -345,7 +344,7 @@ class LaporanController extends Controller
             'message' => 'Perhitungan bobot berhasil'
         ]);
     }
-    
+
     public function accept($id)
     {
         try {
@@ -607,6 +606,91 @@ class LaporanController extends Controller
         }
 
         redirect('/laporan/kelola');
+    }
+
+    public function finishForm($id)
+    {
+        $laporan = LaporanModel::findOrFail($id);
+        return view('laporan.finish_laporan_form', compact('laporan'));
+    }
+
+    public function selesai($id, Request $request)
+    {
+        $laporan = LaporanModel::findOrFail($id);
+
+        if ($laporan->status_laporan !== 'dikerjakan') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Laporan tidak dalam status Dikerjakan.'
+            ], 400);
+        }
+
+        $request->validate([
+            'tindakan' => 'required|string',
+            'bahan' => 'nullable|string',
+            'biaya' => 'nullable|numeric',
+        ]);
+
+        $riwayatPerbaikan = new RiwayatPerbaikanModel();
+        $riwayatPerbaikan->laporan_id = $laporan->laporan_id;
+        $riwayatPerbaikan->teknisi_id = Auth::user()->user_id;
+        $riwayatPerbaikan->tindakan = $request->tindakan;
+        $riwayatPerbaikan->bahan = $request->bahan;
+        $riwayatPerbaikan->biaya = $request->biaya;
+        $riwayatPerbaikan->status = 'selesai';
+        $riwayatPerbaikan->waktu_mulai = now();
+        $riwayatPerbaikan->waktu_selesai = now();
+        $riwayatPerbaikan->save();
+
+        $laporan->status_laporan = 'selesai';
+        $laporan->tanggal_selesai = now();
+        $laporan->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Laporan berhasil diselesaikan.'
+        ]);
+    }
+
+    public function riwayat()
+    {
+        $breadcrumbs = [
+            'title' => 'Riwayat Perbaikan',
+            'list' => ['home', 'riwayat']
+        ];
+        $page = (object) [
+            'title' => "Riwayat Perbaikan"
+        ];
+        $activeMenu = 'riwayat';
+
+        // Fetch the data from the database
+        $riwayatPerbaikan = RiwayatPerbaikanModel::with(['laporan', 'teknisi.user'])->get();
+
+        return view('laporan.riwayat', [
+            'breadcrumbs' => $breadcrumbs,
+            'page' => $page,
+            'activeMenu' => $activeMenu,
+            'riwayatPerbaikan' => $riwayatPerbaikan // Pass the data to the view
+        ]);
+    }
+
+    public function riwayatData()
+    {
+        $riwayatPerbaikan = RiwayatPerbaikanModel::with(['laporan', 'teknisi.user'])->get();
+
+        return DataTables::of($riwayatPerbaikan)
+            ->addIndexColumn()
+            ->addColumn('teknisi', function ($row) {
+                return $row->teknisi ? $row->teknisi->user->username : '-';
+            })
+            ->addColumn('waktu_mulai', function ($row) {
+                return $row->waktu_mulai ? $row->waktu_mulai->format('d-m-Y H:i') : '-';
+            })
+            ->addColumn('waktu_selesai', function ($row) {
+                return $row->waktu_selesai ? $row->waktu_selesai->format('d-m-Y H:i') : '-';
+            })
+            ->rawColumns(['teknisi', 'waktu_mulai', 'waktu_selesai'])
+            ->make(true);
     }
 
     public function getGedung()

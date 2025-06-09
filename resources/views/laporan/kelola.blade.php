@@ -51,7 +51,6 @@
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
@@ -365,42 +364,96 @@
             });
         });
 
+        // $(document).on('submit', '#formFinishLaporan', function (e) {
+        //     e.preventDefault();
+
+        //     if (!confirm('Apakah Anda yakin ingin menandai laporan ini sebagai selesai?')) {
+        //         return;
+        //     }
+
+        //     $.ajax({
+        //         url: $(this).attr('action'),
+        //         type: 'POST',
+        //         data: $(this).serialize(),
+        //         dataType: 'json',
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         success: function (response) {
+        //             console.log('Success Response:', response);
+        //             if (response.status === 'success') {
+        //                 $('#myModal').modal('hide');
+        //                 alert(response.message || 'Laporan berhasil diselesaikan.');
+        //                 $('#table_laporan').DataTable().ajax.reload(null, false);
+        //             } else {
+        //                 alert(response.message || 'Gagal menandai laporan sebagai selesai.');
+        //             }
+        //         },
+        //         error: function (xhr) {
+        //             console.error('Error Response:', xhr);
+        //             let errorMsg = 'Terjadi kesalahan saat menandai laporan sebagai selesai.';
+        //             if (xhr.status === 419) {
+        //                 errorMsg =
+        //                     'Token CSRF tidak cocok atau sesi telah kedaluwarsa. Silakan refresh halaman.';
+        //             } else if (xhr.status === 404) {
+        //                 errorMsg = 'Laporan tidak ditemukan.';
+        //             } else if (xhr.status === 403) {
+        //                 errorMsg = 'Anda tidak memiliki akses untuk tindakan ini.';
+        //             } else if (xhr.responseJSON && xhr.responseJSON.message) {
+        //                 errorMsg = xhr.responseJSON.message;
+        //             }
+        //             alert(errorMsg);
+        //         }
+        //     });
+        // });
+
+        $(document).on('click', '#finishLaporanButton', function (e) {
+            e.preventDefault();
+            let laporanId = $(this).data('id');
+            let finishUrl = '{{ url('laporan/finish_form') }}/' + laporanId;
+
+            $('#myModal .modal-content').html('<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
+            $('#myModal').modal('show');
+
+            $.ajax({
+                url: finishUrl,
+                type: 'GET',
+                success: function (response) {
+                    $('#myModal .modal-content').html(response);
+                },
+                error: function (xhr) {
+                    let errorMsg = 'Terjadi kesalahan saat memuat formulir.';
+                    if (xhr.status === 404) {
+                        errorMsg = 'Laporan tidak ditemukan.';
+                    }
+                    $('#myModal .modal-content').html('<div class="alert alert-danger">' + errorMsg + '</div>');
+                }
+            });
+        });
+
         $(document).on('submit', '#formFinishLaporan', function (e) {
             e.preventDefault();
 
-            if (!confirm('Apakah Anda yakin ingin menandai laporan ini sebagai selesai?')) {
-                return;
-            }
+            let formData = $(this).serialize();
+            let finishUrl = $(this).attr('action');
 
             $.ajax({
-                url: $(this).attr('action'),
+                url: finishUrl,
                 type: 'POST',
-                data: $(this).serialize(),
+                data: formData,
                 dataType: 'json',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
                 success: function (response) {
-                    console.log('Success Response:', response);
                     if (response.status === 'success') {
                         $('#myModal').modal('hide');
-                        alert(response.message || 'Laporan berhasil diselesaikan.');
+                        alert(response.message);
                         $('#table_laporan').DataTable().ajax.reload(null, false);
                     } else {
-                        alert(response.message || 'Gagal menandai laporan sebagai selesai.');
+                        alert(response.message);
                     }
                 },
                 error: function (xhr) {
-                    console.error('Error Response:', xhr);
-                    let errorMsg = 'Terjadi kesalahan saat menandai laporan sebagai selesai.';
-                    if (xhr.status === 419) {
-                        errorMsg =
-                            'Token CSRF tidak cocok atau sesi telah kedaluwarsa. Silakan refresh halaman.';
-                    } else if (xhr.status === 404) {
-                        errorMsg = 'Laporan tidak ditemukan.';
-                    } else if (xhr.status === 403) {
-                        errorMsg = 'Anda tidak memiliki akses untuk tindakan ini.';
-                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    let errorMsg = 'Terjadi kesalahan saat menyimpan data.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMsg = xhr.responseJSON.message;
                     }
                     alert(errorMsg);

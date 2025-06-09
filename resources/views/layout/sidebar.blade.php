@@ -49,7 +49,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ url('/periode') }}"
+                                    <a href="{{ url('/laporan/periode') }}"
                                         class="nav-link {{ $activeMenu == 'kelola-periode' ? 'active' : '' }}">
                                         <i class="fa fa-calendar"></i> Kelola Periode
                                     </a>
@@ -98,12 +98,12 @@
                                 <span>Kelola Statistik</span>
                             </a>
                             <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan', 'laporan-per-barang']) ? 'in' : '' }}">
-                                <li><a href="{{ url('/laporan/per_tahun') }}"
+                                {{-- <li><a href="{{ url('/laporan/per_tahun') }}"
                                         class="nav-link {{ $activeMenu == 'laporan-tahunan' ? 'active' : '' }}"><i
-                                            class="fa fa-calendar"></i> Laporan per Tahun</a></li>
-                                <li><a href="{{ url('/laporan/per_bulan') }}"
+                                            class="fa fa-calendar"></i> Laporan per Tahun</a></li> --}}
+                                {{-- <li><a href="{{ url('/laporan/per_bulan') }}"
                                         class="nav-link {{ $activeMenu == 'laporan-bulanan' ? 'active' : '' }}"><i
-                                            class="fa fa-calendar-o"></i> Laporan per Bulan</a></li>
+                                            class="fa fa-calendar-o"></i> Laporan per Bulan</a></li> --}}
                                 <li><a href="{{ url('/laporan/per_barang') }}" class="nav-link {{ $activeMenu == 'laporan-per-barang' ? 'active' : '' }}"><i class="fa fa-cube"></i> Laporan per Barang</a></li>
                             </ul>
                         </li>

@@ -28,3 +28,6 @@ class BarangModel extends Model
         return $this->hasMany(SaranaModel::class, 'barang_id', 'barang_id');
     }
 }
+
+
+

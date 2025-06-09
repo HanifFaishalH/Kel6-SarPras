@@ -102,9 +102,11 @@
 @endsection
 
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 $(document).ready(function () {
     let isLoading = false;
+    let chartInstance = null;
 
     function showLoading() {
         isLoading = true;
@@ -120,9 +122,44 @@ $(document).ready(function () {
         $('#btn-filter').prop('disabled', false);
     }
 
+    function renderChart(labels, data) {
+        const canvas = document.getElementById('chartTotalLaporan');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Jumlah Laporan',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Jumlah' }
+                    }
+                }
+            }
+        });
+    }
+
     function fetchData() {
         if (isLoading) return;
-        
         showLoading();
 
         const filterData = {
@@ -135,80 +172,51 @@ $(document).ready(function () {
             url: "{{ route('laporan.periode.data') }}",
             method: "GET",
             data: filterData,
-            timeout: 10000, // 10 seconds timeout
             success: function(response) {
                 try {
-                    // Update Statistik
                     $('#statistik-utama').html(response.statistik_html);
+                    renderChart(response.chart.labels, response.chart.data);
 
-                    // Update Tabel Detail
                     let tbody = '';
                     let totalLaporan = 0;
-                    
-                    // Calculate total for percentage
-                    response.tabel.forEach(item => {
-                        totalLaporan += parseInt(item.jumlah);
-                    });
+                    response.tabel.forEach(item => totalLaporan += parseInt(item.jumlah));
 
                     if (response.tabel.length > 0) {
                         response.tabel.forEach((item, index) => {
                             const persentase = totalLaporan > 0 ? 
                                 ((parseInt(item.jumlah) / totalLaporan) * 100).toFixed(1) : '0.0';
-                            
                             tbody += `<tr>
                                 <td>${index + 1}</td>
                                 <td>${item.tahun}</td>
                                 <td>${item.bulan}</td>
-                                <td>
-                                    <span class="badge bg-primary">${item.jumlah}</span>
-                                </td>
+                                <td><span class="badge bg-primary">${item.jumlah}</span></td>
                                 <td>${persentase}%</td>
                             </tr>`;
                         });
                     } else {
-                        tbody = `<tr>
-                            <td colspan="5" class="text-center text-muted">
-                                <i class="fa fa-info-circle"></i> 
-                                Tidak ada data untuk filter yang dipilih
-                            </td>
-                        </tr>`;
+                        tbody = `<tr><td colspan="5" class="text-center text-muted">
+                                    <i class="fa fa-info-circle"></i> Tidak ada data untuk filter yang dipilih
+                                </td></tr>`;
                     }
-                    
-                    $('#tabel-detail tbody').html(tbody);
 
-                    // Show success message briefly
+                    $('#tabel-detail tbody').html(tbody);
                     showNotification('Data berhasil dimuat', 'success');
-                    
                 } catch (error) {
-                    console.error('Error processing response:', error);
+                    console.error(error);
                     showError('Gagal memproses data response');
                 }
             },
             error: function(xhr, status, error) {
-                console.error("AJAX Error:", {
-                    status: xhr.status,
-                    statusText: xhr.statusText,
-                    responseText: xhr.responseText,
-                    error: error
-                });
-
+                console.error("AJAX Error:", xhr, status, error);
                 let errorMessage = 'Gagal memuat data.';
-                
-                if (xhr.status === 404) {
-                    errorMessage = 'Endpoint tidak ditemukan.';
-                } else if (xhr.status === 500) {
-                    errorMessage = 'Terjadi kesalahan server.';
-                } else if (xhr.status === 0) {
-                    errorMessage = 'Tidak dapat terhubung ke server.';
-                } else if (status === 'timeout') {
-                    errorMessage = 'Request timeout. Silakan coba lagi.';
-                }
+                if (xhr.status === 404) errorMessage = 'Endpoint tidak ditemukan.';
+                else if (xhr.status === 500) errorMessage = 'Terjadi kesalahan server.';
+                else if (xhr.status === 0) errorMessage = 'Tidak dapat terhubung ke server.';
+                else if (status === 'timeout') errorMessage = 'Request timeout.';
 
-                showError(errorMessage + ` (${xhr.status})`);
+                showError(`${errorMessage} (${xhr.status})`);
             },
-            complete: function() {
-                hideLoading();
-            }
+            complete: hideLoading
         });
     }
 
@@ -221,48 +229,36 @@ $(document).ready(function () {
                 </button>
             </div>
         `);
-        $('#tabel-detail tbody').html(`
-            <tr>
-                <td colspan="5" class="text-center text-danger">
-                    <i class="fa fa-exclamation-triangle"></i> ${message}
-                </td>
-            </tr>
-        `);
+        $('#tabel-detail tbody').html(`<tr>
+            <td colspan="5" class="text-center text-danger">
+                <i class="fa fa-exclamation-triangle"></i> ${message}
+            </td>
+        </tr>`);
     }
 
     function showNotification(message, type = 'info') {
-        // Create notification element
         const notification = $(`
-            <div class="alert alert-${type} alert-dismissible fade show position-fixed" 
+            <div class="alert alert-${type} alert-dismissible fade show position-fixed"
                  style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
                 <i class="fa fa-check-circle"></i> ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         `);
-        
+
         $('body').append(notification);
-        
-        // Auto remove after 3 seconds
-        setTimeout(() => {
-            notification.fadeOut(() => notification.remove());
-        }, 3000);
+        setTimeout(() => notification.fadeOut(() => notification.remove()), 3000);
     }
 
-    // Event handlers
     $('#filter-form').on('submit', function (e) {
         e.preventDefault();
         fetchData();
     });
 
-    // Auto-fetch when filter changes
     $('#tahun, #bulan, #barang').on('change', function() {
         fetchData();
     });
 
-    // Initial data load
     fetchData();
-
-    // Make fetchData available globally for retry button
     window.fetchData = fetchData;
 });
 </script>

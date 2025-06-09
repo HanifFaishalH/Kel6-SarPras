@@ -60,4 +60,9 @@ class UserModel extends Authenticatable
 
         return false;
     }
+
+    public function laporan()
+    {
+        return $this->hasMany(LaporanModel::class, 'user_id', 'user_id');
+    }
 }

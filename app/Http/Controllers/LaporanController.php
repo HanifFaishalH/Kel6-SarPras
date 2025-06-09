@@ -120,11 +120,15 @@ class LaporanController extends Controller
             $laporan->where('status', $request->status);
         }
 
-        if ($user->level->level_name !== 'admin') {
-            // Bukan admin, batasi hanya laporan milik user ini
-            $laporan->where('teknisi_id', $teknisi->teknisi_id);
+        if ($user->level->level_kode === 'teknisi') {
+            // Teknisi can only see laporan assigned to them
+            $teknisiId = TeknisiModel::where('user_id', $user->user_id)->value('teknisi_id');
+            $laporan->where('teknisi_id', $teknisiId);
+        } elseif ($user->level->level_kode !== 'sarpras') {
+            // If the user is neither sarpras nor teknisi, show nothing
+            $laporan->whereRaw('1 = 0');
         }
-
+            
         return datatables()->of($laporan)
             ->addIndexColumn()
             ->addColumn('laporan_judul', function ($row) {

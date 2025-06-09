@@ -122,7 +122,7 @@
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras', 'teknisi']))
                         <!-- Laporan Management (for sarpras and admin) -->
                         <li
-                            class="nav nav-second-level collapse {{ in_array($activeMenu, ['kelola', 'riwayat']) ? 'in' : '' }}">
+                            class="nav nav-second-level collapse {{ in_array($activeMenu, ['kelola']) ? 'in' : '' }}">
                         <li>
                             <a href="{{ url('/laporan/kelola') }}"
                                 class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}"><i class="fa fa-wrench"></i>
@@ -142,11 +142,11 @@
                     </li>
                     @endif
 
-                    @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras', 'admin']))
+                    @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras']))
                         <!-- Riwayat Perbaikan (sarpras and admin) -->
                         <li class="nav-item">
-                            <a href="{{ url('/riwayat-perbaikan') }}"
-                                class="nav-link {{ $activeMenu == 'riwayat-perbaikan' ? 'active' : '' }}">
+                            <a href="{{ url('/laporan/riwayat') }}"
+                                class="nav-link {{ $activeMenu == 'riwayat' ? 'active' : '' }}">
                                 <i class="fa fa-wrench"></i>
                                 <span>Riwayat Perbaikan</span>
                             </a>

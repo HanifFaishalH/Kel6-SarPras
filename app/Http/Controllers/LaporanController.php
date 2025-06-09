@@ -254,27 +254,77 @@ class LaporanController extends Controller
     public function kalkulasi($id)
     {
         $laporan = LaporanModel::findOrFail($id);
-        $sarana = SaranaModel::findOrFail($laporan->sarana_id); // Changed to use sarana_id from laporan
-
+        $sarana = SaranaModel::findOrFail($laporan->sarana_id);
+    
         // Map values to scores
-        $kerusakanMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3, 'kritis' => 4];
-        $urgensiMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3, 'kritis' => 4];
-        $frekuensiMap = ['tahunan' => 1, 'bulanan' => 2, 'harian' => 3];
+        $kerusakanMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3];
+        $urgensiMap = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3];
+        $frekuensiMap = ['tahunan' => 1, 'bulanan' => 2,'mingguan' => 3, 'harian' => 4];
         $dampakMap = ['kecil' => 1, 'sedang' => 2, 'besar' => 3];
-
-
+    
         $kerusakan = $kerusakanMap[strtolower($laporan->tingkat_kerusakan)] ?? 0;
         $urgensi = $urgensiMap[strtolower($laporan->tingkat_urgensi)] ?? 0;
         $frekuensi = $frekuensiMap[strtolower($sarana->frekuensi_penggunaan)] ?? 0;
         $dampak = $dampakMap[strtolower($laporan->dampak_kerusakan)] ?? 0;
-
+    
         $jumlahLaporan = $sarana->jumlah_laporan ?? 1;
-        $bobot = $kerusakan * $urgensi * $frekuensi * $dampak * $jumlahLaporan;
+    
+        // Normalize jumlah_laporan as a cost criterion
+        // Assuming the maximum possible value for jumlah_laporan is 100
+        $totalJumlahLaporan = SaranaModel::sum('jumlah_laporan');
+        $normalizedJumlahLaporan = 1 - ($jumlahLaporan / $totalJumlahLaporan);
 
-        // Save the bobot to the database
+        $tanggalOperasional = \Carbon\Carbon::parse($sarana->tanggal_operasional);
+        $now = \Carbon\Carbon::now();
+        $usia = $now->diffInDays($tanggalOperasional);
+        $maxUsia = 3650;
+        $normalizedUsia = 1 - ($usia / $maxUsia);    
+    
+        // AHP Method
+        // Define criteria bobot (normalized)
+        $bobot = [
+            'kerusakan' => 0.2,
+            'urgensi' => 0.2,
+            'frekuensi' => 0.2,
+            'dampak' => 0.1,
+            'jumlah_laporan' => 0.2,
+            'usia' => 0.1
+        ];
+    
+        // Calculate AHP score
+        $ahpScore = $bobot['kerusakan'] * $kerusakan +
+                    $bobot['urgensi'] * $urgensi +
+                    $bobot['frekuensi'] * $frekuensi +
+                    $bobot['dampak'] * $dampak +
+                    $bobot['jumlah_laporan'] * $normalizedJumlahLaporan +
+                    $bobot['usia'] * $normalizedUsia;
+    
+        // SAW Method
+        // Define criteria bobot (normalized)
+        $sawBobot = [
+            'kerusakan' => 0.2,
+            'urgensi' => 0.2,
+            'frekuensi' => 0.2,
+            'dampak' => 0.1,
+            'jumlah_laporan' => 0.2,
+            'usia' => 0.1
+        ];
+    
+        // Calculate SAW score
+        $sawScore = $sawBobot['kerusakan'] * $kerusakan +
+                    $sawBobot['urgensi'] * $urgensi +
+                    $sawBobot['frekuensi'] * $frekuensi +
+                    $sawBobot['dampak'] * $dampak +
+                    $sawBobot['jumlah_laporan'] * $normalizedJumlahLaporan +
+                    $sawBobot['usia'] * $normalizedUsia;
+
+
+        $bobot = (($ahpScore + $sawScore) / 2) * 100;
+    
+        // Save the scores to the 
         $laporan->bobot = $bobot;
         $laporan->save();
-
+    
         $html = view('laporan.calculate_result', [
             'laporan' => $laporan,
             'bobot' => $bobot,
@@ -283,10 +333,11 @@ class LaporanController extends Controller
                 'Urgensi' => ['value' => $laporan->tingkat_urgensi, 'score' => $urgensi],
                 'Frekuensi' => ['value' => $sarana->frekuensi_penggunaan, 'score' => $frekuensi],
                 'Dampak' => ['value' => $laporan->dampak_kerusakan, 'score' => $dampak],
-                'Jumlah Laporan' => ['value' => $jumlahLaporan, 'score' => $jumlahLaporan]
+                'Jumlah Laporan' => ['value' => $jumlahLaporan, 'score' => $normalizedJumlahLaporan],
+                'Usia' => ['value' => $usia, 'score' => $normalizedUsia]
             ]
         ])->render();
-
+    
         return response()->json([
             'status' => 'success',
             'html' => $html,
@@ -294,7 +345,7 @@ class LaporanController extends Controller
             'message' => 'Perhitungan bobot berhasil'
         ]);
     }
-
+    
     public function accept($id)
     {
         try {

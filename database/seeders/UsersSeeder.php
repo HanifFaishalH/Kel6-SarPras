@@ -58,7 +58,7 @@ class UsersSeeder extends Seeder
             [
                 'username' => 'teknisi 2',
                 'password' => bcrypt('teknisi2'),
-                'nama' => 'Teknisi1',
+                'nama' => 'Teknisi2',
                 'level_id' => 5,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -66,7 +66,7 @@ class UsersSeeder extends Seeder
             [
                 'username' => 'teknisi 3',
                 'password' => bcrypt('teknisi3'),
-                'nama' => 'Teknisi1',
+                'nama' => 'Teknisi3',
                 'level_id' => 5,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -74,7 +74,7 @@ class UsersSeeder extends Seeder
             [
                 'username' => 'teknisi 4',
                 'password' => bcrypt('teknisi4'),
-                'nama' => 'Teknisi1',
+                'nama' => 'Teknisi4',
                 'level_id' => 5,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -82,7 +82,7 @@ class UsersSeeder extends Seeder
             [
                 'username' => 'teknisi 5',
                 'password' => bcrypt('teknisi5'),
-                'nama' => 'Teknisi1',
+                'nama' => 'Teknisi5',
                 'level_id' => 5,
                 'created_at' => now(),
                 'updated_at' => now(),

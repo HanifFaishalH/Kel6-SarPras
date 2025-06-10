@@ -40,7 +40,7 @@
 
                             {{-- Kelola Periode --}}
                             <div class="col-md-3 col-sm-6 mb-4">
-                                <a href="{{ url('/periode') }}" class="text-decoration-none">
+                                <a href="{{ url('/laporan/periode') }}" class="text-decoration-none">
                                     <div class="card h-100 shadow" style="cursor:pointer;">
                                         <div class="card-body text-center p-3">
                                             <div class="bg-primary text-white py-4">

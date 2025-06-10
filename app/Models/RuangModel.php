@@ -25,7 +25,7 @@ class RuangModel extends Model
     }
 
     public function sarana() {
-        return $this->hasMany(SaranaModel::class, 'ruang_id');
+        return $this->hasMany(SaranaModel::class, 'ruang_id', 'ruang_id');
     }
 
 }

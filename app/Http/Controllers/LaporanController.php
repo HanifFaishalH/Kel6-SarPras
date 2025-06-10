@@ -563,7 +563,7 @@ class LaporanController extends Controller
         }
 
         return view('/laporan');
-    }
+}
 
     public function update_ajax(Request $request, $id)
     {
@@ -677,6 +677,27 @@ class LaporanController extends Controller
     {
         $lantai = LantaiModel::where('gedung_id', $gedung_id)->get();
         return response()->json($lantai);
+    }
+
+    public function getRuangByLantai($lantai_id)
+    {
+        $ruang = RuangModel::where('lantai_id', $lantai_id)->get();
+        return response()->json($ruang);
+    }
+
+    public function getSaranaByRuang($ruang_id)
+    {
+        $sarana = SaranaModel::where('ruang_id', $ruang_id)->with('barang')->get();
+
+        $saranaFormatted = $sarana->map(function ($item) {
+            return [
+                'sarana_id' => $item->sarana_id,
+                'sarana_kode' => $item->barang->barang_kode ?? 'KODE-' . $item->sarana_id,
+                'sarana_nama' => $item->barang->barang_nama ?? 'Sarana #' . $item->sarana_id
+            ];
+        });
+
+        return response()->json($saranaFormatted);
     }
 
     public function getRuangDanSarana($lantai_id)

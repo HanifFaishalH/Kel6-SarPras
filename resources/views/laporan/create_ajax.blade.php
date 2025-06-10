@@ -37,7 +37,7 @@
                 {{-- Ruang --}}
                 <div class="form-group">
                     <label>Ruang</label>
-                    <select name="ruang_id" id="ruang_id" class="form-control" required>
+                    <select name="ruang_id" id="ruang_id" class="form-control" disabled required>
                         <option value="">- Pilih Ruang -</option>
                     </select>
                     <small id="error-ruang_id" class="error-text form-text text-danger"></small>
@@ -46,7 +46,7 @@
                 {{-- Sarana --}}
                 <div class="form-group">
                     <label>Sarana</label>
-                    <select name="sarana_id" id="sarana_id" class="form-control" required>
+                    <select name="sarana_id" id="sarana_id" class="form-control" disabled required>
                         <option value="">- Pilih Sarana -</option>
                     </select>
                     <small id="error-sarana_id" class="error-text form-text text-danger"></small>
@@ -113,49 +113,71 @@
 
 <script>
     $(document).ready(function() {
-        // Ambil data ruang & sarana berdasarkan lantai terpilih
+        // Saat lantai diubah
         $('select[name="lantai_id"]').on('change', function() {
             var lantaiID = $(this).val();
             var ruangSelect = $('select[name="ruang_id"]');
             var saranaSelect = $('select[name="sarana_id"]');
-    
-            // Kosongkan pilihan sebelumnya
+
+            // Kosongkan ruang dan sarana
             ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>');
-            saranaSelect.empty().append('<option value="">- Pilih Sarana -</option>');
-    
+            saranaSelect.empty().append('<option value="">- Pilih Sarana -</option>').prop('disabled', true);
+
             if (lantaiID) {
                 $.ajax({
-                    url: "{{ url('laporan/ajax/ruang-sarana') }}/" + lantaiID,
+                    url: "{{ url('laporan/ajax/ruang-by-lantai') }}/" + lantaiID,
                     type: "GET",
                     dataType: "json",
                     success: function(data) {
-                        // Isi ruang
-                        if (data.ruang && data.ruang.length > 0) {
-                            $.each(data.ruang, function(key, value) {
-                                ruangSelect.append('<option value="'+ value.ruang_id +'">'+ value.ruang_nama +'</option>');
+                        if (data.length > 0) {
+                            $.each(data, function(key, value) {
+                                ruangSelect.append('<option value="' + value.ruang_id + '">' + value.ruang_nama + '</option>');
                             });
+                            ruangSelect.prop('disabled', false);
                         } else {
+                            ruangSelect.prop('disabled', true);
                             alert('Tidak ada ruang tersedia untuk lantai ini.');
-                        }
-    
-                        // Isi sarana
-                        if (data.sarana && data.sarana.length > 0) {
-                            $.each(data.sarana, function(key, value) {
-                                saranaSelect.append('<option value="'+ value.sarana_id +'">'+ value.sarana_kode + ' - ' + value.sarana_nama + '</option>');
-                            });
-                        } else {
-                            alert('Tidak ada sarana tersedia untuk lantai ini.');
                         }
                     },
                     error: function(xhr) {
-                        console.error('Error:', xhr.responseText);
-                        alert('Gagal memuat data ruang atau sarana. Silakan coba lagi.');
+                        alert('Gagal mengambil ruang. Coba lagi.');
                     }
                 });
+            } else {
+                ruangSelect.prop('disabled', true);
             }
         });
-    
-        // Remove any existing submit handlers to prevent duplicates
+
+        // Saat ruang diubah
+        $('select[name="ruang_id"]').on('change', function() {
+            var ruangID = $(this).val();
+            var saranaSelect = $('select[name="sarana_id"]');
+            saranaSelect.empty().append('<option value="">- Pilih Sarana -</option>');
+
+            if (ruangID) {
+                $.ajax({
+                    url: "{{ url('laporan/ajax/sarana-by-ruang') }}/" + ruangID,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        if (data.length > 0) {
+                            $.each(data, function(key, value) {
+                                saranaSelect.append('<option value="' + value.sarana_id + '">' + value.sarana_kode + ' - ' + value.sarana_nama + '</option>');
+                            });
+                            saranaSelect.prop('disabled', false);
+                        } else {
+                            saranaSelect.prop('disabled', true);
+                            alert('Tidak ada sarana tersedia untuk ruang ini.');
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Gagal mengambil sarana. Coba lagi.');
+                    }
+                });
+            } else {
+                saranaSelect.prop('disabled', true);
+            }
+        });
         $('#form-create-laporan').off('submit').on('submit', function(e) {
             e.preventDefault();
             // Clear previous error messages
@@ -203,4 +225,5 @@
             });
         });
     });
-    </script>
+        
+</script>

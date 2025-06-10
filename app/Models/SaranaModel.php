@@ -33,6 +33,6 @@ class SaranaModel extends Model
 
     public function barang()
     {
-        return $this->belongsTo(BarangModel::class, 'barang_id');
+        return $this->belongsTo(BarangModel::class, 'barang_id', 'barang_id');
     }
 }

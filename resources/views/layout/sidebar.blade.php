@@ -60,12 +60,6 @@
                                         <i class="fa fa-users"></i> Kelola Pengguna
                                     </a>
                                 </li>
-                                <li>
-                                    <a href="{{ url('/prioritas') }}"
-                                        class="nav-link {{ $activeMenu == 'kelola-prioritas' ? 'active' : '' }}">
-                                        <i class="fa fa-exclamation-circle"></i> Kelola Prioritas
-                                    </a>
-                                </li>
                             </ul>
                         </li>
 
@@ -97,14 +91,17 @@
                                 <i class="fa fa-bar-chart"></i>
                                 <span>Kelola Statistik</span>
                             </a>
-                            <ul class="nav nav-second-level collapse {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan', 'laporan-per-barang']) ? 'in' : '' }}">
+                            <ul
+                                class="nav nav-second-level collapse {{ in_array($activeMenu, ['laporan-tahunan', 'laporan-bulanan', 'laporan-per-barang']) ? 'in' : '' }}">
                                 {{-- <li><a href="{{ url('/laporan/per_tahun') }}"
                                         class="nav-link {{ $activeMenu == 'laporan-tahunan' ? 'active' : '' }}"><i
                                             class="fa fa-calendar"></i> Laporan per Tahun</a></li> --}}
                                 {{-- <li><a href="{{ url('/laporan/per_bulan') }}"
                                         class="nav-link {{ $activeMenu == 'laporan-bulanan' ? 'active' : '' }}"><i
                                             class="fa fa-calendar-o"></i> Laporan per Bulan</a></li> --}}
-                                <li><a href="{{ url('/laporan/per_barang') }}" class="nav-link {{ $activeMenu == 'laporan-per-barang' ? 'active' : '' }}"><i class="fa fa-cube"></i> Laporan per Barang</a></li>
+                                <li><a href="{{ url('/laporan/per_barang') }}"
+                                        class="nav-link {{ $activeMenu == 'laporan-per-barang' ? 'active' : '' }}"><i
+                                            class="fa fa-cube"></i> Laporan per Barang</a></li>
                             </ul>
                         </li>
                     @endif
@@ -112,7 +109,8 @@
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['mhs', 'dosen', 'tendik']))
                         <!-- Laporan (for regular users) -->
                         <li class="nav-item">
-                            <a href="{{ url('/laporan') }}" class="nav-link {{ $activeMenu == 'laporan' ? 'active' : '' }}">
+                            <a href="{{ url('/laporan') }}"
+                                class="nav-link {{ $activeMenu == 'laporan' ? 'active' : '' }}">
                                 <i class="fa fa-file-text"></i>
                                 <span>Buat Laporan</span>
                             </a>
@@ -121,11 +119,11 @@
 
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras', 'teknisi']))
                         <!-- Laporan Management (for sarpras and admin) -->
-                        <li
-                            class="nav nav-second-level collapse {{ in_array($activeMenu, ['kelola']) ? 'in' : '' }}">
+                        <li class="nav nav-second-level collapse {{ in_array($activeMenu, ['kelola']) ? 'in' : '' }}">
                         <li>
                             <a href="{{ url('/laporan/kelola') }}"
-                                class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}"><i class="fa fa-wrench"></i>
+                                class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}"><i
+                                    class="fa fa-wrench"></i>
                                 <span>
                                 </span>Kelola Laporan</a>
                         </li>
@@ -133,13 +131,13 @@
 
                     <!-- Umpan Balik (user only) -->
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['mhs', 'dosen', 'tendik']))
-                    <li class="nav-item">
-                        <a href="{{ url('/feedback') }}"
-                            class="nav-link {{ $activeMenu == 'berikan-umpan-balik' ? 'active' : '' }}">
-                            <i class="fa fa-comment"></i>
-                            <span>Berikan Umpan Balik</span>
-                        </a>
-                    </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/feedback') }}"
+                                class="nav-link {{ $activeMenu == 'berikan-umpan-balik' ? 'active' : '' }}">
+                                <i class="fa fa-comment"></i>
+                                <span>Berikan Umpan Balik</span>
+                            </a>
+                        </li>
                     @endif
 
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras']))
@@ -223,11 +221,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         $('#menu').metisMenu();
 
         // Intercept sidebar link clicks
-        $('.sidebar-menu a.nav-link').on('click', function (e) {
+        $('.sidebar-menu a.nav-link').on('click', function(e) {
             const href = $(this).attr('href');
 
             // Skip if it's a javascript link or current page
@@ -245,11 +243,11 @@
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
                 },
-                success: function (response) {
+                success: function(response) {
                     // Allow navigation if successful
                     window.location.href = href;
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     if (xhr.status === 403) {
                         $('#accessDeniedModal').modal('show');
                     } else {

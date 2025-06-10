@@ -33,7 +33,7 @@
                             </div>
                             <div class="col-sm-6 text-right">
                                 <button type="button" class="btn btn-primary"
-                                    onclick="modalAction('{{ url('barang/create') }}')">
+                                    onclick="modalAction('{{ url('barang/create_ajax') }}')">
                                     <i class="fa fa-plus"></i> Tambah Barang
                                 </button>
                             </div>
@@ -68,11 +68,93 @@
     <script>
         function modalAction(url = '') {
             $('#myModal').load(url, function(response, status, xhr) {
-                if (status == "error") {
+                if (status === "error") {
                     $('#myModal').html(
-                        '<div class="alert alert-danger">Belum buat</div>');
+                        '<div class="modal-dialog"><div class="modal-content"><div class="modal-body"><div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div></div></div></div>'
+                    );
                 }
                 $('#myModal').modal('show');
+
+                // Handle form update barang
+                $('#form-update-barang').on('submit', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'PUT',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                alert(response.message);
+                                dataBarang.ajax.reload(null, false); // Reload tabel
+                            }
+                        },
+                        error: function(xhr) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                let errorMsg = 'Gagal update barang:\n';
+                                $.each(errors, function(key, value) {
+                                    errorMsg += `- ${value}\n`;
+                                });
+                                alert(errorMsg);
+                            } else {
+                                alert('Gagal update barang. Silakan coba lagi.');
+                            }
+                        }
+                    });
+                });
+
+                // Handle form create barang
+                $('#form-create-barang').on('submit', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                alert(response.message);
+                                dataBarang.ajax.reload(null, false); // Reload tabel
+                            }
+                        },
+                        error: function(xhr) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                let errorMsg = 'Gagal tambah barang:\n';
+                                $.each(errors, function(key, value) {
+                                    errorMsg += `- ${value}\n`;
+                                });
+                                alert(errorMsg);
+                            } else {
+                                alert('Gagal tambah barang. Silakan coba lagi.');
+                            }
+                        }
+                    });
+                });
+
+                // Handle form delete barang
+                $('#form-delete-barang').on('submit', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'DELETE',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                alert(response.message);
+                                dataBarang.ajax.reload(null, false); // Reload tabel
+                            }
+                        },
+                        error: function(xhr) {
+                            alert('Gagal menghapus barang. Silakan coba lagi.');
+                        }
+                    });
+                });
             });
         }
 

@@ -144,7 +144,7 @@ Route::middleware(['auth'])->group(function () {
         Route::group(['prefix' => 'laporan'], function () {
             Route::post('/finish/{id}', [LaporanController::class, 'finish'])->name('laporan.finish');
             Route::get('/finish_form/{id}', [LaporanController::class, 'finishForm'])->name('laporan.finish_form');
-            Route::post('/selesai/{id}', [LaporanController::class, 'selesai'])->name('laporan.selesai');    
+            Route::post('/selesai/{id}', [LaporanController::class, 'selesai'])->name('laporan.selesai');
         });
     });
 
@@ -157,14 +157,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/tugaskan_teknisi/{id}', [LaporanController::class, 'tugaskan_teknisi']);
             Route::post('/reject/{id}', [LaporanController::class, 'reject'])->name('laporan.reject');
             Route::get('/riwayat', [LaporanController::class, 'riwayat'])->name('laporan.riwayat');
-            Route::get('/riwayat_data', [LaporanController::class, 'riwayatData'])->name('laporan.riwayat_data');
-        });
-    });
-
-    Route::middleware(['authorize:sarpras'])->group(function (): void {
-        Route::group(['prefix' => 'teknisi'], function () {
-            Route::get('/', [UserController::class, 'index']);
-            Route::get('/list', [UserController::class, 'list']);
         });
     });
 });

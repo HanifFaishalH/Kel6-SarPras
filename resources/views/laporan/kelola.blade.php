@@ -43,6 +43,7 @@
                                 <thead class="bg-light text-capitalize">
                                     <tr>
                                         <th>No</th>
+                                        <th>ID Laporan</th> <!-- Add this column -->
                                         <th>Judul</th>
                                         <th>Sarana</th>
                                         <th>Status Laporan</th>
@@ -195,41 +196,46 @@
                         d.status = $('#status').val();
                     }
                 },
-                columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                },
-                {
-                    data: 'laporan_judul',
-                    name: 'laporan_judul'
-                },
-                {
-                    data: 'sarana',
-                    name: 'sarana'
-                },
-                {
-                    data: 'status_laporan',
-                    name: 'status_laporan'
-                },
-                {
-                    data: 'created_at',
-                    name: 'created_at'
-                },
-                {
-                    data: 'bobot',
-                    name: 'bobot',
-                    render: function (data, type, row) {
-                        return data ? Math.floor(data) : '-';
+                columns: [
+                    {
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                    },
+                    {
+                        data: 'laporan_id', // Add this column
+                        name: 'laporan_id',
+                        searchable: true, // Make it searchable
+                    },
+                    {
+                        data: 'laporan_judul',
+                        name: 'laporan_judul'
+                    },
+                    {
+                        data: 'sarana',
+                        name: 'sarana'
+                    },
+                    {
+                        data: 'status_laporan',
+                        name: 'status_laporan'
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'created_at'
+                    },
+                    {
+                        data: 'bobot',
+                        name: 'bobot',
+                        render: function (data, type, row) {
+                            return data ? Math.floor(data) : '-';
+                        }
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
                     }
-                },
-                {
-                    data: 'aksi',
-                    name: 'aksi',
-
-                }
                 ],
                 order: [
-                    [5, 'desc']
+                    [6, 'desc']
                 ]
             });
 

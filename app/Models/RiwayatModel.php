@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RiwayatPerbaikanModel extends Model
+class RiwayatModel extends Model
 {
     use HasFactory;
 
@@ -24,10 +24,10 @@ class RiwayatPerbaikanModel extends Model
     ];
 
     protected $dates = [
-        'waktu_mulai',
-        'waktu_selesai',
-        'created_at',
-        'updated_at',
+        'waktu_mulai' => 'datetime',
+        'waktu_selesai' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     // Relationship with LaporanModel

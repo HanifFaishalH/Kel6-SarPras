@@ -9,16 +9,15 @@ use App\Models\LantaiModel;
 use App\Models\RuangModel;
 use App\Models\SaranaModel;
 use App\Models\TeknisiModel;
-use App\Models\RiwayatPerbaikanModel;
+use App\Models\RiwayatModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-
-
 use Exception;
+use Carbon\Carbon;
 
 class LaporanController extends Controller
 {
@@ -36,6 +35,26 @@ class LaporanController extends Controller
         $activeMenu = 'laporan';
         return view('laporan.index', [
             'laporan' => $laporan,
+            'breadcrumbs' => $breadcrumbs,
+            'page' => $page,
+            'activeMenu' => $activeMenu
+        ]);
+    }
+
+    public function riwayat()
+    {
+        $riwayat = RiwayatModel::with(['laporan', 'teknisi'])->get();
+
+        $breadcrumbs = [
+            'title' => 'Daftar Laporan',
+            'list' => ['home', 'riwayat']
+        ];
+        $page = (object) [
+            'title' => "Daftar Riwayat"
+        ];
+        $activeMenu = 'riwayat';
+        return view('laporan.riwayat', [
+            'riwayat' => $riwayat,
             'breadcrumbs' => $breadcrumbs,
             'page' => $page,
             'activeMenu' => $activeMenu
@@ -84,7 +103,6 @@ class LaporanController extends Controller
             ->make(true);
     }
 
-
     public function kelola()
     {
         $laporan = LaporanModel::all();
@@ -116,7 +134,7 @@ class LaporanController extends Controller
         }
 
         if ($request->status) {
-            $laporan->where('status', $request->status);
+            $laporan->where('status_laporan', $request->status);
         }
 
         if ($user->level->level_kode === 'teknisi') {
@@ -130,6 +148,9 @@ class LaporanController extends Controller
 
         return datatables()->of($laporan)
             ->addIndexColumn()
+            ->addColumn('laporan_id', function ($row) {
+                return $row->laporan_id;
+            })
             ->addColumn('laporan_judul', function ($row) {
                 return $row->laporan_judul;
             })
@@ -273,8 +294,8 @@ class LaporanController extends Controller
         $totalJumlahLaporan = SaranaModel::sum('jumlah_laporan');
         $normalizedJumlahLaporan = 1 - ($jumlahLaporan / $totalJumlahLaporan);
 
-        $tanggalOperasional = \Carbon\Carbon::parse($sarana->tanggal_operasional);
-        $now = \Carbon\Carbon::now();
+        $tanggalOperasional = Carbon::parse($sarana->tanggal_operasional);
+        $now = Carbon::now();
         $usia = $now->diffInDays($tanggalOperasional);
         $maxUsia = 3650;
         $normalizedUsia = 1 - ($usia / $maxUsia);
@@ -316,7 +337,6 @@ class LaporanController extends Controller
             $sawBobot['dampak'] * $dampak +
             $sawBobot['jumlah_laporan'] * $normalizedJumlahLaporan +
             $sawBobot['usia'] * $normalizedUsia;
-
 
         $bobot = (($ahpScore + $sawScore) / 2) * 100;
 
@@ -460,33 +480,28 @@ class LaporanController extends Controller
         return null;
     }
 
-
     public function show_kelola($id)
     {
-        try {
-            $laporan = LaporanModel::findOrFail($id);
-            $sarana = SaranaModel::findOrFail($id);
+        $laporan = LaporanModel::with([
+            'gedung',
+            'lantai',
+            'ruang',
+            'sarana',
+            'sarana.barang',
+            'user',
+            'teknisi.user'
+        ])->findOrFail($id);
+        $sarana = SaranaModel::findOrFail($id);
 
-            $html = view('laporan.show_kelola_detail', [
-                'laporan' => $laporan,
-                'sarana' => $sarana
-            ])->render();
+        $html = view('laporan.show_kelola_detail', [
+            'laporan' => $laporan,
+            'sarana' => $sarana
+        ])->render();
 
-            return response()->json([
-                'status' => 'success',
-                'html' => $html
-            ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Laporan tidak ditemukan.'
-            ], 404);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan saat mengambil data laporan.'
-            ], 500);
-        }
+        return response()->json([
+            'status' => 'success',
+            'html' => $html
+        ]);
     }
 
     public function create_ajax()
@@ -631,9 +646,9 @@ class LaporanController extends Controller
             'biaya' => 'nullable|numeric',
         ]);
 
-        $riwayatPerbaikan = new RiwayatPerbaikanModel();
+        $riwayatPerbaikan = new RiwayatModel();
         $riwayatPerbaikan->laporan_id = $laporan->laporan_id;
-        $riwayatPerbaikan->teknisi_id = Auth::user()->user_id;
+        $riwayatPerbaikan->teknisi_id = $laporan->teknisi_id;
         $riwayatPerbaikan->tindakan = $request->tindakan;
         $riwayatPerbaikan->bahan = $request->bahan;
         $riwayatPerbaikan->biaya = $request->biaya;
@@ -650,47 +665,6 @@ class LaporanController extends Controller
             'status' => 'success',
             'message' => 'Laporan berhasil diselesaikan.'
         ]);
-    }
-
-    public function riwayat()
-    {
-        $breadcrumbs = [
-            'title' => 'Riwayat Perbaikan',
-            'list' => ['home', 'riwayat']
-        ];
-        $page = (object) [
-            'title' => "Riwayat Perbaikan"
-        ];
-        $activeMenu = 'riwayat';
-
-        // Fetch the data from the database
-        $riwayatPerbaikan = RiwayatPerbaikanModel::with(['laporan', 'teknisi.user'])->get();
-
-        return view('laporan.riwayat', [
-            'breadcrumbs' => $breadcrumbs,
-            'page' => $page,
-            'activeMenu' => $activeMenu,
-            'riwayatPerbaikan' => $riwayatPerbaikan // Pass the data to the view
-        ]);
-    }
-
-    public function riwayatData()
-    {
-        $riwayatPerbaikan = RiwayatPerbaikanModel::with(['laporan', 'teknisi.user'])->get();
-
-        return DataTables::of($riwayatPerbaikan)
-            ->addIndexColumn()
-            ->addColumn('teknisi', function ($row) {
-                return $row->teknisi ? $row->teknisi->user->username : '-';
-            })
-            ->addColumn('waktu_mulai', function ($row) {
-                return $row->waktu_mulai ? $row->waktu_mulai->format('d-m-Y H:i') : '-';
-            })
-            ->addColumn('waktu_selesai', function ($row) {
-                return $row->waktu_selesai ? $row->waktu_selesai->format('d-m-Y H:i') : '-';
-            })
-            ->rawColumns(['teknisi', 'waktu_mulai', 'waktu_selesai'])
-            ->make(true);
     }
 
     public function getGedung()

@@ -46,9 +46,8 @@
                                 <small class="form-text text-muted">Lantai Sarana</small>
                             </div>
                         </div>
-
                         <div class="form-group row">
-                            <div class="col-sm-6 text-right">
+                            <div class="col-12 text-right">
                                 <button type="button" class="btn btn-primary"
                                     onclick="modalAction('{{ url('sarana/create_ajax') }}')">
                                     <i class="fa fa-plus"></i> Tambah Sarana

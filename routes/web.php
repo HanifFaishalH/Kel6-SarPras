@@ -141,8 +141,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/create_ajax', [SaranaController::class, 'create_ajax']);
             Route::post('/store_ajax', [SaranaController::class, 'store_ajax']);
             Route::get('/ruang/{id}/edit', [RuangController::class, 'edit'])->name('ruang.edit');
-            Route::get('/edit_ajax/{id}', [SaranaController::class, 'edit_ajax']);
-            Route::put('/update_ajax/{id}', [SaranaController::class, 'update_ajax']);
             Route::get('/delete_ajax/{id}', [SaranaController::class, 'delete_ajax']);
             Route::delete('/destroy_ajax/{id}', [SaranaController::class, 'destroy_ajax']);
         });

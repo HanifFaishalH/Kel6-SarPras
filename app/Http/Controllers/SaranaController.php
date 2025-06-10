@@ -72,7 +72,6 @@ class SaranaController extends Controller
             ->addColumn('aksi', function ($row) {
                 return '
                     <a href="javascript:void(0)" onclick="modalAction(\'' . url('sarana/show/' . $row->sarana_id) . '\')" class="btn btn-sm btn-info">Detail</a>
-                    <a href="javascript:void(0)" onclick="modalAction(\'' . url('sarana/edit_ajax/' . $row->sarana_id) . '\')" class="btn btn-sm btn-warning">Edit</a>
                     <a href="javascript:void(0)" onclick="modalAction(\'' . url('sarana/delete_ajax/' . $row->sarana_id) . '\')" class="btn btn-sm btn-danger">Hapus</a>
                 ';
             })
@@ -132,40 +131,6 @@ class SaranaController extends Controller
         return redirect('/sarana');
     }
 
-    public function edit_ajax($id)
-    {
-        $sarana = SaranaModel::findOrFail($id);
-        $ruang_list = RuangModel::all();
-
-        return view('sarana.edit_ajax', [
-            'sarana' => $sarana,
-            'ruang_list' => $ruang_list
-        ]);
-    }
-
-    public function update_ajax(Request $request, $id)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $validator = Validator::make($request->all(), [
-                'ruang_id' => 'required|exists:m_ruang,ruang_id',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $data = $validator->validated();
-            $sarana = SaranaModel::findOrFail($id);
-            $sarana->update($data);
-
-            return response()->json(['success' => true, 'message' => 'Sarana updated successfully']);
-        }
-
-        return redirect('/sarana');
-    }
 
     public function delete_ajax($id)
     {

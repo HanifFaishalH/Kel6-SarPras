@@ -126,27 +126,27 @@ class LaporanController extends Controller
     public function list_kelola(Request $request)
     {
         $user = auth()->user();
-        $laporan = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
+        $query = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
             ->where('status_laporan', '!=', 'ditolak');
 
-        if ($request->laporan_id) {
-            $laporan->where('laporan_id', $request->laporan_id);
+        if ($request->status) {
+            $query->where('status_laporan', $request->status);
         }
 
-        if ($request->status) {
-            $laporan->where('status_laporan', $request->status);
+        // Handle search for laporan_id
+        if ($request->has('search') && $request->search['value'] != '') {
+            $searchValue = $request->search['value'];
+            $query->where('laporan_id', 'LIKE', '%' . $searchValue . '%');
         }
 
         if ($user->level->level_kode === 'teknisi') {
-            // Teknisi can only see laporan assigned to them
             $teknisiId = TeknisiModel::where('user_id', $user->user_id)->value('teknisi_id');
-            $laporan->where('teknisi_id', $teknisiId);
+            $query->where('teknisi_id', $teknisiId);
         } elseif ($user->level->level_kode !== 'sarpras') {
-            // If the user is neither sarpras nor teknisi, show nothing
-            $laporan->whereRaw('1 = 0');
+            $query->whereRaw('1 = 0');
         }
 
-        return datatables()->of($laporan)
+        return datatables()->of($query)
             ->addIndexColumn()
             ->addColumn('laporan_id', function ($row) {
                 return $row->laporan_id;
@@ -164,7 +164,7 @@ class LaporanController extends Controller
                 return $row->created_at->format('d-m-Y H:i');
             })
             ->addColumn('bobot', function ($row) {
-                return $row->bobot ?? '-'; // Handle null/undefined bobot
+                return $row->bobot ?? '-';
             })
             ->addColumn('aksi', function ($row) {
                 $btn = '<button onclick="modalAction(\'' . url('/laporan/show_kelola_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';

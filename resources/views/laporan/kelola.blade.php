@@ -200,27 +200,38 @@
                     {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false,
                     },
                     {
-                        data: 'laporan_id', // Add this column
+                        data: 'laporan_id',
                         name: 'laporan_id',
-                        searchable: true, // Make it searchable
+                        searchable: true,
+                        orderable: true
                     },
                     {
                         data: 'laporan_judul',
-                        name: 'laporan_judul'
+                        name: 'laporan_judul',
+                        searchable: true,
+                        orderable: true
                     },
                     {
                         data: 'sarana',
-                        name: 'sarana'
+                        name: 'sarana',
+                        searchable: true,
+                        orderable: true
                     },
                     {
                         data: 'status_laporan',
-                        name: 'status_laporan'
+                        name: 'status_laporan',
+                        searchable: true,
+                        orderable: true
                     },
                     {
                         data: 'created_at',
-                        name: 'created_at'
+                        name: 'created_at',
+                        searchable: true,
+                        orderable: true
                     },
                     {
                         data: 'bobot',

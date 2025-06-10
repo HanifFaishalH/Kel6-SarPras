@@ -107,12 +107,13 @@
                 <button type="submit" class="btn btn-success">Kerjakan</button>
             </form>
         @endif --}}
-
-        @if($laporan->status_laporan === 'dikerjakan')
-            <button id="finishLaporanButton" data-id="{{ $laporan->laporan_id }}"
-                class="btn btn-success btn-sm">Kerjakan</button>
+        @if($user->level_id == 5)
+            @if($laporan->status_laporan === 'dikerjakan')
+                <button id="finishLaporanButton" data-id="{{ $laporan->laporan_id }}"
+                    class="btn btn-success btn-sm">Kerjakan</button>
+            @endif
         @endif
-
+        
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
     </div>
 </div>

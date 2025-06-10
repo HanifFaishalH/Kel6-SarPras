@@ -482,6 +482,7 @@ class LaporanController extends Controller
 
     public function show_kelola($id)
     {
+        $user = Auth::user();
         $laporan = LaporanModel::with([
             'gedung',
             'lantai',
@@ -495,7 +496,8 @@ class LaporanController extends Controller
 
         $html = view('laporan.show_kelola_detail', [
             'laporan' => $laporan,
-            'sarana' => $sarana
+            'sarana' => $sarana,
+            'user' => $user,
         ])->render();
 
         return response()->json([

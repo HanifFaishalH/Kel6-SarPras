@@ -12,26 +12,44 @@ class TeknisiSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Gunakan level_id 5
-        $levelId = 5;
+        // Define a fixed list of unique skills
+        $keahlianList = [
+            'Listrik',
+            'Jaringan',
+            'AC',
+            'Perabot',
+            'Komputer'
+        ];
 
-        // Ambil user_id dari m_users dengan filter user_id antara 5 sampai 9
+        $levelId = 5;
+        
         $userIds = DB::table('m_users')
             ->whereBetween('user_id', [5, 9])
             ->pluck('user_id')
             ->toArray();
 
-        if (empty($userIds)) {
+            if (empty($userIds)) {
             $this->command->warn('Tabel m_users dengan user_id 5-9 kosong. Seeder Teknisi dibatalkan.');
             return;
         }
 
-        // Insert data teknisi sesuai user_id range 5-9
-        foreach ($userIds as $userId) {
+        // Check if the number of users matches the number of skills
+        if (count($userIds) > count($keahlianList)) {
+            $this->command->warn('Jumlah user_id melebihi jumlah keahlian yang tersedia. Tambahkan lebih banyak keahlian.');
+            return;
+        }
+
+        // Shuffle the keahlian list to randomize assignment while ensuring uniqueness
+        $shuffledKeahlian = $keahlianList;
+        shuffle($shuffledKeahlian);
+
+        // Assign keahlian to users
+        foreach ($userIds as $index => $userId) {
+            $keahlian = $shuffledKeahlian[$index];
             DB::table('m_teknisi')->insert([
-                'level_id' => $levelId,
                 'user_id' => $userId,
-                'keahlian' => $faker->randomElement(['Listrik', 'Jaringan', 'AC', 'Perabot', 'Komputer']),
+                'keahlian' => $shuffledKeahlian[$index],
+                'level_id' => $levelId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

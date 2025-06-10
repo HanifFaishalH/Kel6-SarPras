@@ -167,7 +167,6 @@
                                     </div>
                                 </a>
                             </div>
-
                         </div>
 
                     @elseif ($user->level_id == 2 || $user->level_id == 3 || $user->level_id == 4)
@@ -253,25 +252,131 @@
                             </div>
                         </div>
 
-
-
                     @elseif ($user->level_id == 5)
                         {{-- TEKNISI DASHBOARD --}}
-                        <h5>Halo Teknisi, {{ $user->nama }}</h5>
-                        <ul>
-                            <li>Lihat Tugas Perbaikan</li>
-                            <li>Update Status Perbaikan</li>
-                            <li>Riwayat Tugas</li>
-                        </ul>
+                        <h5 class="font-weight-bold">Halo Teknisi, {{ $user->nama }}</h5>
+                        <div class="row mt-4">
+                            {{-- Total Tugas --}}
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card text-white bg-primary h-100 shadow">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fa fa-list-alt fa-3x mr-3"></i>
+                                        <div>
+                                            <h6 class="card-title mb-1">Total Tugas</h6>
+                                            <h3 class="card-text mb-0">{{ $total }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Tugas Diproses --}}
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card text-white bg-info h-100 shadow">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fa fa-hourglass-half fa-3x mr-3"></i>
+                                        <div>
+                                            <h6 class="card-title mb-1">Sedang Diproses</h6>
+                                            <h3 class="card-text mb-0">{{ $diproses }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Tugas Dikerjakan --}}
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card text-white bg-warning h-100 shadow">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fa fa-tools fa-3x mr-3"></i>
+                                        <div>
+                                            <h6 class="card-title mb-1">Dikerjakan</h6>
+                                            <h3 class="card-text mb-0">{{ $dikerjakan }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Tugas Selesai --}}
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card text-white bg-success h-100 shadow">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fa fa-check-circle fa-3x mr-3"></i>
+                                        <div>
+                                            <h6 class="card-title mb-1">Selesai</h6>
+                                            <h3 class="card-text mb-0">{{ $selesai }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="{{ url('/laporan/teknisi') }}" class="btn btn-primary">
+                                <i class="fa fa-list mr-2"></i> Lihat Daftar Tugas
+                            </a>
+                        </div>
 
                     @elseif ($user->level_id == 6)
                         {{-- SARPRAS DASHBOARD --}}
-                        <h5>Halo, {{ $user->nama }}</h5>
-                        <ul>
-                            <li>Rekap Laporan Masuk</li>
-                            <li>Statistik Kerusakan</li>
-                            <li>Pengawasan Kinerja Teknisi</li>
-                        </ul>
+                        <h5 class="font-weight-bold">Halo Sarpras, {{ $user->nama }}</h5>
+                        <div class="row mt-4">
+                            {{-- Total Laporan --}}
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card text-white bg-primary h-100 shadow">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fa fa-list-alt fa-3x mr-3"></i>
+                                        <div>
+                                            <h6 class="card-title mb-1">Total Laporan</h6>
+                                            <h3 class="card-text mb-0">{{ $total }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Laporan Pending --}}
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card text-white bg-secondary h-100 shadow">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fa fa-clock fa-3x mr-3"></i>
+                                        <div>
+                                            <h6 class="card-title mb-1">Pending</h6>
+                                            <h3 class="card-text mb-0">{{ $pending }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Laporan Diproses --}}
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card text-white bg-info h-100 shadow">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fa fa-hourglass-half fa-3x mr-3"></i>
+                                        <div>
+                                            <h6 class="card-title mb-1">Diproses</h6>
+                                            <h3 class="card-text mb-0">{{ $diproses }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Laporan Selesai --}}
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card text-white bg-success h-100 shadow">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fa fa-check-circle fa-3x mr-3"></i>
+                                        <div>
+                                            <h6 class="card-title mb-1">Selesai</h6>
+                                            <h3 class="card-text mb-0">{{ $selesai }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="{{ url('/laporan') }}" class="btn btn-primary">
+                                <i class="fa fa-list mr-2"></i> Kelola Laporan
+                            </a>
+                        </div>
 
                     @else
                         <h5>Halo {{ $user->name }}</h5>

@@ -44,8 +44,8 @@ class LantaiController extends Controller
             ->addIndexColumn()
             ->addColumn('gedung', fn($row) => $row->gedung ? $row->gedung->gedung_nama : '-')
             ->addColumn('aksi', function ($row) {
-                $btn = '<button onclick="modalAction(\'' . url('/lantai/show_ajax/' . $row->lantai_id) . '\')" class="btn btn-info btn-sm" style="margin-bottom: 5px;">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/lantai/edit_ajax/' . $row->lantai_id) . '\')" class="btn btn-warning btn-sm" style="margin-bottom: 5px;">Edit</button> ';
+                $btn = '<button onclick="modalAction(\'' . url('/lantai/show_ajax/' . $row->lantai_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/lantai/edit_ajax/' . $row->lantai_id) . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/lantai/delete_ajax/' . $row->lantai_id) . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })

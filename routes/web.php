@@ -45,6 +45,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index']);
 
+    Route::get('/laporan/kalkulasi/{id}', [LaporanController::class, 'kalkulasi']);
+
     // User
 
     Route::middleware(['authorize:mhs,dosen,tendik'])->group(function () {
@@ -176,7 +178,6 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['authorize:sarpras'])->group(function (): void {
         Route::group(['prefix' => 'laporan'], function () {
             Route::post('/{id}/update_ajax', [LaporanController::class, 'update_ajax']);
-            Route::get('/kalkulasi/{id}', [LaporanController::class, 'kalkulasi']);
             Route::post('/accept/{id}', [LaporanController::class, 'accept'])->name('laporan.accept');
             Route::get('/tugaskan_teknisi/{id}', [LaporanController::class, 'tugaskan_teknisi']);
             Route::post('/tugaskan_teknisi/{id}', [LaporanController::class, 'tugaskan_teknisi']);

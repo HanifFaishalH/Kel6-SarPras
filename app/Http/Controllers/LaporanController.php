@@ -152,8 +152,15 @@ class LaporanController extends Controller
     public function list_kelola(Request $request)
     {
         $user = auth()->user();
+
+        // Use window function to get only the latest report per sarana
         $query = LaporanModel::with(['gedung', 'lantai', 'ruang', 'sarana', 'user', 'teknisi'])
-            ->where('status_laporan', '!=', 'ditolak');
+            ->fromSub(function ($query) {
+                $query->from('t_laporan_kerusakan')
+                    ->whereNotIn('status_laporan', ['ditolak'])
+                    ->selectRaw('*, ROW_NUMBER() OVER (PARTITION BY sarana_id ORDER BY laporan_id DESC) as rn');
+            }, 'ranked_laporan')
+            ->where('rn', 1);
 
         if ($request->status) {
             $query->where('status_laporan', $request->status);
@@ -194,11 +201,6 @@ class LaporanController extends Controller
             })
             ->addColumn('aksi', function ($row) {
                 $btn = '<button onclick="modalAction(\'' . url('/laporan/show_kelola_ajax/' . $row->laporan_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                if (empty($row->bobot)) {
-                    if ($row->status_laporan === 'diproses') {
-                        $btn .= '<button onclick="calculatePriority(' . $row->laporan_id . ')" class="btn btn-success btn-sm">Kalkulasi</button>';
-                    }
-                }
 
                 if ($row->status_laporan === 'diproses') {
                     $btn .= '<br><a href="' . url('/laporan/tugaskan_teknisi/' . $row->laporan_id) . '" class="btn btn-warning btn-sm mt-1" onclick="modalAction(this.href); return false;">Tugaskan Teknisi</a>';
@@ -299,7 +301,32 @@ class LaporanController extends Controller
 
     public function kalkulasi($id)
     {
-        $laporan = LaporanModel::findOrFail($id);
+        try {
+            $laporan = LaporanModel::findOrFail($id);
+
+            // Calculate bobot using the new method
+            $this->calculateBobotForLaporan($laporan);
+
+            // Refresh the laporan to get the updated bobot
+            $laporan->refresh();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Perhitungan bobot berhasil',
+                'bobot' => $laporan->bobot
+            ]);
+        } catch (Exception $e) {
+            Log::error('Failed to calculate bobot for laporan ' . $id . ': ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menghitung bobot: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function calculateBobotForLaporan($laporan)
+    {
         $sarana = SaranaModel::findOrFail($laporan->sarana_id);
 
         // Map values to scores
@@ -355,31 +382,11 @@ class LaporanController extends Controller
 
         $bobot = (($ahpScore + $sawScore) / 2) * 100;
 
-        // Save the scores to the laporan
+        // Save the calculated bobot to the laporan
         $laporan->bobot = $bobot;
         $laporan->save();
 
-        $html = view('laporan.calculate_result', [
-            'laporan' => $laporan,
-            'bobot' => $bobot,
-            'factors' => [
-                'Kerusakan' => ['value' => $laporan->tingkat_kerusakan, 'score' => $kerusakan],
-                'Urgensi' => ['value' => $laporan->tingkat_urgensi, 'score' => $urgensi],
-                'Frekuensi' => ['value' => $sarana->frekuensi_penggunaan, 'score' => $frekuensi],
-                'Dampak' => ['value' => $laporan->dampak_kerusakan, 'score' => $dampak],
-                'Jumlah Laporan' => ['value' => $jumlahLaporan, 'score' => $normalizedJumlahLaporan],
-                'Usia' => ['value' => $usia, 'score' => $normalizedUsia]
-            ],
-            'normalizedMatrix' => $this->getNormalizedMatrix(),
-            'bobotAHP' => array_values($ahpWeights)
-        ])->render();
-
-        return response()->json([
-            'status' => 'success',
-            'html' => $html,
-            'bobot' => $bobot,
-            'message' => 'Perhitungan bobot berhasil'
-        ]);
+        Log::info('Bobot calculated for laporan ' . $laporan->laporan_id . ': ' . $bobot);
     }
 
     private function calculateAHPWeights()
@@ -764,14 +771,24 @@ class LaporanController extends Controller
 
             $laporan = LaporanModel::create($data);
 
+            // Increment jumlah_laporan for the sarana
             if ($laporan->sarana_id) {
                 SaranaModel::where('sarana_id', $laporan->sarana_id)
                     ->increment('jumlah_laporan');
             }
+
+            // Auto-calculate bobot after creating the report
+            try {
+                $this->calculateBobotForLaporan($laporan);
+            } catch (Exception $e) {
+                Log::error('Failed to calculate bobot for laporan ' . $laporan->laporan_id . ': ' . $e->getMessage());
+                // Don't fail the entire operation if bobot calculation fails
+            }
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Laporan berhasil dibuat',
-                'data' => $laporan
+                'message' => 'Laporan berhasil dibuat dan bobot telah dihitung',
+                'data' => $laporan->fresh() // Refresh to get the calculated bobot
             ], 200);
         }
 

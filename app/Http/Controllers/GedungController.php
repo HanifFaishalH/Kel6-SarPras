@@ -46,6 +46,7 @@ class GedungController extends Controller
             ->addColumn('aksi', function ($gedung) {
                 $btn  = '<button onclick="modalAction(\'' . url('/gedung/' . $gedung->gedung_id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/gedung/' . $gedung->gedung_id . '/edit') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/gedung/' . $gedung->gedung_id . '/delete') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -86,12 +87,7 @@ class GedungController extends Controller
     public function store(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            // Generate gedung_kode otomatis (misal berdasarkan last_id)
-            $last_id = GedungModel::max('gedung_id') ?? 0;
-            $next_number = $last_id + 1;
-            $gedung_kode = 'GDG-' . $next_number;
-
-            $validator = Validator::make(array_merge($request->all(), ['gedung_kode' => $gedung_kode]), [
+            $validator = Validator::make($request->all(), [
                 'gedung_nama' => 'required|string|max:255',
                 'gedung_kode' => 'required|string|max:50|unique:m_gedung,gedung_kode',
             ]);
@@ -107,7 +103,7 @@ class GedungController extends Controller
             $data = $validator->validated();
             GedungModel::create([
                 'gedung_nama' => $data['gedung_nama'],
-                'gedung_kode' => $gedung_kode,
+                'gedung_kode' => $data['gedung_kode'],
             ]);
 
             return response()->json([
@@ -118,6 +114,7 @@ class GedungController extends Controller
 
         return redirect('/gedung');
     }
+
 
     // Edit
 
@@ -145,5 +142,39 @@ class GedungController extends Controller
             'status' => 'success',
             'message' => 'Data gedung berhasil diperbarui!',
         ]);
+    }
+
+    public function delete_ajax($id)
+    {
+        $gedung = GedungModel::findOrFail($id);
+        return response()->json([
+            'status' => 'success',
+            'html' => view('gedung.delete_confirm_ajax', [
+                'gedung' => $gedung
+            ])->render()
+        ]);
+    }
+
+    public function destroy_ajax(Request $request, $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            try {
+                $gedung = GedungModel::findOrFail($id);
+                $gedung->delete();
+
+                // Ulang Increment
+                $maxId = GedungModel::max('gedung_id');
+                if ($maxId) {
+                    DB::statement('ALTER TABLE m_gedung AUTO_INCREMENT = ' . ($maxId + 1));
+                }
+
+                return response()->json(['success' => true, 'message' => 'Gedung deleted successfully']);
+            } catch (\Exception $e) {
+                \Log::error('Error deleting gedung: ' . $e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Gagal menghapus data: ' . $e->getMessage()], 500);
+            }
+        }
+
+        return redirect('/gedung');
     }
 }

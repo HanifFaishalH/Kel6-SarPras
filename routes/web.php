@@ -98,8 +98,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/{id}/edit', [GedungController::class, 'edit']);
             Route::put('/{id}/update', [GedungController::class, 'update'])->name('gedung.update');
             Route::post('/{id}/update', [GedungController::class, 'update'])->name('gedung.update');
-            Route::get('/{id}/delete', [GedungController::class, 'confirm']);
-            Route::delete('/{id}/delete', [GedungController::class, 'destroy'])->name('gedung.destroy');
+            Route::get('/{id}/delete', [GedungController::class, 'delete_ajax'])->name('gedung.delete_ajax');
+            Route::delete('/destroy_ajax/{id}', [GedungController::class, 'destroy_ajax'])->name('gedung.destroy_ajax');
         });
 
         Route::group(['prefix' => 'ruang'], function () {

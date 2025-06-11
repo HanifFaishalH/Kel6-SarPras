@@ -18,11 +18,11 @@
                 <div class="form-group">
                     <label for="gedung_kode">Kode Gedung</label>
                     <input type="text" class="form-control" id="gedung_kode" name="gedung_kode"
-                        value="{{ 'GDG-' . (GedungModel::max('gedung_id') ?? 0 + 1) }}" readonly required>
+                        placeholder="Masukkan kode gedung" required>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="type" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </div>

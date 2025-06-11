@@ -139,6 +139,36 @@
                 dataGedung.ajax.reload();
             });
 
+            // Tangani form submission via AJAX untuk create
+            $(document).on('submit', '#form-create-gedung', function(e) {
+                e.preventDefault();
+                let form = $(this);
+
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: form.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#myModal').modal('hide');
+                            dataGedung.ajax.reload();
+                            alert(response.message || 'Data berhasil ditambahkan!');
+                        } else {
+                            alert('Gagal menyimpan data: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        let message = 'Terjadi kesalahan saat menyimpan data.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+                        alert(message);
+                        console.error('Error:', xhr);
+                    }
+                });
+            });
+
             // Tangani form submission via AJAX untuk update
             $(document).on('submit', '#editGedungForm', function(e) {
                 e.preventDefault();
@@ -183,9 +213,9 @@
                     data: form.serialize(),
                     dataType: 'json',
                     success: function(response) {
-                        if (response.status === 'success') {
+                        if (response.success) {
                             $('#myModal').modal('hide');
-                            dataGedung.ajax.reload(); // Refresh DataTable
+                            dataGedung.ajax.reload(); // Refresh DataTable hanya jika sukses
                             alert(response.message || 'Data berhasil dihapus!');
                         } else {
                             alert('Gagal menghapus data: ' + response.message);

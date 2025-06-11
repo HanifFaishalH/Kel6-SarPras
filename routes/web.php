@@ -81,10 +81,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/{id}/show', [UserController::class, 'show']);
             Route::get('/{id}/edit', [UserController::class, 'edit']);
             Route::get('/create_ajax', [UserController::class, 'create_ajax']);
-            Route::post('/store', [UserController::class, 'store']);
-            Route::delete('/{id}', [UserController::class, 'destroy']);
-            Route::put('/{id}/update', [UserController::class, 'update'])->name('user.update');
-            Route::post('/{id}/update', [UserController::class, 'update'])->name('user.update');
+            Route::post('/store_ajax', [UserController::class, 'store']);
+            Route::put('/update/{id}/', [UserController::class, 'update'])->name('user.update');
+            Route::post('/update/{id}/', [UserController::class, 'update'])->name('user.update');
+            Route::get('/delete_ajax/{id}', [UserController::class, 'delete_ajax']);
+            Route::delete('/destroy_ajax/{id}', [UserController::class, 'destroy_ajax']);
         });
 
         Route::group(['prefix' => 'gedung'], function () {

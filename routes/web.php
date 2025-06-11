@@ -186,7 +186,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    Route::middleware(['authorize:mhs,dosen,tendik,sarpras'])->group(function () {
+    Route::middleware(['authorize:mhs,dosen,tendik,sarpras,admin'])->group(function () {
         Route::group(['prefix' => 'feedback'], function () {
             Route::get('/', [FeedbackController::class, 'index'])->name('feedback.index');
             Route::post('/', [FeedbackController::class, 'store'])->name('feedback.store');

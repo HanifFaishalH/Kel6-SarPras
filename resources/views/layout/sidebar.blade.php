@@ -23,29 +23,17 @@
                     @if (Auth::check() && Auth::user()->getRole() === 'admin')
                         <!-- Kelola (admin only) -->
                         <li
-                            class="nav-item has-submenu {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas', 'lantai', 'ruang']) ? 'mm-active' : '' }}">
+                            class="nav-item has-submenu {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas']) ? 'mm-active' : '' }}">
                             <a href="javascript:void(0)" class="nav-link section-title">
                                 <i class="fa fa-gear"></i>
                                 <span>Kelola</span>
                             </a>
                             <ul
-                                class="nav nav-second-level collapse {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas', 'lantai', 'ruang']) ? 'in' : '' }}">
+                                class="nav nav-second-level collapse {{ in_array($activeMenu, ['level', 'kelola-periode', 'user', 'kelola-prioritas']) ? 'in' : '' }}">
                                 <li>
                                     <a href="{{ url('/level') }}"
                                         class="nav-link {{ $activeMenu == 'level' ? 'active' : '' }}">
                                         <i class="fa fa-list"></i> Level
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ url('/lantai') }}"
-                                        class="nav-link {{ $activeMenu == 'lantai' ? 'active' : '' }}">
-                                        <i class="fa fa-building"></i> Kelola Lantai
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ url('/ruang') }}"
-                                        class="nav-link {{ $activeMenu == 'ruang' ? 'active' : '' }}">
-                                        <i class="fa fa-home"></i> Kelola Ruang
                                     </a>
                                 </li>
                                 <li>
@@ -71,13 +59,13 @@
 
                         <!-- Sarana Prasarana (admin only) -->
                         <li
-                            class="nav-item has-submenu {{ in_array($activeMenu, ['sarana', 'gedung', 'barang']) ? 'mm-active' : '' }}">
+                            class="nav-item has-submenu {{ in_array($activeMenu, ['sarana', 'gedung', 'barang', 'lantai', 'ruang']) ? 'mm-active' : '' }}">
                             <a href="javascript:void(0)" class="nav-link section-title">
                                 <i class="fa fa-building"></i>
                                 <span>Sarana Prasarana</span>
                             </a>
                             <ul
-                                class="nav nav-second-level collapse {{ in_array($activeMenu, ['sarana', 'gedung', 'barang']) ? 'in' : '' }}">
+                                class="nav nav-second-level collapse {{ in_array($activeMenu, ['sarana', 'gedung', 'barang', 'lantai', 'ruang']) ? 'in' : '' }}">
                                 <li><a href="{{ url('/sarana') }}"
                                         class="nav-link {{ $activeMenu == 'sarana' ? 'active' : '' }}"><i
                                             class="fa fa-building"></i> Kelola Sarana</a></li>
@@ -87,6 +75,18 @@
                                 <li><a href="{{ url('/barang') }}"
                                         class="nav-link {{ $activeMenu == 'barang' ? 'active' : '' }}"><i
                                             class="fa fa-cube"></i> Kelola Barang</a></li>
+                                <li>
+                                    <a href="{{ url('/lantai') }}"
+                                        class="nav-link {{ $activeMenu == 'lantai' ? 'active' : '' }}">
+                                        <i class="fa fa-building"></i> Kelola Lantai
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('/ruang') }}"
+                                        class="nav-link {{ $activeMenu == 'ruang' ? 'active' : '' }}">
+                                        <i class="fa fa-home"></i> Kelola Ruang
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     @endif

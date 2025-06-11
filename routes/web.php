@@ -16,6 +16,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaporanKerusakanController;
 use App\Http\Controllers\RuangController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\FeedbackController;
 
 /*
 |--------------------------------------------------------------------------
@@ -181,6 +182,14 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/tugaskan_teknisi/{id}', [LaporanController::class, 'tugaskan_teknisi']);
             Route::post('/reject/{id}', [LaporanController::class, 'reject'])->name('laporan.reject');
             Route::get('/riwayat', [LaporanController::class, 'riwayat'])->name('laporan.riwayat');
+        });
+    });
+
+    Route::middleware(['authorize:mhs,dosen,tendik'])->group(function () {
+        Route::group(['prefix' => 'feedback'], function () {
+            Route::get('/', [FeedbackController::class, 'index'])->name('feedback.index');
+            Route::post('/', [FeedbackController::class, 'store'])->name('feedback.store');
+            Route::get('/list', [FeedbackController::class, 'list'])->name('feedback.list');
         });
     });
 });

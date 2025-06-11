@@ -89,7 +89,6 @@
                                             class="fa fa-cube"></i> Kelola Barang</a></li>
                             </ul>
                         </li>
-
                     @endif
 
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['mhs', 'dosen', 'tendik']))
@@ -104,33 +103,41 @@
                     @endif
 
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras', 'teknisi']))
-                        <!-- Laporan Management (for sarpras and admin) -->
-                        <li class="nav nav-second-level collapse {{ in_array($activeMenu, ['kelola']) ? 'in' : '' }}">
-                        <li>
+                        <!-- Laporan Management (for sarpras and teknisi) -->
+                        <li class="nav-item">
                             <a href="{{ url('/laporan/kelola') }}"
-                                class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}"><i
-                                    class="fa fa-wrench"></i>
-                                <span>
-                                </span>Kelola Laporan</a>
+                                class="nav-link {{ $activeMenu == 'kelola' ? 'active' : '' }}">
+                                <i class="fa fa-wrench"></i>
+                                <span>Kelola Laporan</span>
+                            </a>
                         </li>
                     @endif
 
-                    <!-- Umpan Balik (user only) -->
+                    <!-- Daftar Umpan Balik (accessible to all) -->
+                    <li class="nav-item">
+                        <a href="{{ route('feedback.list') }}"
+                           class="nav-link {{ $activeMenu == 'daftar-umpan-balik' ? 'active' : '' }}">
+                            <i class="fa fa-list"></i>
+                            <span>Daftar Umpan Balik</span>
+                        </a>
+                    </li>
+
+                    <!-- Umpan Balik (only for mhs, dosen, tendik) -->
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['mhs', 'dosen', 'tendik']))
                         <li class="nav-item">
-                            <a href="{{ url('/feedback') }}"
-                                class="nav-link {{ $activeMenu == 'berikan-umpan-balik' ? 'active' : '' }}">
+                            <a href="{{ route('feedback.index') }}"
+                               class="nav-link {{ $activeMenu == 'berikan-umpan-balik' ? 'active' : '' }}">
                                 <i class="fa fa-comment"></i>
-                                <span>Berikan Umpan Balik</span>
+                                <span>Umpan Balik</span>
                             </a>
                         </li>
                     @endif
 
                     @if (Auth::check() && in_array(Auth::user()->getRole(), ['sarpras']))
-                        <!-- Riwayat Perbaikan (sarpras and admin) -->
+                        <!-- Riwayat Perbaikan (sarpras only) -->
                         <li class="nav-item">
                             <a href="{{ url('/laporan/riwayat') }}"
-                                class="nav-link {{ $activeMenu == 'riwayat' ? 'active' : '' }}">
+                               class="nav-link {{ $activeMenu == 'riwayat' ? 'active' : '' }}">
                                 <i class="fa fa-wrench"></i>
                                 <span>Riwayat Perbaikan</span>
                             </a>
@@ -150,7 +157,7 @@
             <div class="modal-header">
                 <h5 class="modal-title">Akses Ditolak</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body">

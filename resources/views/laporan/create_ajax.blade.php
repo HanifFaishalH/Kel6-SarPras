@@ -109,17 +109,14 @@
     </div>
 </div>
 
-
-
 <script>
     $(document).ready(function() {
-        // Saat lantai diubah
+        // Ambil ruang berdasarkan lantai
         $('select[name="lantai_id"]').on('change', function() {
             var lantaiID = $(this).val();
             var ruangSelect = $('select[name="ruang_id"]');
             var saranaSelect = $('select[name="sarana_id"]');
 
-            // Kosongkan ruang dan sarana
             ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>');
             saranaSelect.empty().append('<option value="">- Pilih Sarana -</option>').prop('disabled', true);
 
@@ -136,11 +133,11 @@
                             ruangSelect.prop('disabled', false);
                         } else {
                             ruangSelect.prop('disabled', true);
-                            alert('Tidak ada ruang tersedia untuk lantai ini.');
+                            Swal.fire('Info', 'Tidak ada ruang tersedia untuk lantai ini.', 'info');
                         }
                     },
-                    error: function(xhr) {
-                        alert('Gagal mengambil ruang. Coba lagi.');
+                    error: function() {
+                        Swal.fire('Error', 'Gagal mengambil data ruang.', 'error');
                     }
                 });
             } else {
@@ -148,7 +145,7 @@
             }
         });
 
-        // Saat ruang diubah
+        // Ambil sarana berdasarkan ruang
         $('select[name="ruang_id"]').on('change', function() {
             var ruangID = $(this).val();
             var saranaSelect = $('select[name="sarana_id"]');
@@ -167,22 +164,24 @@
                             saranaSelect.prop('disabled', false);
                         } else {
                             saranaSelect.prop('disabled', true);
-                            alert('Tidak ada sarana tersedia untuk ruang ini.');
+                            Swal.fire('Info', 'Tidak ada sarana tersedia untuk ruang ini.', 'info');
                         }
                     },
-                    error: function(xhr) {
-                        alert('Gagal mengambil sarana. Coba lagi.');
+                    error: function() {
+                        Swal.fire('Error', 'Gagal mengambil data sarana.', 'error');
                     }
                 });
             } else {
                 saranaSelect.prop('disabled', true);
             }
         });
+
+        // Submit form AJAX
         $('#form-create-laporan').off('submit').on('submit', function(e) {
             e.preventDefault();
-            // Clear previous error messages
             $('.error-text').text('');
             var formData = new FormData(this);
+
             $.ajax({
                 url: $(this).attr('action'),
                 type: 'POST',
@@ -190,40 +189,40 @@
                 contentType: false,
                 processData: false,
                 beforeSend: function() {
-                    // Disable submit button to prevent multiple clicks
                     $('#form-create-laporan button[type="submit"]').prop('disabled', true);
                 },
                 success: function(response) {
                     if (response.status === 'success') {
-                        alert(response.message);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
                         $('#form-create-laporan')[0].reset();
-                        // Reset dropdowns
                         $('select[name="ruang_id"]').html('<option value="">- Pilih Ruang -</option>');
                         $('select[name="sarana_id"]').html('<option value="">- Pilih Sarana -</option>');
-                        // Reset filter status jika ada di halaman utama
                         if ($('#status').length) {
                             $('#status').val('').trigger('change');
                         }
                         $('#myModal').modal('hide');
                         $('#laporan-table').DataTable().ajax.reload(null, false);
                     } else {
-                        // Tampilkan error validasi
                         $.each(response.errors, function(key, value) {
                             $('#error-' + key).text(value[0]);
                         });
-                        alert('Gagal menyimpan laporan. Periksa isian form.');
+                        Swal.fire('Gagal', 'Gagal menyimpan laporan. Periksa kembali isian.', 'error');
                     }
                 },
                 error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                    alert('Gagal menyimpan laporan: ' + (xhr.responseJSON?.message || 'Silakan coba lagi.'));
+                    Swal.fire('Error', xhr.responseJSON?.message || 'Terjadi kesalahan saat menyimpan.', 'error');
                 },
                 complete: function() {
-                    // Re-enable submit button
                     $('#form-create-laporan button[type="submit"]').prop('disabled', false);
                 }
             });
         });
     });
-        
 </script>

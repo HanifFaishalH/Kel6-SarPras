@@ -38,40 +38,62 @@
 
 <script>
     $('#form-create-ruang').on('submit', function(e) {
-    e.preventDefault();
+        e.preventDefault();
 
-    let form = $(this);
-    let url = form.attr('action');
-    let data = form.serialize();
+        let form = $(this);
+        let url = form.attr('action');
+        let data = form.serialize();
 
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        success: function(response) {
-            if (response.success) {  // <-- perbaikan di sini
-                $('#myModal').modal('hide');
-                dataLantai.ajax.reload(null, false);
-                alert(response.message);
-            } else {
-                alert('Gagal menyimpan data: ' + (response.message || 'Terjadi kesalahan.'));
-            }
-        },
-        error: function(xhr) {
-            let errors = xhr.responseJSON?.errors;
-            let msg = 'Terjadi kesalahan: ';
-            if (errors) {
-                Object.values(errors).forEach(arr => {
-                    arr.forEach(e => { msg += e + '\n'; });
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                if (response.success) {
+                    $('#myModal').modal('hide');
+                    dataLantai.ajax.reload(null, false);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message || 'Data berhasil disimpan!',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: response.message || 'Data gagal disimpan!',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                }
+            },
+            error: function(xhr) {
+                let errors = xhr.responseJSON?.errors;
+                let msg = '';
+
+                if (errors) {
+                    Object.values(errors).forEach(arr => {
+                        arr.forEach(e => { msg += e + '<br>'; });
+                    });
+                } else {
+                    msg = 'Terjadi kesalahan saat mengirim data.';
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validasi Gagal',
+                    html: msg
                 });
             }
-            alert(msg);
-        }
+        });
     });
-});
+
     $('#myModal').on('hidden.bs.modal', function() {
         $(this).find('form')[0].reset(); // Reset form saat modal ditutup
         $(this).find('.alert').remove(); // Hapus pesan error jika ada
         $(this).find('.is-invalid').removeClass('is-invalid'); // Hapus kelas is-invalid
     });
-</script>  
+</script>

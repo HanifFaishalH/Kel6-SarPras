@@ -68,6 +68,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/periode', [LaporanKerusakanController::class, 'index'])->name('laporan.periode');
             Route::get('/periode/data', [LaporanKerusakanController::class, 'getData'])->name('laporan.periode.data');
             Route::get('/periode/chart', [LaporanKerusakanController::class, 'getChartData'])->name('laporan.periode.chart');
+            Route::get('/periode/export-pdf', [LaporanKerusakanController::class, 'exportPdf'])->name('laporan.periode.export.pdf');
+
         });
 
         Route::group(['prefix' => 'level'], function () {

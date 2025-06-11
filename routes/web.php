@@ -69,7 +69,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/periode/data', [LaporanKerusakanController::class, 'getData'])->name('laporan.periode.data');
             Route::get('/periode/chart', [LaporanKerusakanController::class, 'getChartData'])->name('laporan.periode.chart');
             Route::get('/periode/export-pdf', [LaporanKerusakanController::class, 'exportPdf'])->name('laporan.periode.export.pdf');
-
         });
 
         Route::group(['prefix' => 'level'], function () {
@@ -93,6 +92,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [GedungController::class, 'index'])->name('gedung.index');
             Route::get('/list', [GedungController::class, 'list']);
             Route::get('/{id}/show', [GedungController::class, 'show']);
+            Route::get('/create_ajax', [GedungController::class, 'create_ajax']);
+            Route::post('/store', [GedungController::class, 'store']);
             Route::get('/{id}/edit', [GedungController::class, 'edit']);
             Route::put('/{id}/update', [GedungController::class, 'update'])->name('gedung.update');
             Route::post('/{id}/update', [GedungController::class, 'update'])->name('gedung.update');

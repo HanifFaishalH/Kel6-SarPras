@@ -111,14 +111,19 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Usia (Sejak Operasional)</label>
-                    <input type="text" class="form-control" value="@if ($laporan->sarana->tanggal_operasional) @php
-                            $operasional = \Carbon\Carbon::parse($laporan->sarana->tanggal_operasional);
-                            $now = \Carbon\Carbon::now();
-                            $usia = $operasional->diff($now);
-                        @endphp
+                    <div class="form-control">
+                        <p>@if ($laporan->sarana->tanggal_operasional)
+                            @php
+                                $operasional = \Carbon\Carbon::parse($laporan->sarana->tanggal_operasional);
+                                $now = \Carbon\Carbon::now();
+                                $usia = $operasional->diff($now);
+                            @endphp
                             {{ $usia->y }} tahun, {{ $usia->m }} bulan, {{ $usia->d }} hari
-                    @else
-                    - @endif" readonly style="text-align: left;">
+                        @else
+                                -
+                            @endif
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

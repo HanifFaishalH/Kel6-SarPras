@@ -163,8 +163,8 @@
                 ]
             });
 
-            // Reload data when floor filter changes
             $('#lantai_id').change(function() {
+                console.log('Selected lantai_id:', $(this).val());
                 dataRuang.ajax.reload(null, false);
             });
         });

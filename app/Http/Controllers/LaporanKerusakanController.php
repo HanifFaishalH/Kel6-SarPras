@@ -7,10 +7,11 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Models\BarangModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanKerusakanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
             Log::info('Attempting to load BarangModel');
@@ -19,10 +20,20 @@ class LaporanKerusakanController extends Controller
                 ->orderBy('barang_nama')
                 ->get();
 
-            Log::info('BarangModel loaded successfully', ['count' => $barangList->count()]);
+            // Dapatkan filter tahun, bulan, barang dari request atau default
+           $tahunDipilih = $request->get('tahun', null); 
+            $bulanDipilih = $request->get('bulan', null);
+            $barangDipilih = $request->get('barang', null);
+
+            // Siapkan daftar tahun dari 2020 sampai sekarang + 1
+            $listTahun = range(2020, date('Y') + 1);
 
             return view('laporan.periode', [
                 'barangList' => $barangList,
+                'listTahun' => $listTahun,
+                'tahunDipilih' => $tahunDipilih,
+                'bulanDipilih' => $bulanDipilih,
+                'barangDipilih' => $barangDipilih,
                 'activeMenu' => 'kelola-periode'
             ]);
         } catch (\Exception $e) {
@@ -30,6 +41,7 @@ class LaporanKerusakanController extends Controller
             return redirect()->back()->with('error', 'Gagal memuat halaman kelola periode: ' . $e->getMessage());
         }
     }
+
 
     public function getData(Request $request)
     {
@@ -163,5 +175,72 @@ class LaporanKerusakanController extends Controller
         }
 
         return $html;
+    }
+
+    public function exportPdf(Request $request)
+    {
+        try {
+            $request->validate([
+                'tahun' => 'nullable|integer|min:2020|max:' . (now()->year + 1),
+                'bulan' => 'nullable|integer|min:1|max:12',
+                'barang' => 'nullable|integer|exists:m_barang,barang_id'
+            ]);
+
+            $tahun = $request->tahun;
+            $bulan = $request->bulan;
+            $barang = $request->barang;
+
+            $query = DB::table('t_laporan_kerusakan')
+                ->join('m_sarana', 't_laporan_kerusakan.sarana_id', '=', 'm_sarana.sarana_id')
+                ->whereNotNull('t_laporan_kerusakan.tanggal_diproses');
+
+            if ($tahun) {
+                $query->whereYear('t_laporan_kerusakan.tanggal_diproses', $tahun);
+            }
+            if ($bulan) {
+                $query->whereMonth('t_laporan_kerusakan.tanggal_diproses', $bulan);
+            }
+            if ($barang) {
+                $query->where('m_sarana.barang_id', $barang);
+            }
+
+            $data = $query
+                ->selectRaw('YEAR(t_laporan_kerusakan.tanggal_diproses) as tahun, MONTH(t_laporan_kerusakan.tanggal_diproses) as bulan, COUNT(*) as jumlah')
+                ->groupByRaw('YEAR(t_laporan_kerusakan.tanggal_diproses), MONTH(t_laporan_kerusakan.tanggal_diproses)')
+                ->orderByRaw('tahun DESC, bulan DESC')
+                ->get();
+
+            $barangInfo = null;
+            if ($barang) {
+                $barangInfo = DB::table('m_barang')
+                    ->leftJoin('m_kategori', 'm_barang.kategori_id', '=', 'm_kategori.kategori_id')
+                    ->where('m_barang.barang_id', $barang)
+                    ->select('m_barang.*', 'm_kategori.kategori_nama')
+                    ->first();
+            }
+
+            $tabel = $data->map(function ($item) {
+                return [
+                    'tahun' => $item->tahun,
+                    'bulan' => Carbon::create()->month($item->bulan)->translatedFormat('F'),
+                    'jumlah' => $item->jumlah,
+                ];
+            });
+
+            $total = $data->sum('jumlah');
+
+            $pdf = PDF::loadView('laporan.export_pdf', [
+                'data' => $tabel,
+                'total' => $total,
+                'tahun' => $tahun,
+                'bulan' => $bulan,
+                'barangInfo' => $barangInfo
+            ])->setPaper('A4', 'portrait');
+
+            return $pdf->stream('laporan_periode.pdf');
+        } catch (\Exception $e) {
+            Log::error('Export PDF gagal: ' . $e->getMessage());
+            return back()->with('error', 'Export PDF gagal: ' . $e->getMessage());
+        }
     }
 }

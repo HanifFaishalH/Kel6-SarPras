@@ -22,6 +22,10 @@ class TeknisiModel extends Model
         'status',       // aktif / nonaktif
     ];
 
+    public function level() {
+        return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
+    }
+
     // Relasi ke user
     public function user()
     {

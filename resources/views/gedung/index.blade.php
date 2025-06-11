@@ -37,7 +37,7 @@
                             </div>
                             <div class="col-sm-6 text-right">
                                 <button type="button" class="btn btn-primary"
-                                    onclick="modalAction('{{ url('gedung/create') }}')">
+                                    onclick="modalAction('{{ url('gedung/create_ajax') }}')">
                                     <i class="fa fa-plus"></i> Tambah Gedung
                                 </button>
                             </div>

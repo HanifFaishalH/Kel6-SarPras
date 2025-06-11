@@ -1,5 +1,4 @@
-<div class="modal-dialog" role="document">
-    <form id="deleteGedungForm" action="{{ url('/gedung/destroy_ajax/' . $gedung->gedung_id) }}" method="POST">
+<form id="deleteGedungForm" action="{{ url('/gedung/destroy_ajax/' . $gedung->gedung_id) }}" method="POST">
         @csrf
         @method('DELETE')
         <div class="modal-content">
@@ -18,4 +17,3 @@
             </div>
         </div>
     </form>
-</div>

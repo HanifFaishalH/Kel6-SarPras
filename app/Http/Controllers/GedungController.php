@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+
 class GedungController extends Controller
 {
     public function index()
@@ -170,7 +171,7 @@ class GedungController extends Controller
 
                 return response()->json(['success' => true, 'message' => 'Gedung deleted successfully']);
             } catch (\Exception $e) {
-                \Log::error('Error deleting gedung: ' . $e->getMessage());
+                \log::error('Error deleting gedung: ' . $e->getMessage());
                 return response()->json(['success' => false, 'message' => 'Gagal menghapus data: ' . $e->getMessage()], 500);
             }
         }

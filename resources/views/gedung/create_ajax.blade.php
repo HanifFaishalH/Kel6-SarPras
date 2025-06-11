@@ -1,5 +1,4 @@
-<!-- resources/views/gedung/create_ajax.blade.php -->
-<div class="modal-dialog modal-lg" role="document">
+
     <form id="form-create-gedung" action="{{ url('/gedung/store') }}" method="POST">
         @csrf
         <div class="modal-content">
@@ -27,4 +26,3 @@
             </div>
         </div>
     </form>
-</div>

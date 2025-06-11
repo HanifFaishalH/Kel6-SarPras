@@ -19,14 +19,15 @@
                         @if (session('error'))
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
-                        <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-info">Tambah User</button>
+                        <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-info">Tambah
+                            User</button>
 
                         <div class="form-group row">
                             <label class="col-form-label col-sm-2">Filter Level:</label>
                             <div class="col-sm-4">
                                 <select class="form-control" id="level_id" name="level_id">
                                     <option value="">- Pilih Level -</option>
-                                    @foreach($level as $item)
+                                    @foreach ($level as $item)
                                         <option value="{{ $item->level_id }}">{{ $item->level_nama }}</option>
                                     @endforeach
                                 </select>
@@ -83,20 +84,42 @@
                         success: function(response) {
                             if (response.success) {
                                 $('#myModal').modal('hide');
-                                alert(response.message);
                                 dataUser.ajax.reload(null, false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data user berhasil diperbarui!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Gagal update user: ' + (response.message ||
+                                        'Coba lagi.'),
+                                });
                             }
                         },
                         error: function(xhr) {
                             let errors = xhr.responseJSON?.errors;
                             if (errors) {
-                                let errorMsg = 'Gagal update user:\n';
+                                let errorMsg = '';
                                 $.each(errors, function(key, value) {
-                                    errorMsg += `- ${value}\n`;
+                                    errorMsg += `- ${value}<br>`;
                                 });
-                                alert(errorMsg);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    html: errorMsg
+                                });
                             } else {
-                                alert('Gagal update user. Silakan coba lagi.');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Gagal update user. Silakan coba lagi.'
+                                });
                             }
                         }
                     });
@@ -116,20 +139,42 @@
                         success: function(response) {
                             if (response.success) {
                                 $('#myModal').modal('hide');
-                                alert(response.message);
                                 dataUser.ajax.reload(null, false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data user berhasil ditambahkan!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Gagal tambah user: ' + (response.message ||
+                                        'Coba lagi.'),
+                                });
                             }
                         },
                         error: function(xhr) {
                             let errors = xhr.responseJSON?.errors;
                             if (errors) {
-                                let errorMsg = 'Gagal tambah user:\n';
+                                let errorMsg = '';
                                 $.each(errors, function(key, value) {
-                                    errorMsg += `- ${value}\n`;
+                                    errorMsg += `- ${value}<br>`;
                                 });
-                                alert(errorMsg);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    html: errorMsg
+                                });
                             } else {
-                                alert('Gagal tambah user. Silakan coba lagi.');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Gagal tambah user. Silakan coba lagi.'
+                                });
                             }
                         }
                     });
@@ -146,12 +191,38 @@
                         success: function(response) {
                             if (response.success) {
                                 $('#myModal').modal('hide');
-                                alert(response.message);
                                 dataUser.ajax.reload(null, false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data user berhasil dihapus!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Gagal menghapus user: ' + (response
+                                        .message || 'Coba lagi.'),
+                                });
                             }
                         },
                         error: function(xhr) {
-                            alert('Gagal menghapus user. Silakan coba lagi.');
+                            let message = 'Gagal menghapus user. Silakan coba lagi.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            } else if (xhr.status === 404) {
+                                message = 'Data user tidak ditemukan.';
+                            } else if (xhr.status === 500) {
+                                message = 'Kesalahan server internal.';
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: message
+                            });
                         }
                     });
                 });
@@ -159,7 +230,7 @@
         }
 
         var dataUser;
-        $(document).ready(function () {
+        $(document).ready(function() {
             dataUser = $('#table_user').DataTable({
                 processing: true,
                 serverSide: true,
@@ -167,36 +238,57 @@
                     url: "{{ url('user/list') }}",
                     dataType: "json",
                     type: "GET",
-                    data: function (d) {
+                    data: function(d) {
                         d.level_id = $('#level_id').val();
                     }
                 },
-                columns: [
-                    { data: "DT_RowIndex", name: "DT_RowIndex" },
-                    { data: "username", name: "username" },
-                    { data: "no_induk", name: "no_induk" },
-                    { data: "nama", name: "nama" },
-                    { data: "level_nama", name: "level_nama" },
-                    { data: "aksi", name: "aksi", orderable: false, searchable: false }
+                columns: [{
+                        data: "DT_RowIndex",
+                        name: "DT_RowIndex"
+                    },
+                    {
+                        data: "username",
+                        name: "username"
+                    },
+                    {
+                        data: "no_induk",
+                        name: "no_induk"
+                    },
+                    {
+                        data: "nama",
+                        name: "nama"
+                    },
+                    {
+                        data: "level_nama",
+                        name: "level_nama"
+                    },
+                    {
+                        data: "aksi",
+                        name: "aksi",
+                        orderable: false,
+                        searchable: false
+                    }
                 ],
-                order: [[0, 'asc']]
+                order: [
+                    [0, 'asc']
+                ]
             });
 
-            $('#level_id').on('change', function () {
+            $('#level_id').on('change', function() {
                 dataUser.ajax.reload();
             });
 
-            $(document).on('click', '.btn-detail', function () {
+            $(document).on('click', '.btn-detail', function() {
                 var id = $(this).data('id');
                 modalAction('/user/show/' + id); // Load detail user
             });
 
-            $(document).on('click', '.btn-edit', function () {
+            $(document).on('click', '.btn-edit', function() {
                 var id = $(this).data('id');
                 modalAction('/user/edit/' + id); // Load form edit user
             });
 
-            $(document).on('click', '.btn-hapus', function () {
+            $(document).on('click', '.btn-hapus', function() {
                 var id = $(this).data('id');
                 modalAction('/user/delete_ajax/' + id); // Load form hapus user
             });

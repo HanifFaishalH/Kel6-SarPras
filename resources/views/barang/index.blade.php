@@ -86,20 +86,42 @@
                         success: function(response) {
                             if (response.success) {
                                 $('#myModal').modal('hide');
-                                alert(response.message);
                                 dataBarang.ajax.reload(null, false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data barang berhasil diperbarui!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Gagal update barang: ' + (response.message ||
+                                        'Coba lagi.'),
+                                });
                             }
                         },
                         error: function(xhr) {
                             let errors = xhr.responseJSON?.errors;
                             if (errors) {
-                                let errorMsg = 'Gagal update barang:\n';
+                                let errorMsg = '';
                                 $.each(errors, function(key, value) {
-                                    errorMsg += `- ${value}\n`;
+                                    errorMsg += `- ${value}<br>`;
                                 });
-                                alert(errorMsg);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    html: errorMsg
+                                });
                             } else {
-                                alert('Gagal update barang. Silakan coba lagi.');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Gagal update barang. Silakan coba lagi.'
+                                });
                             }
                         }
                     });
@@ -116,20 +138,42 @@
                         success: function(response) {
                             if (response.success) {
                                 $('#myModal').modal('hide');
-                                alert(response.message);
                                 dataBarang.ajax.reload(null, false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data barang berhasil ditambahkan!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Gagal tambah barang: ' + (response.message ||
+                                        'Coba lagi.'),
+                                });
                             }
                         },
                         error: function(xhr) {
                             let errors = xhr.responseJSON?.errors;
                             if (errors) {
-                                let errorMsg = 'Gagal tambah barang:\n';
+                                let errorMsg = '';
                                 $.each(errors, function(key, value) {
-                                    errorMsg += `- ${value}\n`;
+                                    errorMsg += `- ${value}<br>`;
                                 });
-                                alert(errorMsg);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    html: errorMsg
+                                });
                             } else {
-                                alert('Gagal tambah barang. Silakan coba lagi.');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Gagal tambah barang. Silakan coba lagi.'
+                                });
                             }
                         }
                     });
@@ -146,17 +190,43 @@
                         success: function(response) {
                             if (response.success) {
                                 $('#myModal').modal('hide');
-                                alert(response.message);
                                 dataBarang.ajax.reload(null, false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data barang berhasil dihapus!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Gagal menghapus barang: ' + (response
+                                        .message || 'Coba lagi.'),
+                                });
                             }
                         },
                         error: function(xhr) {
-                            alert('Gagal menghapus barang. Silakan coba lagi.');
+                            let message = 'Gagal menghapus barang. Silakan coba lagi.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            } else if (xhr.status === 404) {
+                                message = 'Data barang tidak ditemukan.';
+                            } else if (xhr.status === 500) {
+                                message = 'Kesalahan server internal.';
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: message
+                            });
                         }
                     });
                 });
             });
-        }
+        };
 
         var dataBarang;
         $(document).ready(function() {

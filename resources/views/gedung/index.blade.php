@@ -151,9 +151,20 @@
                         if (response.status === 'success') {
                             $('#myModal').modal('hide');
                             dataGedung.ajax.reload();
-                            alert(response.message || 'Data berhasil ditambahkan!');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Data berhasil ditambahkan!',
+                                timer: 3000,
+                                showConfirmButton: false
+                            });
                         } else {
-                            alert('Gagal menyimpan data: ' + response.message);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Gagal menyimpan data: ' + (response.message ||
+                                    'Coba lagi.'),
+                            });
                         }
                     },
                     error: function(xhr) {
@@ -161,7 +172,11 @@
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             message = xhr.responseJSON.message;
                         }
-                        alert(message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: message
+                        });
                         console.error('Error:', xhr);
                     }
                 });
@@ -183,9 +198,20 @@
                         if (response.status === 'success') {
                             $('#myModal').modal('hide');
                             dataGedung.ajax.reload(); // Refresh DataTable
-                            alert(response.message || 'Data berhasil diperbarui!');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Data berhasil diperbarui!',
+                                timer: 3000,
+                                showConfirmButton: false
+                            });
                         } else {
-                            alert('Gagal menyimpan data: ' + response.message);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Gagal menyimpan data: ' + (response.message ||
+                                    'Coba lagi.'),
+                            });
                         }
                     },
                     error: function(xhr) {
@@ -193,7 +219,11 @@
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             message = xhr.responseJSON.message;
                         }
-                        alert(message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: message
+                        });
                         console.error('Error:', xhr);
                     }
                 });
@@ -214,9 +244,20 @@
                         if (response.success) {
                             $('#myModal').modal('hide');
                             dataGedung.ajax.reload(); // Refresh DataTable hanya jika sukses
-                            alert(response.message || 'Data berhasil dihapus!');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Data berhasil dihapus!',
+                                timer: 3000,
+                                showConfirmButton: false
+                            });
                         } else {
-                            alert('Gagal menghapus data: ' + response.message);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Gagal menghapus data: ' + (response.message ||
+                                    'Coba lagi.'),
+                            });
                         }
                     },
                     error: function(xhr) {
@@ -228,7 +269,11 @@
                         } else if (xhr.status === 500) {
                             message = 'Kesalahan server internal.';
                         }
-                        alert(message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: message
+                        });
                         console.error('Error:', xhr);
                     }
                 });

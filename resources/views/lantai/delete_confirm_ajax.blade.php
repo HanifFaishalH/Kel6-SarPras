@@ -1,5 +1,5 @@
 <div class="modal-dialog" role="document">
-    <form id="form-delete-lantai" action="{{ url('/lantai/destroy_ajax/'.$lantai->lantai_id) }}" method="POST">
+    <form id="form-delete-lantai" action="{{ url('/lantai/destroy_ajax/' . $lantai->lantai_id) }}" method="POST">
         @csrf
         @method('DELETE')
         <div class="modal-content">
@@ -10,7 +10,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus lantai <strong>{{ $lantai->lantai_nama }}</strong> ({{ $lantai->lantai_nama }})?</p>
+                <p>Apakah Anda yakin ingin menghapus lantai <strong>{{ $lantai->lantai_nama }}</strong>
+                    ({{ $lantai->lantai_nama }})?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -19,31 +20,3 @@
         </div>
     </form>
 </div>
-
-<script>
-    $('#form-delete-lantai').on('submit', function(e) {
-        e.preventDefault();
-
-        let form = $(this);
-        let url = form.attr('action');
-        let data = form.serialize();
-
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            success: function(response) {
-                if(response.success) {
-                    $('#myModal').modal('hide');
-                    dataLantai.ajax.reload(null, false);
-                    alert('Data lantai berhasil dihapus.');
-                } else {
-                    alert('Gagal menghapus data.');
-                }
-            },
-            error: function(xhr) {
-                alert('Terjadi kesalahan: ' + xhr.responseText);
-            }
-        });
-    });
-</script>

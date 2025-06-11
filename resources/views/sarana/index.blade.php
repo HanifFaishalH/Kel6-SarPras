@@ -93,85 +93,155 @@
                 }
                 $('#myModal').modal('show');
 
-                // Handle form create sarana
                 $('#form-create-sarana').on('submit', function(e) {
                     e.preventDefault();
+                    e.stopImmediatePropagation(); // Mencegah multiple submission
+
+                    let form = $(this);
+                    let url = form.attr('action');
+                    let data = form.serialize();
+
                     $.ajax({
-                        url: $(this).attr('action'),
+                        url: url,
                         type: 'POST',
-                        data: $(this).serialize(),
-                        dataType: 'json',
+                        data: data,
                         success: function(response) {
                             if (response.success) {
-                                $('#myModal').modal('hide');
-                                alert(response.message);
-                                dataSarana.ajax.reload(null, false); // Reload tabel
+                                $('#myModal').modal('hide'); // Pastikan id modalnya sesuai
+                                $('#sarana-table').DataTable().ajax.reload(null,
+                                    false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data sarana berhasil ditambahkan!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: response.message ||
+                                        'Gagal menambahkan sarana.',
+                                });
                             }
                         },
                         error: function(xhr) {
-                            let errors = xhr.responseJSON?.errors;
-                            if (errors) {
-                                let errorMsg = 'Gagal tambah sarana:\n';
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                let errorMsg = '';
                                 $.each(errors, function(key, value) {
-                                    errorMsg += `- ${value}\n`;
+                                    errorMsg += value[0] + '<br>';
                                 });
-                                alert(errorMsg);
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    html: errorMsg
+                                });
                             } else {
-                                alert('Gagal tambah sarana. Silakan coba lagi.');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: xhr.responseJSON?.message ||
+                                        'Terjadi kesalahan pada server.'
+                                });
                             }
                         }
                     });
+                    return false; // Mencegah form submit biasa
                 });
 
-                // Handle form update sarana
-                $('#form-update-sarana').on('submit', function(e) {
-                    e.preventDefault();
-                    $.ajax({
-                        url: $(this).attr('action'),
-                        type: 'PUT',
-                        data: $(this).serialize(),
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                $('#myModal').modal('hide');
-                                alert(response.message);
-                                dataSarana.ajax.reload(null, false); // Reload tabel
-                            }
-                        },
-                        error: function(xhr) {
-                            let errors = xhr.responseJSON?.errors;
-                            if (errors) {
-                                let errorMsg = 'Gagal update sarana:\n';
-                                $.each(errors, function(key, value) {
-                                    errorMsg += `- ${value}\n`;
-                                });
-                                alert(errorMsg);
-                            } else {
-                                alert('Gagal update sarana. Silakan coba lagi.');
-                            }
-                        }
-                    });
-                });
+                // // Handle form update sarana
+                // $('#form-update-sarana').on('submit', function(e) {
+                //     e.preventDefault();
+                //     $.ajax({
+                //         url: $(this).attr('action'),
+                //         type: 'PUT',
+                //         data: $(this).serialize(),
+                //         dataType: 'json',
+                //         success: function(response) {
+                //             if (response.success) {
+                //                 $('#myModal').modal('hide');
+                //                 alert(response.message);
+                //                 dataSarana.ajax.reload(null, false); // Reload tabel
+                //             }
+                //         },
+                //         error: function(xhr) {
+                //             let errors = xhr.responseJSON?.errors;
+                //             if (errors) {
+                //                 let errorMsg = 'Gagal update sarana:\n';
+                //                 $.each(errors, function(key, value) {
+                //                     errorMsg += `- ${value}\n`;
+                //                 });
+                //                 alert(errorMsg);
+                //             } else {
+                //                 alert('Gagal update sarana. Silakan coba lagi.');
+                //             }
+                //         }
+                //     });
+                // });
 
                 // Handle form delete sarana
                 $('#form-delete-sarana').on('submit', function(e) {
                     e.preventDefault();
+                    e.stopImmediatePropagation(); // Mencegah multiple submission
+
+                    let form = $(this);
+                    let url = form.attr('action');
+                    let data = form.serialize();
+
                     $.ajax({
-                        url: $(this).attr('action'),
+                        url: url,
                         type: 'DELETE',
-                        data: $(this).serialize(),
+                        data: data,
                         dataType: 'json',
                         success: function(response) {
                             if (response.success) {
-                                $('#myModal').modal('hide');
-                                alert(response.message);
-                                dataSarana.ajax.reload(null, false); // Reload tabel
+                                $('#myModal').modal('hide'); // Pastikan id modalnya sesuai
+                                $('#sarana-table').DataTable().ajax.reload(null,
+                                    false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data sarana berhasil dihapus!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: response.message || 'Gagal menghapus sarana.',
+                                });
                             }
                         },
                         error: function(xhr) {
-                            alert('Gagal menghapus sarana. Silakan coba lagi.');
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                let errorMsg = '';
+                                $.each(errors, function(key, value) {
+                                    errorMsg += value[0] + '<br>';
+                                });
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    html: errorMsg
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: xhr.responseJSON?.message ||
+                                        'Terjadi kesalahan pada server.'
+                                });
+                            }
                         }
                     });
+                    return false; // Mencegah form submit biasa
                 });
             });
         }

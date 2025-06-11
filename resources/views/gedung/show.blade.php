@@ -1,4 +1,4 @@
-<div class="modal-header">
+<div class="modal-header bg-info text-white">
     <h5 class="modal-title">Detail Gedung {{ $gedung->gedung_kode ?? 'N/A' }}</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">×</span>

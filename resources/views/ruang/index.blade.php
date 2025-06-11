@@ -73,41 +73,168 @@
                 }
                 $('#myModal').modal('show');
 
-                // Handle form submissions for create, edit, and delete
-                const forms = ['#form-create-ruang', '#form-update-ruang', '#form-delete-ruang'];
-                forms.forEach(formId => {
-                    $(formId).on('submit', function(e) {
-                        e.preventDefault();
-                        const form = $(this);
-                        const method = formId === '#form-delete-ruang' ? 'DELETE' : form.find(
-                            'input[name="_method"]').val() || 'POST';
-                        $.ajax({
-                            url: form.attr('action'),
-                            type: method,
-                            data: form.serialize(),
-                            dataType: 'json',
-                            success: function(response) {
-                                if (response.success) {
-                                    $('#myModal').modal('hide');
-                                    alert(response.message);
-                                    dataRuang.ajax.reload(null, false); // Reload tabel
-                                }
-                            },
-                            error: function(xhr) {
-                                let errors = xhr.responseJSON?.errors;
-                                if (errors) {
-                                    let errorMsg =
-                                        `Gagal ${formId.includes('create') ? 'menambah' : formId.includes('update') ? 'update' : 'menghapus'} ruang:\n`;
-                                    $.each(errors, function(key, value) {
-                                        errorMsg += `- ${value}\n`;
-                                    });
-                                    alert(errorMsg);
-                                } else {
-                                    alert(
-                                        `Gagal ${formId.includes('create') ? 'menambah' : formId.includes('update') ? 'update' : 'menghapus'} ruang. Silakan coba lagi.`);
-                                }
+                $('#form-create-ruang').on('submit', function(e) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation(); // Tambahkan ini untuk mencegah multiple submission
+
+                    let form = $(this);
+                    let url = form.attr('action');
+                    let data = form.serialize();
+
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: data,
+                        beforeSend: function() {
+                            // Tampilkan loading indicator jika perlu
+                            $('.modal-footer button').prop('disabled', true);
+                        },
+                        complete: function() {
+                            $('.modal-footer button').prop('disabled', false);
+                        },
+                        success: function(response) {
+                            $('#myModal').modal('hide');
+                            $('#ruang-table').DataTable().ajax.reload(null, false);
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Data berhasil disimpan!',
+                                timer: 3000,
+                                showConfirmButton: false
+                            });
+
+                            form.trigger("reset");
+                        },
+                        error: function(xhr) {
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                let errorMessage = '';
+
+                                $.each(errors, function(key, value) {
+                                    errorMessage += value[0] + '<br>';
+                                });
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    html: errorMessage,
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: xhr.responseJSON?.message ||
+                                        'Terjadi kesalahan pada server.',
+                                });
                             }
-                        });
+                        }
+                    });
+                    return false; // Mencegah form submit biasa
+                });
+
+                // Handle form update ruang
+                $('#form-update-ruang').on('submit', function(e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    const method = form.find('input[name="_method"]').val() || 'POST';
+
+                    $.ajax({
+                        url: form.attr('action'),
+                        type: method,
+                        data: form.serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                dataRuang.ajax.reload(null, false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data ruang berhasil diperbarui!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Gagal update ruang: ' + (response.message ||
+                                        'Coba lagi.'),
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                let errorMsg = '';
+                                $.each(errors, function(key, value) {
+                                    errorMsg += `- ${value}<br>`;
+                                });
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    html: errorMsg
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Gagal update ruang. Silakan coba lagi.'
+                                });
+                            }
+                        }
+                    });
+                });
+
+                // Handle form delete ruang
+                $('#form-delete-ruang').on('submit', function(e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    const method = 'DELETE';
+
+                    $.ajax({
+                        url: form.attr('action'),
+                        type: method,
+                        data: form.serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                dataRuang.ajax.reload(null, false); // Reload tabel
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message ||
+                                        'Data ruang berhasil dihapus!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Gagal menghapus ruang: ' + (response
+                                        .message || 'Coba lagi.'),
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            let message = 'Gagal menghapus ruang. Silakan coba lagi.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            } else if (xhr.status === 404) {
+                                message = 'Data ruang tidak ditemukan.';
+                            } else if (xhr.status === 500) {
+                                message = 'Kesalahan server internal.';
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: message
+                            });
+                        }
                     });
                 });
             });

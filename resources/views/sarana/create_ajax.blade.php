@@ -164,5 +164,65 @@
                 });
             }
         });
+
+
+        $('#form-create-sarana').on('submit', function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation(); // Mencegah multiple submission
+
+            let form = $(this);
+            let url = form.attr('action');
+            let data = form.serialize();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    if (response.success) {
+                        $('#myModal').modal('hide'); // Pastikan id modalnya sesuai
+                        $('#sarana-table').DataTable().ajax.reload(null,
+                            false); // Reload tabel
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message ||
+                                'Data sarana berhasil ditambahkan!',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: response.message || 'Gagal menambahkan sarana.',
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        let errors = xhr.responseJSON.errors;
+                        let errorMsg = '';
+                        $.each(errors, function(key, value) {
+                            errorMsg += value[0] + '<br>';
+                        });
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validasi Gagal',
+                            html: errorMsg
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message ||
+                                'Terjadi kesalahan pada server.'
+                        });
+                    }
+                }
+            });
+            return false; // Mencegah form submit biasa
+        });
     });
 </script>

@@ -1,7 +1,7 @@
 @extends('layout.template')
 
 @section('content')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <div class="container py-4">
         <h2 class="mb-4">Kelola Periode</h2>
@@ -11,11 +11,11 @@
             <form id="filter-form" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label for="tahun" class="form-label">Tahun</label>
-                    <select name="tahun" id="tahun" class="form-select">
+                    <select class="form-select" id="filter-tahun">
                         <option value="">- Pilih Tahun -</option>
-                        @for ($i = now()->year; $i >= 2020; $i--)
-                            <option value="{{ $i }}" {{ $i == now()->year ? 'selected' : '' }}>{{ $i }}</option>
-                        @endfor
+                        @foreach ($listTahun as $tahun)
+                            <option value="{{ $tahun }}" {{ $tahun == $tahunDipilih ? 'selected' : '' }}>{{ $tahun }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -188,17 +188,17 @@
                                     const persentase = totalLaporan > 0 ?
                                         ((parseInt(item.jumlah) / totalLaporan) * 100).toFixed(1) : '0.0';
                                     tbody += `<tr>
-                                            <td>${index + 1}</td>
-                                            <td>${item.tahun}</td>
-                                            <td>${item.bulan}</td>
-                                            <td><span class="badge bg-primary">${item.jumlah}</span></td>
-                                            <td>${persentase}%</td>
-                                        </tr>`;
+                                                    <td>${index + 1}</td>
+                                                    <td>${item.tahun}</td>
+                                                    <td>${item.bulan}</td>
+                                                    <td><span class="badge bg-primary">${item.jumlah}</span></td>
+                                                    <td>${persentase}%</td>
+                                                </tr>`;
                                 });
                             } else {
                                 tbody = `<tr><td colspan="5" class="text-center text-muted">
-                                                <i class="fa fa-info-circle"></i> Tidak ada data untuk filter yang dipilih
-                                            </td></tr>`;
+                                                        <i class="fa fa-info-circle"></i> Tidak ada data untuk filter yang dipilih
+                                                    </td></tr>`;
                             }
 
                             $('#tabel-detail tbody').html(tbody);
@@ -224,28 +224,28 @@
 
             function showError(message) {
                 $('#statistik-utama').html(`
-                        <div class="alert alert-danger">
-                            <i class="fa fa-exclamation-triangle"></i> ${message}
-                            <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="fetchData()">
-                                <i class="fa fa-refresh"></i> Coba Lagi
-                            </button>
-                        </div>
-                    `);
+                                <div class="alert alert-danger">
+                                    <i class="fa fa-exclamation-triangle"></i> ${message}
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="fetchData()">
+                                        <i class="fa fa-refresh"></i> Coba Lagi
+                                    </button>
+                                </div>
+                            `);
                 $('#tabel-detail tbody').html(`<tr>
-                        <td colspan="5" class="text-center text-danger">
-                            <i class="fa fa-exclamation-triangle"></i> ${message}
-                        </td>
-                    </tr>`);
+                                <td colspan="5" class="text-center text-danger">
+                                    <i class="fa fa-exclamation-triangle"></i> ${message}
+                                </td>
+                            </tr>`);
             }
 
             function showNotification(message, type = 'info') {
                 const notification = $(`
-                        <div class="alert alert-${type} alert-dismissible fade show position-fixed"
-                             style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                            <i class="fa fa-check-circle"></i> ${message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    `);
+                                <div class="alert alert-${type} alert-dismissible fade show position-fixed"
+                                     style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                                    <i class="fa fa-check-circle"></i> ${message}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            `);
 
                 $('body').append(notification);
                 setTimeout(() => notification.fadeOut(() => notification.remove()), 3000);

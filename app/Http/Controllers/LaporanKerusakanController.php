@@ -11,7 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanKerusakanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
             Log::info('Attempting to load BarangModel');
@@ -20,10 +20,20 @@ class LaporanKerusakanController extends Controller
                 ->orderBy('barang_nama')
                 ->get();
 
-            Log::info('BarangModel loaded successfully', ['count' => $barangList->count()]);
+            // Dapatkan filter tahun, bulan, barang dari request atau default
+           $tahunDipilih = $request->get('tahun', null); 
+            $bulanDipilih = $request->get('bulan', null);
+            $barangDipilih = $request->get('barang', null);
+
+            // Siapkan daftar tahun dari 2020 sampai sekarang + 1
+            $listTahun = range(2020, date('Y') + 1);
 
             return view('laporan.periode', [
                 'barangList' => $barangList,
+                'listTahun' => $listTahun,
+                'tahunDipilih' => $tahunDipilih,
+                'bulanDipilih' => $bulanDipilih,
+                'barangDipilih' => $barangDipilih,
                 'activeMenu' => 'kelola-periode'
             ]);
         } catch (\Exception $e) {
@@ -31,6 +41,7 @@ class LaporanKerusakanController extends Controller
             return redirect()->back()->with('error', 'Gagal memuat halaman kelola periode: ' . $e->getMessage());
         }
     }
+
 
     public function getData(Request $request)
     {

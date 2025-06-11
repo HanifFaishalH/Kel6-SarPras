@@ -19,8 +19,7 @@
                         @if (session('error'))
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
-                        <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-info">Tambah
-                            User</button>
+                        <button onclick="modalAction('{{ url('/user/create_ajax') }}')" class="btn btn-info">Tambah User</button>
 
                         <div class="form-group row">
                             <label class="col-form-label col-sm-2">Filter Level:</label>
@@ -50,7 +49,6 @@
                                 <tbody></tbody>
                             </table>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -59,23 +57,106 @@
 @endsection
 
 @push('css')
-
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
 @endpush
 
 @push('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function modalAction(url) {
-            $.get(url, function (response) {
-                // Jika response adalah HTML langsung (bukan JSON), inject langsung ke modal
-                $('#myModal').remove(); // Hapus modal lama jika ada
-                $('body').append(response); // Tambahkan modal ke body
-                $('#myModal').modal('show'); // Tampilkan modal
-            }).fail(function () {
-                alert("Terjadi kesalahan: Tidak dapat memuat data.");
+        function modalAction(url = '') {
+            $('#myModal').load(url, function(response, status, xhr) {
+                if (status === "error") {
+                    $('#myModal').html(
+                        '<div class="modal-dialog"><div class="modal-content"><div class="modal-body"><div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div></div></div></div>'
+                    );
+                }
+                $('#myModal').modal('show');
+
+                // Handle form update user
+                $('#form-update-user').on('submit', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'PUT',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                alert(response.message);
+                                dataUser.ajax.reload(null, false); // Reload tabel
+                            }
+                        },
+                        error: function(xhr) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                let errorMsg = 'Gagal update user:\n';
+                                $.each(errors, function(key, value) {
+                                    errorMsg += `- ${value}\n`;
+                                });
+                                alert(errorMsg);
+                            } else {
+                                alert('Gagal update user. Silakan coba lagi.');
+                            }
+                        }
+                    });
+                });
+
+                // Handle form create user
+                $('#form-create-user').on('submit', function(e) {
+                    e.preventDefault();
+                    let formData = new FormData(this); // Untuk mendukung file upload (foto)
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                alert(response.message);
+                                dataUser.ajax.reload(null, false); // Reload tabel
+                            }
+                        },
+                        error: function(xhr) {
+                            let errors = xhr.responseJSON?.errors;
+                            if (errors) {
+                                let errorMsg = 'Gagal tambah user:\n';
+                                $.each(errors, function(key, value) {
+                                    errorMsg += `- ${value}\n`;
+                                });
+                                alert(errorMsg);
+                            } else {
+                                alert('Gagal tambah user. Silakan coba lagi.');
+                            }
+                        }
+                    });
+                });
+
+                // Handle form delete user
+                $('#form-delete-user').on('submit', function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'DELETE',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $('#myModal').modal('hide');
+                                alert(response.message);
+                                dataUser.ajax.reload(null, false); // Reload tabel
+                            }
+                        },
+                        error: function(xhr) {
+                            alert('Gagal menghapus user. Silakan coba lagi.');
+                        }
+                    });
+                });
             });
         }
-
 
         var dataUser;
         $(document).ready(function () {
@@ -105,36 +186,19 @@
                 dataUser.ajax.reload();
             });
 
+            $(document).on('click', '.btn-detail', function () {
+                var id = $(this).data('id');
+                modalAction('/user/show/' + id); // Load detail user
+            });
+
+            $(document).on('click', '.btn-edit', function () {
+                var id = $(this).data('id');
+                modalAction('/user/edit/' + id); // Load form edit user
+            });
+
             $(document).on('click', '.btn-hapus', function () {
                 var id = $(this).data('id');
-                Swal.fire({
-                    title: 'Yakin ingin menghapus?',
-                    text: "Data pengguna tidak bisa dikembalikan!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '/user/' + id, // Sesuai dengan route /user/{id}
-                            type: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Header CSRF
-                            },
-                            success: function (response) {
-                                Swal.fire('Berhasil!', response.message, 'success');
-                                dataUser.ajax.reload();
-                            },
-                            error: function (xhr) {
-                                Swal.fire('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan.', 'error');
-                                console.log(xhr.responseText); // Untuk debugging
-                            }
-                        });
-                    }
-                });
+                modalAction('/user/delete_ajax/' + id); // Load form hapus user
             });
         });
     </script>

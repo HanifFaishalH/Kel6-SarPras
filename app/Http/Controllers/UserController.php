@@ -6,6 +6,8 @@ use App\Models\LevelModel;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+
 
 class UserController extends Controller
 {
@@ -74,7 +76,7 @@ class UserController extends Controller
             ->addColumn('aksi', function ($row) {
                 $btn  = '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/user/' . $row->user_id . '/edit') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button class="btn btn-danger btn-sm btn-hapus" data-id="' . $row->user_id . '">Hapus</button>';
+                $btn .= '<button onclick="modalAction(\'' . url('/user/' . 'delete_ajax/' . $row->user_id ) . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -129,20 +131,30 @@ class UserController extends Controller
         return back()->with('success', 'User berhasil diperbarui');
     }
 
-    public function destroy($id)
+    public function delete_ajax($id)
     {
-        $user = UserModel::find($id);
+        $user = UserModel::findOrFail($id);
+        return view('user.delete_confirm_ajax', [
+            'user' => $user
+        ]);
+    }
 
-        if (!$user) {
-            return response()->json(['message' => 'User tidak ditemukan.'], 404);
-        }
-
-        try {
+    public function destroy_ajax(Request $request, $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $user = UserModel::findOrFail($id);
             $user->delete();
-            return response()->json(['message' => 'User berhasil dihapus.']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Terjadi kesalahan saat menghapus user.'], 500);
+
+            // Ulangi increment (jika perlu)
+            $maxId = UserModel::max('user_id');
+            if ($maxId) {
+                DB::statement('ALTER TABLE users AUTO_INCREMENT = ' . ($maxId + 1));
+            }
+
+            return response()->json(['success' => true, 'message' => 'User deleted successfully']);
         }
+
+        return redirect('/user');
     }
 
     public function create_ajax(Request $request)

@@ -1,67 +1,52 @@
-<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Tambah User</button>
-
-<div class="modal fade" id="myModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form id="formTambahUser" enctype="multipart/form-data">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah User Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <label>Level</label>
-                    <select name="level_id" class="form-control" required>
-                        <option value="">- Pilih Level -</option>
+<div class="modal-dialog modal-lg" role="document">
+    <form id="form-create-user" action="{{ url('/user/store_ajax') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Tambah User Baru</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="text-white">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="level_id">Level</label>
+                    <select name="level_id" id="level_id" class="form-control" required>
+                        <option value="" disabled selected>Pilih Level</option>
                         @foreach($level as $l)
                             <option value="{{ $l->level_id }}">{{ $l->level_nama }}</option>
                         @endforeach
                     </select>
-
-                    <label class="mt-2">Username</label>
-                    <input type="text" name="username" class="form-control" required>
-
-                    <label class="mt-2">Password</label>
-                    <input type="password" name="password" class="form-control" required>
-
-                    <label class="mt-2">Nama Lengkap</label>
-                    <input type="text" name="nama" class="form-control" required>
-
-                    <label class="mt-2">No Induk (opsional)</label>
-                    <input type="text" name="no_induk" class="form-control">
-
-                    <label class="mt-2">Foto (opsional)</label>
-                    <input type="file" name="foto" class="form-control">
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Simpan</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username"
+                           placeholder="Masukkan username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder="Masukkan password" required>
+                </div>
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap</label>
+                    <input type="text" class="form-control" id="nama" name="nama"
+                           placeholder="Masukkan nama lengkap" required>
+                </div>
+                <div class="form-group">
+                    <label for="no_induk">No Induk (opsional)</label>
+                    <input type="text" class="form-control" id="no_induk" name="no_induk"
+                           placeholder="Masukkan no induk">
+                </div>
+                <div class="form-group">
+                    <label for="foto">Foto (opsional)</label>
+                    <input type="file" class="form-control" id="foto" name="foto">
                 </div>
             </div>
-        </form>
-    </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+        </div>
+    </form>
 </div>
-
-<script>
-    $('#formTambahUser').submit(function (e) {
-        e.preventDefault();
-        let formData = new FormData(this);
-
-        $.ajax({
-            url: '{{ url('/user/store') }}',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (res) {
-                $('#modalTambahUser').modal('hide');
-                $('#formTambahUser')[0].reset();
-                toastr.success('User berhasil ditambahkan');
-                $('#datatable-user').DataTable().ajax.reload();
-            },
-            error: function (err) {
-                toastr.error('Gagal menambahkan user');
-            }
-        });
-    });
-</script>

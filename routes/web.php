@@ -69,7 +69,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/periode/data', [LaporanKerusakanController::class, 'getData'])->name('laporan.periode.data');
             Route::get('/periode/chart', [LaporanKerusakanController::class, 'getChartData'])->name('laporan.periode.chart');
             Route::get('/periode/export-pdf', [LaporanKerusakanController::class, 'exportPdf'])->name('laporan.periode.export.pdf');
-
         });
 
         Route::group(['prefix' => 'level'], function () {
@@ -83,16 +82,19 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/{id}/show', [UserController::class, 'show']);
             Route::get('/{id}/edit', [UserController::class, 'edit']);
             Route::get('/create_ajax', [UserController::class, 'create_ajax']);
-            Route::post('/store', [UserController::class, 'store']);
-            Route::delete('/{id}', [UserController::class, 'destroy']);
-            Route::put('/{id}/update', [UserController::class, 'update'])->name('user.update');
-            Route::post('/{id}/update', [UserController::class, 'update'])->name('user.update');
+            Route::post('/store_ajax', [UserController::class, 'store']);
+            Route::put('/update/{id}/', [UserController::class, 'update'])->name('user.update');
+            Route::post('/update/{id}/', [UserController::class, 'update'])->name('user.update');
+            Route::get('/delete_ajax/{id}', [UserController::class, 'delete_ajax']);
+            Route::delete('/destroy_ajax/{id}', [UserController::class, 'destroy_ajax']);
         });
 
         Route::group(['prefix' => 'gedung'], function () {
             Route::get('/', [GedungController::class, 'index'])->name('gedung.index');
             Route::get('/list', [GedungController::class, 'list']);
             Route::get('/{id}/show', [GedungController::class, 'show']);
+            Route::get('/create_ajax', [GedungController::class, 'create_ajax']);
+            Route::post('/store', [GedungController::class, 'store']);
             Route::get('/{id}/edit', [GedungController::class, 'edit']);
             Route::put('/{id}/update', [GedungController::class, 'update'])->name('gedung.update');
             Route::post('/{id}/update', [GedungController::class, 'update'])->name('gedung.update');

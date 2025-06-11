@@ -61,7 +61,7 @@
             z-index: 3;
             background-color: white;
             border-radius: 50%;
-            padding: 10px;
+            padding: 25px;
             box-shadow: 0px 0 8px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: center;
@@ -78,7 +78,6 @@
             background-color: rgba(255, 255, 255, 0.9);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
             border-radius: 10px;
-            padding: 30px;
         }
 
         .login-form-head {

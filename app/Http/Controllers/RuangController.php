@@ -76,27 +76,27 @@ class RuangController extends Controller
 
     public function store_ajax(Request $request)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $validator = Validator::make($request->all(), [
-                'lantai_id' => 'required|exists:m_lantai,lantai_id',
-                'ruang_nama' => 'required|string|max:255',
-                'ruang_kode' => 'required|string|max:50|unique:m_ruang,ruang_kode',
-                'ruang_tipe' => 'required|string|max:50'
-            ]);
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $validator->errors()
-                ], 422);
-            }
+        $validator = Validator::make($request->all(), [
+            'lantai_id' => 'required|exists:m_lantai,lantai_id',
+            'ruang_nama' => 'required|string|max:255',
+            'ruang_kode' => 'required|string|max:50|unique:m_ruang,ruang_kode',
+            'ruang_tipe' => 'required|string|max:50'
+        ]);
 
-            $data = $validator->validated();
-            RuangModel::create($data);
-
-            return response()->json(['success' => true, 'message' => 'Ruang created successfully']);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        return view('/ruang');
+        $data = $validator->validated();
+        RuangModel::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data ruang berhasil disimpan'
+        ]);
     }
 
     public function edit_ajax($id)

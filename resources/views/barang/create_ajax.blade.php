@@ -36,3 +36,63 @@
         </div>
     </form>
 </div>
+<script>
+    $('#form-create-barang').on('submit', function(e) {
+        e.preventDefault(); // Hindari submit form biasa
+        e.stopImmediatePropagation(); // Mencegah multiple submission
+
+        let form = $(this);
+        let url = form.attr('action');
+        let data = form.serialize();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                if (response.success) {
+                    $('#form-create-barang')[0].reset(); // Reset form
+                    $('#myModal').modal('hide'); // Tutup modal (ganti ID sesuai modal kamu)
+                    $('#barang-table').DataTable().ajax.reload(null, false); // Reload tabel DataTable
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message || 'Barang berhasil ditambahkan!',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: response.message || 'Gagal menambahkan barang.'
+                    });
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    let errorMsg = '';
+                    $.each(errors, function(key, value) {
+                        errorMsg += `<div>${value[0]}</div>`;
+                    });
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validasi Gagal',
+                        html: errorMsg
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Terjadi kesalahan server.'
+                    });
+                }
+            }
+        });
+
+        return false; // Mencegah form submit default
+    });
+</script>

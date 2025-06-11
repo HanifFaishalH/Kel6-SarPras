@@ -134,8 +134,6 @@ class SaranaController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Sarana berhasil ditambahkan']);
         }
-
-        return redirect('/sarana');
     }
 
 

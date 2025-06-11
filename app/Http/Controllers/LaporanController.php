@@ -61,6 +61,32 @@ class LaporanController extends Controller
         ]);
     }
 
+    public function bobot()
+    {
+        $laporan = LaporanModel::all();
+        $sarana = SaranaModel::all();
+
+        // Calculate AHP weights
+        $ahpWeights = $this->calculateAHPWeights();
+
+        $breadcrumbs = [
+            'title' => 'Pembobotan',
+            'list' => ['home', 'pembobotan']
+        ];
+        $page = (object) [
+            'title' => "Pembobotan"
+        ];
+        $activeMenu = 'bobot';
+        return view('bobot.index', [
+            'laporan' => $laporan,
+            'sarana' => $sarana,
+            'breadcrumbs' => $breadcrumbs,
+            'page' => $page,
+            'activeMenu' => $activeMenu,
+            'ahpWeights' => $ahpWeights // Pass AHP weights to the view
+        ]);
+    }
+
     public function list(Request $request)
     {
         $user = auth()->user();
@@ -290,9 +316,8 @@ class LaporanController extends Controller
         $jumlahLaporan = $sarana->jumlah_laporan ?? 1;
 
         // Normalize jumlah_laporan as a cost criterion
-        // Assuming the maximum possible value for jumlah_laporan is 100
         $totalJumlahLaporan = SaranaModel::sum('jumlah_laporan');
-        $normalizedJumlahLaporan = 1 - ($jumlahLaporan / $totalJumlahLaporan);
+        $normalizedJumlahLaporan = 1 - ($jumlahLaporan / ($totalJumlahLaporan ?: 1));
 
         $tanggalOperasional = Carbon::parse($sarana->tanggal_operasional);
         $now = Carbon::now();
@@ -300,27 +325,18 @@ class LaporanController extends Controller
         $maxUsia = 3650;
         $normalizedUsia = 1 - ($usia / $maxUsia);
 
-        // AHP Method
-        // Define criteria bobot (normalized)
-        $bobot = [
-            'kerusakan' => 0.2,
-            'urgensi' => 0.2,
-            'frekuensi' => 0.2,
-            'dampak' => 0.1,
-            'jumlah_laporan' => 0.2,
-            'usia' => 0.1
-        ];
+        // Calculate AHP weights using pairwise comparison
+        $ahpWeights = $this->calculateAHPWeights();
 
         // Calculate AHP score
-        $ahpScore = $bobot['kerusakan'] * $kerusakan +
-            $bobot['urgensi'] * $urgensi +
-            $bobot['frekuensi'] * $frekuensi +
-            $bobot['dampak'] * $dampak +
-            $bobot['jumlah_laporan'] * $normalizedJumlahLaporan +
-            $bobot['usia'] * $normalizedUsia;
+        $ahpScore = ($ahpWeights['kerusakan'] * $kerusakan +
+            $ahpWeights['urgensi'] * $urgensi +
+            $ahpWeights['frekuensi'] * $frekuensi +
+            $ahpWeights['dampak'] * $dampak +
+            $ahpWeights['jumlah_laporan'] * $normalizedJumlahLaporan +
+            $ahpWeights['usia'] * $normalizedUsia);
 
-        // SAW Method
-        // Define criteria bobot (normalized)
+        // SAW Method (remain unchanged)
         $sawBobot = [
             'kerusakan' => 0.2,
             'urgensi' => 0.2,
@@ -330,7 +346,6 @@ class LaporanController extends Controller
             'usia' => 0.1
         ];
 
-        // Calculate SAW score
         $sawScore = $sawBobot['kerusakan'] * $kerusakan +
             $sawBobot['urgensi'] * $urgensi +
             $sawBobot['frekuensi'] * $frekuensi +
@@ -340,7 +355,7 @@ class LaporanController extends Controller
 
         $bobot = (($ahpScore + $sawScore) / 2) * 100;
 
-        // Save the scores to the 
+        // Save the scores to the laporan
         $laporan->bobot = $bobot;
         $laporan->save();
 
@@ -354,7 +369,9 @@ class LaporanController extends Controller
                 'Dampak' => ['value' => $laporan->dampak_kerusakan, 'score' => $dampak],
                 'Jumlah Laporan' => ['value' => $jumlahLaporan, 'score' => $normalizedJumlahLaporan],
                 'Usia' => ['value' => $usia, 'score' => $normalizedUsia]
-            ]
+            ],
+            'normalizedMatrix' => $this->getNormalizedMatrix(),
+            'bobotAHP' => array_values($ahpWeights)
         ])->render();
 
         return response()->json([
@@ -363,6 +380,200 @@ class LaporanController extends Controller
             'bobot' => $bobot,
             'message' => 'Perhitungan bobot berhasil'
         ]);
+    }
+
+    private function calculateAHPWeights()
+    {
+        // Define pairwise comparison matrix using Saaty scale (1-9)
+        $pairwiseMatrix = [
+            ['kerusakan', 'kerusakan', 1],
+            ['kerusakan', 'urgensi', 1],
+            ['kerusakan', 'frekuensi', 2],
+            ['kerusakan', 'dampak', 3],
+            ['kerusakan', 'jumlah_laporan', 2],
+            ['kerusakan', 'usia', 4],
+
+            ['urgensi', 'kerusakan', 1],
+            ['urgensi', 'urgensi', 1],
+            ['urgensi', 'frekuensi', 2],
+            ['urgensi', 'dampak', 3],
+            ['urgensi', 'jumlah_laporan', 2],
+            ['urgensi', 'usia', 4],
+
+            ['frekuensi', 'kerusakan', 0.5],
+            ['frekuensi', 'urgensi', 0.5],
+            ['frekuensi', 'frekuensi', 1],
+            ['frekuensi', 'dampak', 2],
+            ['frekuensi', 'jumlah_laporan', 1],
+            ['frekuensi', 'usia', 3],
+
+            ['dampak', 'kerusakan', 0.33],
+            ['dampak', 'urgensi', 0.33],
+            ['dampak', 'frekuensi', 0.5],
+            ['dampak', 'dampak', 1],
+            ['dampak', 'jumlah_laporan', 0.5],
+            ['dampak', 'usia', 2],
+
+            ['jumlah_laporan', 'kerusakan', 0.5],
+            ['jumlah_laporan', 'urgensi', 0.5],
+            ['jumlah_laporan', 'frekuensi', 1],
+            ['jumlah_laporan', 'dampak', 2],
+            ['jumlah_laporan', 'jumlah_laporan', 1],
+            ['jumlah_laporan', 'usia', 3],
+
+            ['usia', 'kerusakan', 0.25],
+            ['usia', 'urgensi', 0.25],
+            ['usia', 'frekuensi', 0.33],
+            ['usia', 'dampak', 0.5],
+            ['usia', 'jumlah_laporan', 0.33],
+            ['usia', 'usia', 1],
+        ];
+
+        // Convert to square matrix
+        $criteria = ['kerusakan', 'urgensi', 'frekuensi', 'dampak', 'jumlah_laporan', 'usia'];
+        $matrix = array_fill(0, count($criteria), array_fill(0, count($criteria), 0));
+
+        foreach ($pairwiseMatrix as $comparison) {
+            $row = array_search($comparison[0], $criteria);
+            $col = array_search($comparison[1], $criteria);
+            $matrix[$row][$col] = $comparison[2];
+            $matrix[$col][$row] = 1 / $comparison[2]; // Reciprocal
+        }
+
+        // Diagonal elements are 1
+        for ($i = 0; $i < count($criteria); $i++) {
+            $matrix[$i][$i] = 1;
+        }
+
+        // Calculate column sums
+        $columnSums = array_fill(0, count($criteria), 0);
+        for ($j = 0; $j < count($criteria); $j++) {
+            for ($i = 0; $i < count($criteria); $i++) {
+                $columnSums[$j] += $matrix[$i][$j];
+            }
+        }
+
+        // Normalize the matrix
+        $normalizedMatrix = [];
+        for ($i = 0; $i < count($criteria); $i++) {
+            $normalizedMatrix[$i] = [];
+            for ($j = 0; $j < count($criteria); $j++) {
+                $normalizedMatrix[$i][$j] = $matrix[$i][$j] / $columnSums[$j];
+            }
+        }
+
+        // Calculate priority vector (average of rows)
+        $priorityVector = [];
+        for ($i = 0; $i < count($criteria); $i++) {
+            $rowSum = array_sum($normalizedMatrix[$i]);
+            $priorityVector[$criteria[$i]] = $rowSum / count($criteria);
+        }
+
+        // Calculate consistency
+        $weightedSumVector = [];
+        for ($i = 0; $i < count($criteria); $i++) {
+            $sum = 0;
+            for ($j = 0; $j < count($criteria); $j++) {
+                $sum += $matrix[$i][$j] * $priorityVector[$criteria[$j]];
+            }
+            $weightedSumVector[$i] = $sum;
+        }
+
+        $lambdaMax = 0;
+        for ($i = 0; $i < count($criteria); $i++) {
+            $lambdaMax += $weightedSumVector[$i] / $priorityVector[$criteria[$i]];
+        }
+        $lambdaMax /= count($criteria);
+
+        $consistencyIndex = ($lambdaMax - count($criteria)) / (count($criteria) - 1);
+        $randomIndex = [0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41]; // RI for n=1 to 8
+        $consistencyRatio = $consistencyIndex / $randomIndex[count($criteria) - 1];
+
+        // Check consistency (CR should be < 0.1)
+        if ($consistencyRatio > 0.1) {
+            throw new Exception('Matriks perbandingan tidak konsisten. CR = ' . number_format($consistencyRatio, 3));
+        }
+
+        return $priorityVector;
+    }
+
+    private function getNormalizedMatrix()
+    {
+        // This method can be used to return the normalized matrix for display
+        $pairwiseMatrix = [
+            ['kerusakan', 'kerusakan', 1],
+            ['kerusakan', 'urgensi', 1],
+            ['kerusakan', 'frekuensi', 2],
+            ['kerusakan', 'dampak', 3],
+            ['kerusakan', 'jumlah_laporan', 2],
+            ['kerusakan', 'usia', 4],
+
+            ['urgensi', 'kerusakan', 1],
+            ['urgensi', 'urgensi', 1],
+            ['urgensi', 'frekuensi', 2],
+            ['urgensi', 'dampak', 3],
+            ['urgensi', 'jumlah_laporan', 2],
+            ['urgensi', 'usia', 4],
+
+            ['frekuensi', 'kerusakan', 0.5],
+            ['frekuensi', 'urgensi', 0.5],
+            ['frekuensi', 'frekuensi', 1],
+            ['frekuensi', 'dampak', 2],
+            ['frekuensi', 'jumlah_laporan', 1],
+            ['frekuensi', 'usia', 3],
+
+            ['dampak', 'kerusakan', 0.33],
+            ['dampak', 'urgensi', 0.33],
+            ['dampak', 'frekuensi', 0.5],
+            ['dampak', 'dampak', 1],
+            ['dampak', 'jumlah_laporan', 0.5],
+            ['dampak', 'usia', 2],
+
+            ['jumlah_laporan', 'kerusakan', 0.5],
+            ['jumlah_laporan', 'urgensi', 0.5],
+            ['jumlah_laporan', 'frekuensi', 1],
+            ['jumlah_laporan', 'dampak', 2],
+            ['jumlah_laporan', 'jumlah_laporan', 1],
+            ['jumlah_laporan', 'usia', 3],
+
+            ['usia', 'kerusakan', 0.25],
+            ['usia', 'urgensi', 0.25],
+            ['usia', 'frekuensi', 0.33],
+            ['usia', 'dampak', 0.5],
+            ['usia', 'jumlah_laporan', 0.33],
+            ['usia', 'usia', 1],
+        ];
+
+        $criteria = ['kerusakan', 'urgensi', 'frekuensi', 'dampak', 'jumlah_laporan', 'usia'];
+        $matrix = array_fill(0, count($criteria), array_fill(0, count($criteria), 0));
+
+        foreach ($pairwiseMatrix as $comparison) {
+            $row = array_search($comparison[0], $criteria);
+            $col = array_search($comparison[1], $criteria);
+            $matrix[$row][$col] = $comparison[2];
+            $matrix[$col][$row] = 1 / $comparison[2];
+        }
+
+        for ($i = 0; $i < count($criteria); $i++) {
+            $matrix[$i][$i] = 1;
+        }
+
+        $columnSums = array_fill(0, count($criteria), 0);
+        for ($j = 0; $j < count($criteria); $j++) {
+            for ($i = 0; $i < count($criteria); $i++) {
+                $columnSums[$j] += $matrix[$i][$j];
+            }
+        }
+
+        $normalizedMatrix = [];
+        for ($i = 0; $i < count($criteria); $i++) {
+            $normalizedMatrix[$criteria[$i]] = [];
+            for ($j = 0; $j < count($criteria); $j++) {
+                $normalizedMatrix[$criteria[$i]][$criteria[$j]] = $matrix[$i][$j] / $columnSums[$j];
+            }
+        }
+
+        return $normalizedMatrix;
     }
 
     public function accept($id)
@@ -565,7 +776,7 @@ class LaporanController extends Controller
         }
 
         return view('/laporan');
-}
+    }
 
     public function update_ajax(Request $request, $id)
     {

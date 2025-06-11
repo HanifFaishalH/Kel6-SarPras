@@ -146,6 +146,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/delete_ajax/{id}', [SaranaController::class, 'delete_ajax']);
             Route::delete('/destroy_ajax/{id}', [SaranaController::class, 'destroy_ajax']);
         });
+
+        Route::get('/bobot', [LaporanController::class, 'bobot'])->name('laporan.bobot');
     });
 
     Route::middleware(['authorize:sarpras,teknisi'])->group(function (): void {

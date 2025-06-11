@@ -60,6 +60,12 @@
                                         <i class="fa fa-users"></i> Kelola Pengguna
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="{{ url('/bobot') }}"
+                                        class="nav-link {{ $activeMenu == 'bobot' ? 'active' : '' }}">
+                                        <i class="fa fa-users"></i> Pembobotan
+                                    </a>
+                                </li>
                             </ul>
                         </li>
 

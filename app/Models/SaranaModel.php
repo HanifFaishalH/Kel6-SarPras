@@ -11,10 +11,10 @@ class SaranaModel extends Model
 
     protected $table = 'm_sarana';
     protected $primaryKey = 'sarana_id';
-    // SaranaModel.php
     protected $fillable = [
         'sarana_kode',
         'ruang_id',
+        'lantai_id',
         'kategori_id',
         'barang_id',
         'jumlah_laporan',
@@ -38,5 +38,10 @@ class SaranaModel extends Model
     public function barang()
     {
         return $this->belongsTo(BarangModel::class, 'barang_id', 'barang_id');
+    }
+
+    public function lantai()
+    {
+        return $this->belongsTo(LantaiModel::class, 'lantai_id', 'lantai_id');
     }
 }

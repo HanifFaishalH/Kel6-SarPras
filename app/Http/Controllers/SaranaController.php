@@ -10,6 +10,7 @@ use App\Models\RuangModel;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class SaranaController extends Controller
@@ -88,23 +89,46 @@ class SaranaController extends Controller
 
     public function create_ajax()
     {
-        $ruang_list = RuangModel::all();
-        $kategori_list = KategoriModel::all();
-        $barang_list = BarangModel::all();
+        $lantai_list = LantaiModel::all();
+        $ruang_list = RuangModel::all(); // Akan digantikan oleh AJAX
+        $kategori_list = KategoriModel::all(); // Akan digantikan oleh AJAX
+        $barang_list = BarangModel::all(); // Akan digantikan oleh AJAX
 
         return view('sarana.create_ajax', [
+            'lantai_list' => $lantai_list,
             'ruang_list' => $ruang_list,
             'kategori_list' => $kategori_list,
-            'barang_list' => $barang_list
+            'barang_list' => $barang_list,
+            'sarana_kode' => 'SAR-' . (SaranaModel::max('sarana_id') + 1 ?? 1) // Generate kode otomatis
         ]);
+    }
+
+    public function getRuangByLantai($lantai_id)
+    {
+        $ruang = RuangModel::where('lantai_id', $lantai_id)->get();
+        return response()->json($ruang);
+    }
+
+    public function getKategoriByRuang($ruang_id)
+    {
+        $kategori = KategoriModel::whereHas('sarana', function ($query) use ($ruang_id) {
+            $query->where('ruang_id', $ruang_id);
+        })->get();
+
+        return response()->json($kategori);
+    }
+
+    public function getBarangByKategori($kategori_id)
+    {
+        $barang = BarangModel::where('kategori_id', $kategori_id)->get();
+        return response()->json($barang);
     }
 
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            // Generate sarana_kode otomatis
-            $last_id = SaranaModel::max('sarana_id') ?? 0;
-            $next_number = $last_id + 1;
+            $total_entries = SaranaModel::count();
+            $next_number = $total_entries + 1;
             $sarana_kode = 'SAR-' . $next_number;
 
             $validator = Validator::make(array_merge($request->all(), ['sarana_kode' => $sarana_kode]), [
@@ -123,12 +147,18 @@ class SaranaController extends Controller
             }
 
             $data = $validator->validated();
-            // Tambahkan default value untuk field lain
-            $data['jumlah_laporan'] = 0; // Default
-            $data['nomor_urut'] = $next_number; // Bisa pakai next_number
-            $data['tanggal_operasional'] = now(); // Atau null jika boleh
-            $data['tingkat_kerusakan_tertinggi'] = null; // Default
-            $data['skor_prioritas'] = 0; // Default
+
+            // Hitung nomor_urut berdasarkan barang_id dan ruang_id yang sudah ada
+            $existingCount = SaranaModel::where('ruang_id', $data['ruang_id'])
+                ->where('barang_id', $data['barang_id'])
+                ->count();
+            $data['nomor_urut'] = $existingCount + 1;
+
+            $data['jumlah_laporan'] = 0;
+            $data['tanggal_operasional'] = now();
+            $data['tingkat_kerusakan_tertinggi'] = null;
+            $data['skor_prioritas'] = 0;
+            $data['sarana_kode'] = $sarana_kode;
 
             SaranaModel::create($data);
 
@@ -149,7 +179,19 @@ class SaranaController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $sarana = SaranaModel::findOrFail($id);
+
+            $maxIdBefore = SaranaModel::max('sarana_id');
+
             $sarana->delete();
+
+            $maxIdAfter = SaranaModel::max('sarana_id');
+
+            if ($maxIdBefore !== null && $maxIdAfter !== null && $maxIdBefore > $maxIdAfter) {
+                $newAutoIncrement = $maxIdAfter + 1;
+                DB::statement("ALTER TABLE m_sarana AUTO_INCREMENT = $newAutoIncrement");
+            } elseif ($maxIdAfter === null) {
+                DB::statement("ALTER TABLE m_sarana AUTO_INCREMENT = 1");
+            }
 
             return response()->json(['success' => true, 'message' => 'Sarana deleted successfully']);
         }

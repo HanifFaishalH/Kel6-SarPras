@@ -31,8 +31,11 @@
                 </div>
                 <div class="form-group">
                     <label for="kategori_id">Kategori</label>
-                    <select name="kategori_id" id="kategori_id" class="form-control" disabled required>
+                    <select name="kategori_id" id="kategori_id" class="form-control" required>
                         <option value="">- Pilih Kategori -</option>
+                        @foreach ($kategori_list ?? [] as $k)
+                            <option value="{{ $k->kategori_id }}">{{ $k->kategori_nama }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="form-group">
@@ -61,13 +64,11 @@
         $('#lantai_id').on('change', function() {
             var lantaiID = $(this).val();
             var ruangSelect = $('#ruang_id');
-            var kategoriSelect = $('#kategori_id');
+            var kategoriSelect = $('#kategori_id'); // Tetap aktif karena sudah ada opsi
             var barangSelect = $('#barang_id');
 
             ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>').prop('disabled',
                 true);
-            kategoriSelect.empty().append('<option value="">- Pilih Kategori -</option>').prop(
-                'disabled', true);
             barangSelect.empty().append('<option value="">- Pilih Barang -</option>').prop('disabled',
                 true);
 
@@ -96,43 +97,7 @@
             }
         });
 
-        // Ambil kategori berdasarkan ruang
-        $('#ruang_id').on('change', function() {
-            var ruangID = $(this).val();
-            var kategoriSelect = $('#kategori_id');
-            var barangSelect = $('#barang_id');
-
-            kategoriSelect.empty().append('<option value="">- Pilih Kategori -</option>').prop(
-                'disabled', true);
-            barangSelect.empty().append('<option value="">- Pilih Barang -</option>').prop('disabled',
-                true);
-
-            if (ruangID) {
-                $.ajax({
-                    url: "{{ url('sarana/ajax/kategori-by-ruang') }}/" + ruangID,
-                    type: "GET",
-                    dataType: "json",
-                    success: function(data) {
-                        if (data.length > 0) {
-                            $.each(data, function(key, value) {
-                                kategoriSelect.append('<option value="' + value
-                                    .kategori_id + '">' + value.kategori_nama +
-                                    '</option>');
-                            });
-                            kategoriSelect.prop('disabled', false);
-                        } else {
-                            Swal.fire('Info',
-                                'Tidak ada kategori tersedia untuk ruang ini.', 'info');
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Error', 'Gagal mengambil data kategori.', 'error');
-                    }
-                });
-            }
-        });
-
-        // Ambil barang berdasarkan kategori
+        // Ambil barang berdasarkan kategori (ruang tidak lagi memengaruhi kategori)
         $('#kategori_id').on('change', function() {
             var kategoriID = $(this).val();
             var barangSelect = $('#barang_id');

@@ -61,7 +61,7 @@
             z-index: 3;
             background-color: white;
             border-radius: 50%;
-            padding: 10px;
+            padding: 25px;
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: center;

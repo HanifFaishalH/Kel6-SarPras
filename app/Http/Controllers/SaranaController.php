@@ -102,17 +102,17 @@ class SaranaController extends Controller
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            // Generate sarana_kode otomatis sebelum validasi
+            // Generate sarana_kode otomatis
             $last_id = SaranaModel::max('sarana_id') ?? 0;
             $next_number = $last_id + 1;
-            $sarana_kode = 'SARANA-' . $next_number;
+            $sarana_kode = 'SAR-' . $next_number;
 
             $validator = Validator::make(array_merge($request->all(), ['sarana_kode' => $sarana_kode]), [
                 'sarana_kode' => 'required|string|max:50|unique:m_sarana,sarana_kode',
                 'ruang_id' => 'required|exists:m_ruang,ruang_id',
                 'kategori_id' => 'required|exists:m_kategori,kategori_id',
                 'barang_id' => 'required|exists:m_barang,barang_id',
-                'frekuensi_penggunaan' => 'required|string|max:255'
+                'frekuensi_penggunaan' => 'required|string|max:255',
             ]);
 
             if ($validator->fails()) {
@@ -123,9 +123,16 @@ class SaranaController extends Controller
             }
 
             $data = $validator->validated();
+            // Tambahkan default value untuk field lain
+            $data['jumlah_laporan'] = 0; // Default
+            $data['nomor_urut'] = $next_number; // Bisa pakai next_number
+            $data['tanggal_operasional'] = now(); // Atau null jika boleh
+            $data['tingkat_kerusakan_tertinggi'] = null; // Default
+            $data['skor_prioritas'] = 0; // Default
+
             SaranaModel::create($data);
 
-            return response()->json(['success' => true, 'message' => 'Sarana created successfully']);
+            return response()->json(['success' => true, 'message' => 'Sarana berhasil ditambahkan']);
         }
 
         return redirect('/sarana');

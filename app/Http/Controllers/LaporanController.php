@@ -923,7 +923,8 @@ class LaporanController extends Controller
             return [
                 'sarana_id' => $item->sarana_id,
                 'sarana_kode' => $item->barang->barang_kode ?? 'KODE-' . $item->sarana_id,
-                'sarana_nama' => $item->barang->barang_nama ?? 'Sarana #' . $item->sarana_id
+                'sarana_nama' => $item->barang->barang_nama ?? 'Sarana #' . $item->sarana_id,
+                'nomor_urut' => $item->nomor_urut ?? ''
             ];
         });
 
@@ -941,7 +942,8 @@ class LaporanController extends Controller
             return [
                 'sarana_id' => $item->sarana_id,
                 'sarana_kode' => $item->barang->barang_kode ?? 'KODE-' . $item->sarana_id,
-                'sarana_nama' => $item->barang->barang_nama ?? 'Sarana #' . $item->sarana_id
+                'sarana_nama' => $item->barang->barang_nama ?? 'Sarana #' . $item->sarana_id,
+                
             ];
         });
         return response()->json([

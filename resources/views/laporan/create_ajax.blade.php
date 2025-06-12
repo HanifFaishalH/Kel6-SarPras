@@ -159,7 +159,7 @@
                     success: function(data) {
                         if (data.length > 0) {
                             $.each(data, function(key, value) {
-                                saranaSelect.append('<option value="' + value.sarana_id + '">' + value.sarana_kode + ' - ' + value.sarana_nama ' ' + value.nomor_urut + '</option>');
+                                saranaSelect.append('<option value="' + value.sarana_id + '">' + value.sarana_kode + ' - ' + value.sarana_nama + ' ' + value.nomor_urut + '</option>');
                             });
                             saranaSelect.prop('disabled', false);
                         } else {

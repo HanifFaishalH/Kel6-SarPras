@@ -9,7 +9,15 @@ class FeedbackController extends Controller
 {
     public function index()
     {
-        $laporans = DB::table('t_laporan_kerusakan')->get(); // Ambil data laporan untuk dipilih
+        $laporans = DB::table('t_laporan_kerusakan')
+            ->where('status_laporan', 'selesai')
+            ->whereNotIn('laporan_id', function ($query) {
+                $query->select('laporan_id')
+                    ->from('t_feedback')
+                    ->where('user_id', auth()->id());
+            })
+            ->get();
+
         return view('feedback.create', compact('laporans'))->with('activeMenu', 'berikan-umpan-balik');
     }
 

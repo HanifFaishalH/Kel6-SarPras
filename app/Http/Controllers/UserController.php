@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
-
 class UserController extends Controller
 {
     public function index()
@@ -52,14 +51,13 @@ class UserController extends Controller
             'nama',
             'level_id',
             'foto',
-        )->with('level')->get();
-
+        )->with('level');
 
         if ($request->level_id) {
             $data = $data->where('level_id', $request->level_id);
         }
 
-        return datatables()->of($data)
+        return datatables()->of($data->get())
             ->addIndexColumn()
             ->addColumn('level_nama', function ($row) {
                 return $row->level ? $row->level->level_nama : '-';
@@ -94,9 +92,6 @@ class UserController extends Controller
         return view('user.show', compact('user'));
     }
 
-
-    // Edit
-
     public function edit($id)
     {
         $user = UserModel::find($id);
@@ -109,55 +104,71 @@ class UserController extends Controller
         return view('user.edit', compact('user', 'level'));
     }
 
-
     public function update(Request $request, $id)
     {
-        $user = auth()->user();
         $request->validate([
-            'username' => 'required|string|max:50',
-            'no_induk' => 'required|string|max:50|unique:m_users,no_induk,' . $id . ',user_id',
+            'username' => 'required|string|max:50|unique:m_users,username,'.$id.',user_id',
+            'no_induk' => 'required|string|max:50|unique:m_users,no_induk,'.$id.',user_id',
             'nama' => 'required|string|max:50',
             'level_id' => 'required|exists:m_level,level_id',
             'password' => 'nullable|min:5',
         ]);
 
+        $user = UserModel::findOrFail($id);
+        $data = $request->only(['username', 'no_induk', 'nama', 'level_id']);
+        
         if ($request->filled('password')) {
-            $user->password = Hash::make($request['password']);
+            $data['password'] = Hash::make($request->password);
         }
 
-        $user = UserModel::findOrFail($id);
-        $user->update($request->only(['username', 'no_induk', 'nama', 'level_id']));
+        $user->update($data);
 
-        return back()->with('success', 'User berhasil diperbarui');
+        return response()->json([
+            'success' => true,
+            'message' => 'User berhasil diperbarui'
+        ]);
     }
 
     public function delete_ajax($id)
     {
-        $user = UserModel::findOrFail($id);
+        $user = UserModel::find($id);
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan'
+            ], 404);
+        }
+
         return view('user.delete_confirm_ajax', [
             'user' => $user
         ]);
     }
 
-    public function destroy_ajax(Request $request, $id)
+    public function destroy_ajax($id)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $user = UserModel::findOrFail($id);
-            $user->delete();
-
-            // Ulangi increment (jika perlu)
-            $maxId = UserModel::max('user_id');
-            if ($maxId) {
-                DB::statement('ALTER TABLE users AUTO_INCREMENT = ' . ($maxId + 1));
-            }
-
-            return response()->json(['success' => true, 'message' => 'User deleted successfully']);
+        $user = UserModel::find($id);
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan'
+            ], 404);
         }
 
-        return redirect('/user');
+        $user->delete();
+
+        // Reset auto increment jika diperlukan
+        $maxId = UserModel::max('user_id');
+        if ($maxId) {
+            DB::statement('ALTER TABLE m_users AUTO_INCREMENT = ' . ($maxId + 1));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User berhasil dihapus'
+        ]);
     }
 
-    public function create_ajax(Request $request)
+    public function create_ajax()
     {
         $level = LevelModel::all();
         return view('user.create_ajax', compact('level'));
@@ -170,25 +181,23 @@ class UserController extends Controller
             'username' => 'required|unique:m_users,username',
             'password' => 'required|min:6',
             'nama' => 'required',
-            'no_induk' => 'nullable|string',
+            'no_induk' => 'nullable|string|unique:m_users,no_induk',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Upload foto jika ada
-        $fotoPath = null;
+        $data = $request->only(['level_id', 'username', 'nama', 'no_induk']);
+        $data['password'] = bcrypt($request->password);
+
         if ($request->hasFile('foto')) {
             $fotoPath = $request->file('foto')->store('foto_user', 'public');
+            $data['foto'] = $fotoPath;
         }
 
-        UserModel::create([
-            'level_id' => $request->level_id,
-            'username' => $request->username,
-            'password' => bcrypt($request->password),
-            'nama' => $request->nama,
-            'no_induk' => $request->no_induk,
-            'foto' => $fotoPath,
-        ]);
+        UserModel::create($data);
 
-        return response()->json(['status' => 'success']);
+        return response()->json([
+            'success' => true,
+            'message' => 'User berhasil ditambahkan'
+        ]);
     }
 }

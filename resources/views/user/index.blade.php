@@ -58,240 +58,267 @@
 @endsection
 
 @push('css')
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+
 @endpush
 
 @push('js')
     <script>
         function modalAction(url = '') {
-            $('#myModal').load(url, function(response, status, xhr) {
-                if (status === "error") {
-                    $('#myModal').html(
-                        '<div class="modal-dialog"><div class="modal-content"><div class="modal-body"><div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div></div></div></div>'
-                    );
-                }
-                $('#myModal').modal('show');
-
-                // Handle form update user
-                $('#form-update-user').on('submit', function(e) {
-                    e.preventDefault();
-                    $.ajax({
-                        url: $(this).attr('action'),
-                        type: 'PUT',
-                        data: $(this).serialize(),
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                $('#myModal').modal('hide');
-                                dataUser.ajax.reload(null, false); // Reload tabel
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message ||
-                                        'Data user berhasil diperbarui!',
-                                    timer: 3000,
-                                    showConfirmButton: false
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: 'Gagal update user: ' + (response.message ||
-                                        'Coba lagi.'),
-                                });
-                            }
-                        },
-                        error: function(xhr) {
-                            let errors = xhr.responseJSON?.errors;
-                            if (errors) {
-                                let errorMsg = '';
-                                $.each(errors, function(key, value) {
-                                    errorMsg += `- ${value}<br>`;
-                                });
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Validasi Gagal',
-                                    html: errorMsg
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'Gagal update user. Silakan coba lagi.'
-                                });
-                            }
-                        }
-                    });
-                });
-
-                // Handle form create user
-                $('#form-create-user').on('submit', function(e) {
-                    e.preventDefault();
-                    let formData = new FormData(this); // Untuk mendukung file upload (foto)
-                    $.ajax({
-                        url: $(this).attr('action'),
-                        type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                $('#myModal').modal('hide');
-                                dataUser.ajax.reload(null, false); // Reload tabel
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message ||
-                                        'Data user berhasil ditambahkan!',
-                                    timer: 3000,
-                                    showConfirmButton: false
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: 'Gagal tambah user: ' + (response.message ||
-                                        'Coba lagi.'),
-                                });
-                            }
-                        },
-                        error: function(xhr) {
-                            let errors = xhr.responseJSON?.errors;
-                            if (errors) {
-                                let errorMsg = '';
-                                $.each(errors, function(key, value) {
-                                    errorMsg += `- ${value}<br>`;
-                                });
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Validasi Gagal',
-                                    html: errorMsg
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'Gagal tambah user. Silakan coba lagi.'
-                                });
-                            }
-                        }
-                    });
-                });
-
-                // Handle form delete user
-                $('#form-delete-user').on('submit', function(e) {
-                    e.preventDefault();
-                    $.ajax({
-                        url: $(this).attr('action'),
-                        type: 'DELETE',
-                        data: $(this).serialize(),
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                $('#myModal').modal('hide');
-                                dataUser.ajax.reload(null, false); // Reload tabel
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message ||
-                                        'Data user berhasil dihapus!',
-                                    timer: 3000,
-                                    showConfirmButton: false
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: 'Gagal menghapus user: ' + (response
-                                        .message || 'Coba lagi.'),
-                                });
-                            }
-                        },
-                        error: function(xhr) {
-                            let message = 'Gagal menghapus user. Silakan coba lagi.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                message = xhr.responseJSON.message;
-                            } else if (xhr.status === 404) {
-                                message = 'Data user tidak ditemukan.';
-                            } else if (xhr.status === 500) {
-                                message = 'Kesalahan server internal.';
-                            }
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: message
-                            });
-                        }
-                    });
-                });
-            });
+    $('#myModal').load(url, function(response, status, xhr) {
+        if (status === "error") {
+            $('#myModal').html(
+                '<div class="modal-dialog"><div class="modal-content"><div class="modal-body"><div class="alert alert-danger">Gagal memuat konten. Silakan coba lagi.</div></div></div></div>'
+            );
         }
+        $('#myModal').modal('show');
 
-        var dataUser;
-        $(document).ready(function() {
-            dataUser = $('#table_user').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ url('user/list') }}",
-                    dataType: "json",
-                    type: "GET",
-                    data: function(d) {
-                        d.level_id = $('#level_id').val();
+        // Handle form update user
+        $('#form-update-user').on('submit', function(e) {
+            e.preventDefault();
+            
+            let formData = $(this).serialize();
+            
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'PUT',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#myModal').modal('hide');
+                        // Reload datatable tanpa reset paging
+                        dataUser.ajax.reload(null, false);
+                        // Tampilkan notifikasi sukses
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message || 'Data user berhasil diperbarui!',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: response.message || 'Gagal memperbarui user'
+                        });
                     }
                 },
-                columns: [{
-                        data: "DT_RowIndex",
-                        name: "DT_RowIndex"
-                    },
-                    {
-                        data: "username",
-                        name: "username"
-                    },
-                    {
-                        data: "no_induk",
-                        name: "no_induk"
-                    },
-                    {
-                        data: "nama",
-                        name: "nama"
-                    },
-                    {
-                        data: "level_nama",
-                        name: "level_nama"
-                    },
-                    {
-                        data: "aksi",
-                        name: "aksi",
-                        orderable: false,
-                        searchable: false
+                error: function(xhr) {
+                    let errors = xhr.responseJSON?.errors;
+                    if (errors) {
+                        let errorMsg = '';
+                        $.each(errors, function(key, value) {
+                            errorMsg += `- ${value}<br>`;
+                        });
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validasi Gagal',
+                            html: errorMsg
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Gagal memperbarui user. Silakan coba lagi.'
+                        });
                     }
-                ],
-                order: [
-                    [0, 'asc']
-                ]
-            });
-
-            $('#level_id').on('change', function() {
-                dataUser.ajax.reload();
-            });
-
-            $(document).on('click', '.btn-detail', function() {
-                var id = $(this).data('id');
-                modalAction('/user/show/' + id); // Load detail user
-            });
-
-            $(document).on('click', '.btn-edit', function() {
-                var id = $(this).data('id');
-                modalAction('/user/edit/' + id); // Load form edit user
-            });
-
-            $(document).on('click', '.btn-hapus', function() {
-                var id = $(this).data('id');
-                modalAction('/user/delete_ajax/' + id); // Load form hapus user
+                }
             });
         });
+
+        // Handle form create user
+        $('#form-create-user').on('submit', function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                contentType: false, // Penting untuk FormData
+                processData: false, // Penting untuk FormData
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#myModal').modal('hide');
+                        // Bersihkan form
+                        $('#form-create-user')[0].reset();
+                        // Reload datatable
+                        dataUser.ajax.reload(null, false);
+                        // Tampilkan notifikasi sukses
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message || 'Data user berhasil ditambahkan!',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: response.message || 'Gagal menambahkan user'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errors = xhr.responseJSON?.errors;
+                    if (errors) {
+                        let errorMsg = '';
+                        $.each(errors, function(key, value) {
+                            errorMsg += `- ${value}<br>`;
+                        });
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validasi Gagal',
+                            html: errorMsg
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Gagal menambahkan user. Silakan coba lagi.'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Handle form delete user
+        $('#form-delete-user').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'DELETE',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#myModal').modal('hide');
+                        dataUser.ajax.reload(null, false);
+                        showSuccessAlert(response.message || 'Data user berhasil dihapus!');
+                    } else {
+                        showErrorAlert(response.message || 'Gagal menghapus user');
+                    }
+                },
+                error: function(xhr) {
+                    handleAjaxError(xhr, 'hapus user');
+                }
+            });
+        });
+    });
+}
+
+// Helper functions
+function showSuccessAlert(message) {
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: message,
+        timer: 3000,
+        showConfirmButton: false
+    });
+}
+
+function showErrorAlert(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: message
+    });
+}
+
+function handleAjaxError(xhr, action) {
+    let errors = xhr.responseJSON?.errors;
+    if (errors) {
+        let errorMsg = '';
+        $.each(errors, function(key, value) {
+            errorMsg += `- ${value}<br>`;
+        });
+        Swal.fire({
+            icon: 'error',
+            title: 'Validasi Gagal',
+            html: errorMsg
+        });
+    } else {
+        let message = xhr.responseJSON?.message || `Gagal ${action}. Silakan coba lagi.`;
+        if (xhr.status === 404) {
+            message = 'Data tidak ditemukan.';
+        } else if (xhr.status === 500) {
+            message = 'User memiliki relasi dengan data lain.';
+        }
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: message
+        });
+    }
+}
+
+var dataUser;
+$(document).ready(function() {
+    dataUser = $('#table_user').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "{{ url('user/list') }}",
+            dataType: "json",
+            type: "GET",
+            data: function(d) {
+                d.level_id = $('#level_id').val();
+            }
+        },
+        columns: [{
+                data: "DT_RowIndex",
+                name: "DT_RowIndex"
+            },
+            {
+                data: "username",
+                name: "username"
+            },
+            {
+                data: "no_induk",
+                name: "no_induk"
+            },
+            {
+                data: "nama",
+                name: "nama"
+            },
+            {
+                data: "level_nama",
+                name: "level_nama"
+            },
+            {
+                data: "aksi",
+                name: "aksi",
+                orderable: false,
+                searchable: false
+            }
+        ],
+        order: [
+            [0, 'asc']
+        ]
+    });
+
+    $('#level_id').on('change', function() {
+        dataUser.ajax.reload();
+    });
+
+    $(document).on('click', '.btn-detail', function() {
+        var id = $(this).data('id');
+        modalAction('/user/show/' + id);
+    });
+
+    $(document).on('click', '.btn-edit', function() {
+        var id = $(this).data('id');
+        modalAction('/user/edit/' + id);
+    });
+
+    $(document).on('click', '.btn-hapus', function() {
+        var id = $(this).data('id');
+        modalAction('/user/delete_ajax/' + id);
+    });
+});
     </script>
 @endpush

@@ -1,5 +1,5 @@
 <div class="modal-dialog modal-lg" role="document">
-    <form id="form-update-user" action="{{ url('/user/update/' . $user->user_id) }}" method="POST">
+    <form id="form-update-user" action="{{ url('/user/update/' . $user->user_id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="modal-content">

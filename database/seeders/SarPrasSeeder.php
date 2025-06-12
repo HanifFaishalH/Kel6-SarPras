@@ -29,7 +29,7 @@ class SarPrasSeeder extends Seeder
             ];
 
             foreach ($sarprasData as $data) {
-                DB::table('m_saranaprasarana')->insertOrIgnore($data);
+                DB::table('m_saranaPrasarana')->insertOrIgnore($data);
             }
         }
     }

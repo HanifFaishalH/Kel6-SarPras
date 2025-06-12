@@ -11,7 +11,7 @@ class SarPrasModel extends Model
 
     protected $primaryKey = 'sarPras_id';
 
-    protected $table = 'm_saranaprasarana';
+    protected $table = 'm_saranaPrasarana';
 
     protected $fillable = [
         'level_id',

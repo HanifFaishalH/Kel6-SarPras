@@ -128,7 +128,7 @@
                     success: function(data) {
                         if (data.length > 0) {
                             $.each(data, function(key, value) {
-                                ruangSelect.append('<option value="' + value.ruang_id + '">' + value.ruang_nama + ' ' + value.nomor_urut '</option>');
+                                ruangSelect.append('<option value="' + value.ruang_id + '">' + value.ruang_nama + '</option>');
                             });
                             ruangSelect.prop('disabled', false);
                         } else {
@@ -159,7 +159,7 @@
                     success: function(data) {
                         if (data.length > 0) {
                             $.each(data, function(key, value) {
-                                saranaSelect.append('<option value="' + value.sarana_id + '">' + value.sarana_kode + ' - ' + value.sarana_nama + '</option>');
+                                saranaSelect.append('<option value="' + value.sarana_id + '">' + value.sarana_kode + ' - ' + value.sarana_nama ' ' + value.nomor_urut + '</option>');
                             });
                             saranaSelect.prop('disabled', false);
                         } else {

@@ -111,11 +111,12 @@ class RuangSeeder extends Seeder
             foreach ($listRuangan as $ruang) {
                 $data[] = [
                     'lantai_id' => $ruang['lantai_id'],
+                    'gedung_id' => 1, // Tambahkan gedung_id dengan nilai 1 di sini
                     'ruang_nama' => $ruang['ruang_nama'],
                     'ruang_kode' => $ruang['ruang_kode'],
                     'ruang_tipe' => $ruang['ruang_tipe'],
-                    'created_at' => $ruang['created_at'],
-                    'updated_at' => $ruang['updated_at'],
+                    'created_at' => $ruang['created_at'] ?? $now,
+                    'updated_at' => $ruang['updated_at'] ?? $now,
                 ];
             }
         }

@@ -14,9 +14,9 @@ class SaranaModel extends Model
     protected $fillable = [
         'sarana_kode',
         'ruang_id',
-        'lantai_id',
         'kategori_id',
         'barang_id',
+        'gedung_id',
         'jumlah_laporan',
         'nomor_urut',
         'frekuensi_penggunaan',
@@ -43,5 +43,11 @@ class SaranaModel extends Model
     public function lantai()
     {
         return $this->belongsTo(LantaiModel::class, 'lantai_id', 'lantai_id');
+    }
+
+    // Tambahkan relasi ke GedungModel
+    public function gedung()
+    {
+        return $this->belongsTo(GedungModel::class, 'gedung_id', 'gedung_id');
     }
 }

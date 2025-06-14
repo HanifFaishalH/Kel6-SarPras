@@ -11,6 +11,20 @@
                 @csrf
                 <input type="hidden" name="ruang_id" value="{{ $ruang->ruang_id ?? '' }}">
                 <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Gedung</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" value="{{ $ruang->gedung->gedung_nama ?? 'N/A' }}"
+                            readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Lantai</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" value="{{ $ruang->lantai->lantai_nama ?? 'N/A' }}"
+                            readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label class="col-sm-3 col-form-label">Nama Ruang</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" value="{{ $ruang->ruang_nama ?? 'N/A' }}" readonly>
@@ -26,13 +40,6 @@
                     <label class="col-sm-3 col-form-label">Tipe Ruang</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" value="{{ $ruang->ruang_tipe ?? 'N/A' }}" readonly>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">Lantai</label>
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" value="{{ $ruang->lantai->lantai_nama ?? 'N/A' }}"
-                            readonly>
                     </div>
                 </div>
                 <div class="form-group row">

@@ -16,6 +16,7 @@ class RuangModel extends Model
         'ruang_nama',
         'ruang_kode',
         'ruang_tipe',
+        'gedung_id',
     ];
     public $timestamps = true;
 
@@ -24,8 +25,14 @@ class RuangModel extends Model
         return $this->belongsTo(LantaiModel::class, 'lantai_id', 'lantai_id');
     }
 
-    public function sarana() {
+    public function sarana()
+    {
         return $this->hasMany(SaranaModel::class, 'ruang_id', 'ruang_id');
     }
 
+    // Tambahkan relasi ke GedungModel
+    public function gedung()
+    {
+        return $this->belongsTo(GedungModel::class, 'gedung_id', 'gedung_id');
+    }
 }

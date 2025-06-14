@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('m_sarana', function (Blueprint $table) {
             $table->id('sarana_id');
             $table->string('sarana_kode')->unique();
+            $table->unsignedBigInteger('gedung_id');
             $table->unsignedBigInteger('ruang_id');
             $table->unsignedBigInteger('kategori_id');
             $table->unsignedBigInteger('barang_id');
@@ -30,6 +31,7 @@ return new class extends Migration
             $table->foreign('kategori_id')->references('kategori_id')->on('m_kategori')->onDelete('cascade');
             $table->foreign('barang_id')->references('barang_id')->on('m_barang')->onDelete('cascade');
             $table->foreign('ruang_id')->references('ruang_id')->on('m_ruang')->onDelete('cascade');
+            $table->foreign('gedung_id')->references('gedung_id')->on('m_gedung')->onDelete('cascade');
         });
     }
 

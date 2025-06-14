@@ -10,17 +10,18 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="sarana_kode">Kode Sarana</label>
-                    <input type="text" class="form-control" id="sarana_kode" name="sarana_kode"
-                        value="{{ $sarana_kode ?? '' }}" readonly required>
+                    <label for="gedung_id">Gedung</label>
+                    <select name="gedung_id" id="gedung_id" class="form-control" required>
+                        <option value="" disabled selected>Pilih Gedung</option>
+                        @foreach ($gedung_list ?? [] as $g)
+                            <option value="{{ $g->gedung_id }}">{{ $g->gedung_nama }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="lantai_id">Lantai</label>
-                    <select name="lantai_id" id="lantai_id" class="form-control" required>
-                        <option value="" disabled selected>Pilih lantai</option>
-                        @foreach ($lantai_list as $l)
-                            <option value="{{ $l->lantai_id }}">{{ $l->lantai_nama }}</option>
-                        @endforeach
+                    <select name="lantai_id" id="lantai_id" class="form-control" disabled required>
+                        <option value="" disabled selected>Pilih Lantai</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -60,11 +61,53 @@
 
 <script>
     $(document).ready(function() {
-        // Ambil ruang berdasarkan lantai
+        // Ambil lantai berdasarkan gedung
+        $('#gedung_id').on('change', function() {
+            var gedungID = $(this).val();
+            var lantaiSelect = $('#lantai_id');
+            var ruangSelect = $('#ruang_id');
+            var kategoriSelect = $('#kategori_id');
+            var barangSelect = $('#barang_id');
+
+            lantaiSelect.empty().append('<option value="" disabled selected>Pilih Lantai</option>')
+                .prop('disabled', true);
+            ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>').prop('disabled',
+                true);
+            barangSelect.empty().append('<option value="">- Pilih Barang -</option>').prop('disabled',
+                true);
+
+            if (gedungID) {
+                $.ajax({
+                    url: "{{ url('sarana/ajax/lantai-by-gedung') }}/" + gedungID,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        console.log('Data lantai diterima:', data);
+                        if (data.length > 0) {
+                            $.each(data, function(key, value) {
+                                lantaiSelect.append('<option value="' + value
+                                    .lantai_id + '">' + value.lantai_nama +
+                                    '</option>');
+                            });
+                            lantaiSelect.prop('disabled', false);
+                        } else {
+                            Swal.fire('Info', 'Tidak ada lantai tersedia untuk gedung ini.',
+                                'info');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Ajax error:', xhr.responseText);
+                        Swal.fire('Error', 'Gagal mengambil data lantai.', 'error');
+                    }
+                });
+            }
+        });
+
+        // Ambil ruang berdasarkan lantai dengan peringatan jika tidak ada ruang
         $('#lantai_id').on('change', function() {
             var lantaiID = $(this).val();
             var ruangSelect = $('#ruang_id');
-            var kategoriSelect = $('#kategori_id'); // Tetap aktif karena sudah ada opsi
+            var kategoriSelect = $('#kategori_id');
             var barangSelect = $('#barang_id');
 
             ruangSelect.empty().append('<option value="">- Pilih Ruang -</option>').prop('disabled',
@@ -78,6 +121,7 @@
                     type: "GET",
                     dataType: "json",
                     success: function(data) {
+                        console.log('Data ruang diterima:', data);
                         if (data.length > 0) {
                             $.each(data, function(key, value) {
                                 ruangSelect.append('<option value="' + value
@@ -86,18 +130,22 @@
                             });
                             ruangSelect.prop('disabled', false);
                         } else {
-                            Swal.fire('Info', 'Tidak ada ruang tersedia untuk lantai ini.',
-                                'info');
+                            Swal.fire('Peringatan',
+                                'Tidak ada ruang tersedia untuk lantai ini. Lanjutkan jika perlu.',
+                                'warning');
+                            ruangSelect.prop('disabled',
+                            false); // Izinkan memilih meskipun kosong
                         }
                     },
-                    error: function() {
+                    error: function(xhr) {
+                        console.error('Ajax error:', xhr.responseText);
                         Swal.fire('Error', 'Gagal mengambil data ruang.', 'error');
                     }
                 });
             }
         });
 
-        // Ambil barang berdasarkan kategori (ruang tidak lagi memengaruhi kategori)
+        // Ambil barang berdasarkan kategori
         $('#kategori_id').on('change', function() {
             var kategoriID = $(this).val();
             var barangSelect = $('#barang_id');
@@ -111,6 +159,7 @@
                     type: "GET",
                     dataType: "json",
                     success: function(data) {
+                        console.log('Data barang diterima:', data);
                         if (data.length > 0) {
                             $.each(data, function(key, value) {
                                 barangSelect.append('<option value="' + value

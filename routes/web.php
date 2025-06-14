@@ -115,6 +115,7 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/update_ajax/{id}', [RuangController::class, 'update_ajax']);
             Route::get('/delete_ajax/{id}', [RuangController::class, 'delete_ajax']);
             Route::delete('/destroy_ajax/{id}', [RuangController::class, 'destroy_ajax']);
+            Route::get('/ajax/lantai-by-gedung/{gedung_id}', [RuangController::class, 'getLantaiByGedung']);
         });
 
         Route::group(['prefix' => 'lantai'], function () {
@@ -150,10 +151,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/ruang/{id}/edit', [RuangController::class, 'edit'])->name('ruang.edit');
             Route::get('/delete_ajax/{id}', [SaranaController::class, 'delete_ajax']);
             Route::delete('/destroy_ajax/{id}', [SaranaController::class, 'destroy_ajax']);
+            Route::get('/ajax/lantai-by-gedung/{gedung_id}', [SaranaController::class, 'getLantaiByGedung']);
             Route::get('/ajax/ruang-by-lantai/{lantai_id}', [SaranaController::class, 'getRuangByLantai']);
             Route::get('/ajax/kategori-by-ruang/{ruang_id}', [SaranaController::class, 'getKategoriByRuang']);
             Route::get('/ajax/barang-by-kategori/{kategori_id}', [SaranaController::class, 'getBarangByKategori']);
-            Route::get('/ajax/sarana-by-ruang/{ruang_id}', [SaranaController::class, 'getSaranaByRuang']); // Jika masih digunakan
+            Route::get('/ajax/sarana-by-ruang/{ruang_id}', [SaranaController::class, 'getSaranaByRuang']);
         });
 
         Route::get('/bobot', [LaporanController::class, 'bobot'])->name('laporan.bobot');

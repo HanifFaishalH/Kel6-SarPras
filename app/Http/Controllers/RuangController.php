@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GedungModel;
 use App\Models\RuangModel;
 use Illuminate\Http\Request;
 use App\Models\LantaiModel;
@@ -68,8 +69,11 @@ class RuangController extends Controller
 
     public function create_ajax()
     {
+        $gedung_list = GedungModel::all();
         $lantai = LantaiModel::all();
+
         return view('ruang.create_ajax', [
+            'gedung_list' => $gedung_list,
             'lantai' => $lantai
         ]);
     }
@@ -77,6 +81,7 @@ class RuangController extends Controller
     public function store_ajax(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'gedung_id' => 'required|exists:m_gedung,gedung_id',
             'lantai_id' => 'required|exists:m_lantai,lantai_id',
             'ruang_nama' => 'required|string|max:255',
             'ruang_kode' => 'required|string|max:50|unique:m_ruang,ruang_kode',
@@ -97,6 +102,26 @@ class RuangController extends Controller
             'success' => true,
             'message' => 'Data ruang berhasil disimpan'
         ]);
+    }
+
+    public function getLantaiByGedung($gedung_id)
+    {
+        \Log::info('Mengambil lantai untuk gedung_id: ' . $gedung_id); // Debugging
+        try {
+            $lantai = LantaiModel::where('gedung_id', $gedung_id)->get();
+
+            \Log::info('Jumlah lantai ditemukan: ' . $lantai->count());
+            \Log::info('Data lantai: ' . json_encode($lantai->toArray()));
+
+            if ($lantai->isEmpty()) {
+                return response()->json([], 200);
+            }
+
+            return response()->json($lantai);
+        } catch (\Exception $e) {
+            \Log::error('Error mengambil lantai: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal mengambil data lantai: ' . $e->getMessage()], 500);
+        }
     }
 
     public function edit_ajax($id)

@@ -33,8 +33,14 @@
                             </div>
                         </div>
 
-                        <button onclick="modalAction('{{ url('/ruang/create_ajax') }}')" class="btn btn-info mb-3">Tambah
-                            Ruang</button>
+                            <div class="form-group row">
+                            <div class="col-12 text-right">
+                                <button type="button" class="btn btn-primary"
+                                    onclick="modalAction('{{ url('/ruang/create_ajax') }}')">
+                                    <i class="fa fa-plus"></i> Tambah Ruang
+                                </button>
+                            </div>
+                        </div>
 
                         <div class="data-tables">
                             <table class="table table-bordered table-striped table-hover table-sm" id="ruang-table">

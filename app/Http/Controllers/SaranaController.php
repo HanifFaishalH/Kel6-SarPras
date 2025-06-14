@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SaranaModel;
 use App\Models\BarangModel;
+use App\Models\GedungModel;
 use App\Models\KategoriModel;
 use App\Models\LantaiModel;
 use App\Models\RuangModel;
@@ -89,18 +90,33 @@ class SaranaController extends Controller
 
     public function create_ajax()
     {
-        $lantai_list = LantaiModel::all();
-        $ruang_list = RuangModel::all(); // Akan digantikan oleh AJAX
-        $kategori_list = KategoriModel::all(); // Akan digantikan oleh AJAX
-        $barang_list = BarangModel::all(); // Akan digantikan oleh AJAX
+        $gedung_list = GedungModel::all();
+        $kategori_list = KategoriModel::all();
 
         return view('sarana.create_ajax', [
-            'lantai_list' => $lantai_list,
-            'ruang_list' => $ruang_list,
+            'gedung_list' => $gedung_list,
             'kategori_list' => $kategori_list,
-            'barang_list' => $barang_list,
-            'sarana_kode' => 'SAR-' . (SaranaModel::max('sarana_id') + 1 ?? 1) // Generate kode otomatis
         ]);
+    }
+
+    public function getLantaiByGedung($gedung_id)
+    {
+        \Log::info('Mengambil lantai untuk gedung_id: ' . $gedung_id); // Debugging
+        try {
+            $lantai = LantaiModel::where('gedung_id', $gedung_id)->get();
+
+            \Log::info('Jumlah lantai ditemukan: ' . $lantai->count());
+            \Log::info('Data lantai: ' . json_encode($lantai->toArray()));
+
+            if ($lantai->isEmpty()) {
+                return response()->json([], 200);
+            }
+
+            return response()->json($lantai);
+        } catch (\Exception $e) {
+            \Log::error('Error mengambil lantai: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal mengambil data lantai: ' . $e->getMessage()], 500);
+        }
     }
 
     public function getRuangByLantai($lantai_id)
@@ -127,12 +143,14 @@ class SaranaController extends Controller
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
+            // Generate sarana_kode berdasarkan total entries
             $total_entries = SaranaModel::count();
             $next_number = $total_entries + 1;
-            $sarana_kode = 'SAR-' . $next_number;
+            $sarana_kode = 'SAR-' . str_pad($next_number, 4, '0', STR_PAD_LEFT); // Tambah padding untuk format seperti SAR-0001
 
             $validator = Validator::make(array_merge($request->all(), ['sarana_kode' => $sarana_kode]), [
                 'sarana_kode' => 'required|string|max:50|unique:m_sarana,sarana_kode',
+                'gedung_id' => 'required|exists:m_gedung,gedung_id', // Tambahkan validasi untuk gedung_id
                 'ruang_id' => 'required|exists:m_ruang,ruang_id',
                 'kategori_id' => 'required|exists:m_kategori,kategori_id',
                 'barang_id' => 'required|exists:m_barang,barang_id',
@@ -154,16 +172,20 @@ class SaranaController extends Controller
                 ->count();
             $data['nomor_urut'] = $existingCount + 1;
 
+            // Tambahkan nilai default atau dari request
             $data['jumlah_laporan'] = 0;
             $data['tanggal_operasional'] = now();
             $data['tingkat_kerusakan_tertinggi'] = null;
             $data['skor_prioritas'] = 0;
             $data['sarana_kode'] = $sarana_kode;
 
+            // Simpan data ke database
             SaranaModel::create($data);
 
             return response()->json(['success' => true, 'message' => 'Sarana berhasil ditambahkan']);
         }
+
+        return response()->json(['success' => false, 'message' => 'Permintaan tidak valid'], 400);
     }
 
 

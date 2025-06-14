@@ -10,21 +10,21 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="lantai_nama">Nama Lantai</label>
-                    <input type="text" class="form-control" id="lantai_nama" name="lantai_nama"
-                        value="{{ $data->lantai_nama ?? '' }}" placeholder="Masukkan nama lantai" required>
-                </div>
-
-                <div class="form-group">
                     <label for="gedung_id">Gedung</label>
                     <select name="gedung_id" id="gedung_id" class="form-control" required>
                         <option value="" disabled selected>Pilih gedung</option>
                         @foreach ($gedung as $g)
-                            <option value="{{ $g->gedung_id }}" {{ (isset($data) && $data->gedung_id == $g->gedung_id) ? 'selected' : '' }}>
+                            <option value="{{ $g->gedung_id }}"
+                                {{ isset($data) && $data->gedung_id == $g->gedung_id ? 'selected' : '' }}>
                                 {{ $g->gedung_nama }}
                             </option>
                         @endforeach
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="lantai_nama">Nama Lantai</label>
+                    <input type="text" class="form-control" id="lantai_nama" name="lantai_nama"
+                        value="{{ $data->lantai_nama ?? '' }}" placeholder="Masukkan nama lantai" required>
                 </div>
 
             </div>

@@ -887,6 +887,7 @@ class SaranaSeeder extends Seeder
 
                     $data[] = [
                         'sarana_kode' => $saranaKode,
+                        'gedung_id' => 1,
                         'ruang_id' => $roomId,
                         'kategori_id' => $item['kategori_id'],
                         'barang_id' => $item['barang_id'],

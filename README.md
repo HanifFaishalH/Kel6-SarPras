@@ -55,8 +55,6 @@ link : https://reportaction.dbsnetwork.my.id/
 
 ## 📸 Cuplikan Layar
 
-> *(Tambahkan screenshot dari dashboard, form laporan, dan halaman prioritas di sini jika tersedia)*
-
 
 ![Dashboard](image.png)
 ---

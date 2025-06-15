@@ -10,9 +10,9 @@
         <div class="card-body">
             <form id="filter-form" class="row g-3 align-items-end">
                 <div class="col-md-3">
-                    <label for="tahun" class="form-label">Tahun</label>
-                    <select class="form-select" id="filter-tahun">
-                        <option value="">- Pilih Tahun -</option>
+                    <label for="filter-tahun" class="form-label">Tahun</label>
+                    <select class="form-select select2" id="filter-tahun" name="tahun" style="width: 100%;">
+                        <option value="">Semua Tahun</option>
                         @foreach ($listTahun as $tahun)
                             <option value="{{ $tahun }}" {{ $tahun == $tahunDipilih ? 'selected' : '' }}>{{ $tahun }}</option>
                         @endforeach
@@ -21,8 +21,8 @@
 
                 <div class="col-md-3">
                     <label for="bulan" class="form-label">Bulan</label>
-                    <select name="bulan" id="bulan" class="form-select">
-                        <option value="">- Pilih Bulan -</option>
+                    <select name="bulan" id="bulan" class="form-select select2" style="width: 100%;">
+                        <option value="">Semua Bulan</option>
                         @foreach(range(1, 12) as $m)
                             <option value="{{ $m }}">{{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}</option>
                         @endforeach
@@ -31,8 +31,8 @@
 
                 <div class="col-md-3">
                     <label for="barang" class="form-label">Barang</label>
-                    <select name="barang" id="barang" class="form-select">
-                        <option value="">- Pilih Barang -</option>
+                    <select name="barang" id="barang" class="form-select select2" style="width: 100%;">
+                        <option value="">Semua Barang</option>
                         @foreach($barangList as $barang)
                             <option value="{{ $barang->id }}">{{ $barang->nama }}</option>
                         @endforeach
@@ -188,17 +188,17 @@
                                     const persentase = totalLaporan > 0 ?
                                         ((parseInt(item.jumlah) / totalLaporan) * 100).toFixed(1) : '0.0';
                                     tbody += `<tr>
-                                                    <td>${index + 1}</td>
-                                                    <td>${item.tahun}</td>
-                                                    <td>${item.bulan}</td>
-                                                    <td><span class="badge bg-primary">${item.jumlah}</span></td>
-                                                    <td>${persentase}%</td>
-                                                </tr>`;
+                                                                                    <td>${index + 1}</td>
+                                                                                    <td>${item.tahun}</td>
+                                                                                    <td>${item.bulan}</td>
+                                                                                    <td><span class="badge bg-primary">${item.jumlah}</span></td>
+                                                                                    <td>${persentase}%</td>
+                                                                                </tr>`;
                                 });
                             } else {
                                 tbody = `<tr><td colspan="5" class="text-center text-muted">
-                                                        <i class="fa fa-info-circle"></i> Tidak ada data untuk filter yang dipilih
-                                                    </td></tr>`;
+                                                                                        <i class="fa fa-info-circle"></i> Tidak ada data untuk filter yang dipilih
+                                                                                    </td></tr>`;
                             }
 
                             $('#tabel-detail tbody').html(tbody);
@@ -224,28 +224,28 @@
 
             function showError(message) {
                 $('#statistik-utama').html(`
-                                <div class="alert alert-danger">
-                                    <i class="fa fa-exclamation-triangle"></i> ${message}
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="fetchData()">
-                                        <i class="fa fa-refresh"></i> Coba Lagi
-                                    </button>
-                                </div>
-                            `);
+                                                                <div class="alert alert-danger">
+                                                                    <i class="fa fa-exclamation-triangle"></i> ${message}
+                                                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="fetchData()">
+                                                                        <i class="fa fa-refresh"></i> Coba Lagi
+                                                                    </button>
+                                                                </div>
+                                                            `);
                 $('#tabel-detail tbody').html(`<tr>
-                                <td colspan="5" class="text-center text-danger">
-                                    <i class="fa fa-exclamation-triangle"></i> ${message}
-                                </td>
-                            </tr>`);
+                                                                <td colspan="5" class="text-center text-danger">
+                                                                    <i class="fa fa-exclamation-triangle"></i> ${message}
+                                                                </td>
+                                                            </tr>`);
             }
 
             function showNotification(message, type = 'info') {
                 const notification = $(`
-                                <div class="alert alert-${type} alert-dismissible fade show position-fixed"
-                                     style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                                    <i class="fa fa-check-circle"></i> ${message}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
-                            `);
+                                                                <div class="alert alert-${type} alert-dismissible fade show position-fixed"
+                                                                     style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                                                                    <i class="fa fa-check-circle"></i> ${message}
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                                </div>
+                                                            `);
 
                 $('body').append(notification);
                 setTimeout(() => notification.fadeOut(() => notification.remove()), 3000);
@@ -282,5 +282,17 @@
         $(document).ready(() => {
             $('#btn-export-pdf').attr('href', buildExportUrl());
         });
+
+        //dropdown
+        $(document).ready(function () {
+            $('.select2').select2({
+                width: 'resolve', 
+                allowClear: true  
+            });
+        });
     </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 @endpush

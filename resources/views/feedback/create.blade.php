@@ -7,6 +7,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">Berikan Umpan Balik</h4>
+
                         @if (session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
@@ -16,6 +17,7 @@
 
                         <form action="{{ route('feedback.store') }}" method="POST">
                             @csrf
+
                             <div class="form-group">
                                 <label for="laporan_id">Pilih Laporan</label>
                                 @if ($laporans->isEmpty())
@@ -28,14 +30,28 @@
                                     </select>
                                 @endif
                             </div>
+
                             <div class="form-group">
-                                <label for="rating">Rating (1-5)</label>
-                                <input type="number" name="rating" class="form-control" min="1" max="5" required>
+                                <label for="rating">Rating (1-5)</label><br>
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="rating" id="rating{{ $i }}" value="{{ $i }}" {{ old('rating') == $i ? 'checked' : '' }} required>
+                                        <label class="form-check-label" for="rating{{ $i }}">{{ $i }}</label>
+                                    </div>
+                                @endfor
+                                @error('rating')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
-                            <div class="form mechanical-group">
+
+                            <div class="form-group">
                                 <label for="komentar">Komentar</label>
-                                <textarea name="komentar" class="form-control" required></textarea>
+                                <textarea name="komentar" class="form-control" required>{{ old('komentar') }}</textarea>
+                                @error('komentar')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
+
                             <button type="submit" class="btn btn-primary">Kirim</button>
                         </form>
                     </div>
